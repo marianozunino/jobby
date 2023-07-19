@@ -1,0 +1,32 @@
+
+type Status {
+  id: ID!
+  name: String!
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  deletedAt: Timestamp
+  jobOffers: [JobOffer]!
+}
+
+input StatusAggregationInput {
+  id: SortOrder
+  name: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrder
+}
+
+input StatusCreateInput {
+  name: String!
+}
+
+input StatusUpdateInput {
+  name: String!
+}
+
+type PaginatedStatusResponse {
+  edges: [Status!]!
+  total: Int!
+  take: Int
+  skip: Int
+}

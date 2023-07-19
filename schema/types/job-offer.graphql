@@ -1,0 +1,9 @@
+type JobOffer {
+  id: ID!
+  slug: String!
+  title: String!
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  deletedAt: Timestamp
+  statusId: ID!
+}

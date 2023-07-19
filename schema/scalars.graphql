@@ -1,0 +1,6 @@
+
+# A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+scalar Timestamp
+
+# UUID v4 custom scalar type
+scalar UUIDv4

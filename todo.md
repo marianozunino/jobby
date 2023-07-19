@@ -1,0 +1,4 @@
+- https://github.com/zenyui/gqlgen-dataloader/blob/main/gqlgen.yml
+- https://zetcode.com/golang/env/
+- https://github.com/rs/zerolog#log-sampling
+- https://github.com/simukti/sqldb-logger/issues/73

@@ -1,0 +1,33 @@
+
+schema:
+  - "schema/**/*.graphql"
+
+exec:
+  filename: graph/generated/generated.go
+  package: generated
+
+resolver:
+  filename_template: "{name}.resolvers.go"
+  layout: follow-schema
+  package: resolvers
+  dir: resolvers
+  type: Resolver
+
+# Where should any generated models go?
+model:
+  filename: dtos/dtos_gen.go
+  package: dtos
+
+models:
+  Timestamp:
+    model: github.com/marianozunino/cc-backend-go/dtos.Timestamp
+  Status:
+    fields:
+      jobOffers:
+        resolver: true
+
+
+# Optional, set to true if you prefer []Thing over []*Thing
+omit_slice_element_pointers: true
+
+autobind: []

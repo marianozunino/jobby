@@ -1,0 +1,12 @@
+
+type Mutation {
+  login(input: AuthInput!): Auth!
+
+  createStatus(input: StatusCreateInput!): Status!
+  deleteStatus(id: UUIDv4!): Status!
+  updateStatus(id: UUIDv4!, input: StatusUpdateInput!): Status!
+
+  sendMessage(input: MessageCreateInput!): Message!
+  deleteMessage(id: UUIDv4!): Message!
+  updateMessage(id: UUIDv4!, input: MessageUpdateInput!): Message!
+}

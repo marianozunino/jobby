@@ -1,0 +1,16 @@
+
+type Query {
+  status(id: UUIDv4!): Status!
+  statuses(
+    orderBy: StatusAggregationInput
+    take: Int = 10
+    skip: Int = 0
+  ): PaginatedStatusResponse!
+
+  messages(
+    orderBy: MessageAggregationInput
+    take: Int = 10
+    skip: Int = 0
+  ): PaginatedMessageResponse!
+  message(id: UUIDv4!): Message!
+}

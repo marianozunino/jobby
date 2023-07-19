@@ -1,0 +1,9 @@
+
+type Auth {
+  accessToken: ID!
+}
+
+input AuthInput {
+  email: String!
+  password: String!
+}

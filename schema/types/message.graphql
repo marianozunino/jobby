@@ -1,0 +1,44 @@
+
+type Message {
+  id: ID!
+  name: String!
+  email: String!
+  phone: String!
+  message: String!
+
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  deletedAt: Timestamp
+}
+
+input MessageAggregationInput {
+  id: SortOrder
+  name: SortOrder
+  email: SortOrder
+  phone: SortOrder
+
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrder
+}
+
+input MessageCreateInput {
+  name: String!
+  email: String!
+  phone: String!
+  message: String!
+}
+
+input MessageUpdateInput {
+  name: String
+  email: String
+  phone: String
+  message: String
+}
+
+type PaginatedMessageResponse {
+  edges: [Message!]!
+  total: Int!
+  take: Int
+  skip: Int
+}
