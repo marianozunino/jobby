@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
 	"github.com/marianozunino/cc-backend-go/store"
 )
@@ -32,7 +33,7 @@ type StatusService interface {
 }
 
 type JobOfferService interface {
-	JobOffersWithStatus(statusID string) ([]*dtos.JobOffer, error)
+	JobOffersWithStatus(statusID []uuid.UUID) ([]*dtos.JobOffer, error)
 }
 
 type MessageService interface {
@@ -43,16 +44,29 @@ type MessageService interface {
 	GetMessage(id string) (*dtos.Message, error)
 }
 
+type CategoryService interface {
+	CreateCategory(input dtos.CategoryCreateInput) (*dtos.Category, error)
+	DeleteCategory(id uuid.UUID) (*dtos.Category, error)
+	UpdateCategory(id uuid.UUID, input dtos.CategoryUpdateInput) (*dtos.Category, error)
+	GetCategory(id uuid.UUID) (*dtos.Category, error)
+	GetCategories() ([]dtos.Category, error)
+	PaginatedCategories(orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error)
+	ChildCategoriesFor(parentIDs []uuid.UUID) ([]*dtos.Category, error)
+	ParentCategoriesFor(childIDs []uuid.UUID) ([]*dtos.Category, error)
+}
+
 type Service interface {
 	StatusService
 	JobOfferService
 	MessageService
+	CategoryService
 }
 
 type service struct {
 	StatusService
 	JobOfferService
 	MessageService
+	CategoryService
 }
 
 func NewService(store store.Store) Service {
@@ -64,6 +78,9 @@ func NewService(store store.Store) Service {
 			Store: store,
 		},
 		MessageService: &messageService{
+			Store: store,
+		},
+		CategoryService: &categoryService{
 			Store: store,
 		},
 	}

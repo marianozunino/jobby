@@ -16,6 +16,7 @@ type Store struct {
 	store.StatusStore
 	store.JobOfferStore
 	store.MessageStore
+	store.CategoryStore
 }
 
 // assert that Store implements store.Store
@@ -52,5 +53,6 @@ func NewStore(databaseURL string) store.Store {
 		StatusStore:   &StatusStore{db},
 		JobOfferStore: &JobOfferStore{db},
 		MessageStore:  &MessageStore{db},
+		CategoryStore: &CategoryStore{db},
 	}
 }

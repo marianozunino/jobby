@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/marianozunino/cc-backend-go/store"
@@ -14,11 +16,20 @@ type JobOfferStore struct {
 }
 
 // JobOffersWithStatus implements store.JobOfferStore.
-func (j *JobOfferStore) JobOffersWithStatus(statusID uuid.UUID) ([]*models.JobOffers, error) {
+func (j *JobOfferStore) JobOffersWithStatus(statusID []uuid.UUID) ([]*models.JobOffers, error) {
+
+	query, args, err := sqlx.In("SELECT * FROM job_offers WHERE status_id IN (?)", statusID)
+
+	if err != nil {
+		return nil, fmt.Errorf("error building query: %w", err)
+	}
+	query = j.Rebind(query)
+
 	var jobOffers []*models.JobOffers
 
-	if err := j.Select(&jobOffers, "SELECT * FROM job_offers WHERE status_id = $1", statusID); err != nil {
-		return nil, err
+	err = j.Select(&jobOffers, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("error querying job offers: %w", err)
 	}
 
 	return jobOffers, nil

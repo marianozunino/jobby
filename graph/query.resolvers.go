@@ -1,4 +1,4 @@
-package resolvers
+package graph
 
 // This file will be automatically regenerated based on the schema, any resolver implementations
 // will be copied through when generating and any unknown code will be moved to the end.
@@ -7,6 +7,7 @@ package resolvers
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
 	"github.com/marianozunino/cc-backend-go/graph/generated"
 )
@@ -29,6 +30,16 @@ func (r *queryResolver) Messages(ctx context.Context, orderBy *dtos.MessageAggre
 // Message implements generated.QueryResolver.
 func (r *queryResolver) Message(ctx context.Context, id string) (*dtos.Message, error) {
 	return r.GetMessage(id)
+}
+
+// Category is the resolver for the category field.
+func (r *queryResolver) Category(ctx context.Context, id uuid.UUID) (*dtos.Category, error) {
+	return r.GetCategory(id)
+}
+
+// Categories is the resolver for the categories field.
+func (r *queryResolver) Categories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error) {
+	return r.PaginatedCategories(orderBy, take, skip, where)
 }
 
 // Query returns generated.QueryResolver implementation.

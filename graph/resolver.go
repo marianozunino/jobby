@@ -1,7 +1,10 @@
 //go:generate go run github.com/99designs/gqlgen generate
-package resolvers
+package graph
 
-import "github.com/marianozunino/cc-backend-go/service"
+import (
+	"github.com/marianozunino/cc-backend-go/graph/dataloader"
+	"github.com/marianozunino/cc-backend-go/service"
+)
 
 // This file will not be regenerated automatically.
 //
@@ -9,4 +12,5 @@ import "github.com/marianozunino/cc-backend-go/service"
 
 type Resolver struct {
 	service.Service
+	DataLoaders dataloader.Retriever
 }

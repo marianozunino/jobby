@@ -10,17 +10,21 @@ require (
 
 require (
 	github.com/go-chi/chi v1.5.4
+	github.com/gosimple/slug v1.13.1
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/rs/zerolog v1.29.1
+	github.com/simukti/sqldb-logger v0.0.0-20230108155151-646c1a075551
+	github.com/vektah/dataloaden v0.3.0
 )
 
 require (
 	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.3 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/rs/zerolog v1.29.1 // indirect
-	github.com/simukti/sqldb-logger v0.0.0-20230108155151-646c1a075551 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 )
 

@@ -1,0 +1,61 @@
+type Category {
+  id: ID!
+  name: String!
+  slug: String!
+
+  parentId: ID
+  isRoot: Boolean!
+  children: [Category!]! @goField(forceResolver: true)
+  parent: Category @goField(forceResolver: true)
+
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  deletedAt: Timestamp
+}
+
+input CategoryAggregationInput {
+  id: SortOrder
+  name: SortOrder
+  slug: SortOrder
+  isRoot: SortOrder
+
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrder
+}
+
+input CategoryWhereInput {
+  id: ID
+  name: String
+  slug: String
+  isRoot: Boolean
+}
+
+input CategoryCreateInput {
+  name: String!
+
+  # if slug is not provided, it will be generated from name
+  slug: String
+
+  # if isRoot is true, parentID will be ignored
+  # if isRoot is false, parentID will be required
+  isRoot: Boolean!
+  parentId: ID
+
+}
+
+input CategoryUpdateInput {
+  name: String!
+
+  # if isRoot is true, parentID will be ignored
+  # if isRoot is false, parentID will be required
+  isRoot: Boolean!
+  parentId: ID
+}
+
+type PaginatedCategoryResponse {
+  edges: [Category!]!
+  total: Int!
+  take: Int
+  skip: Int
+}

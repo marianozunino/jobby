@@ -7,11 +7,11 @@ import (
 )
 
 type Categories struct {
-	ID       uuid.UUID `db:"id"`
-	Name     string    `db:"name"`
-	Slug     string    `db:"slug"`
-	ParentID uuid.UUID `db:"parent_id"`
-	IsRoot   bool      `db:"is_root"`
+	ID       uuid.UUID  `db:"id"`
+	Name     string     `db:"name"`
+	Slug     string     `db:"slug"`
+	ParentID *uuid.UUID `db:"parent_id"`
+	IsRoot   bool       `db:"is_root"`
 
 	CreatedAt sql.NullTime `db:"created_at"`
 	UpdatedAt sql.NullTime `db:"updated_at"`

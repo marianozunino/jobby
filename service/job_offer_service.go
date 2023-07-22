@@ -11,12 +11,8 @@ type jobOfferService struct {
 }
 
 // JobOffersWithStatus implements JobOfferService.
-func (s *jobOfferService) JobOffersWithStatus(statusID string) ([]*dtos.JobOffer, error) {
-	parsedId, err := uuid.Parse(statusID)
-	if err != nil {
-		return nil, err
-	}
-	jobOffers, err := s.Store.JobOffersWithStatus(parsedId)
+func (s *jobOfferService) JobOffersWithStatus(statusID []uuid.UUID) ([]*dtos.JobOffer, error) {
+	jobOffers, err := s.Store.JobOffersWithStatus(statusID)
 	if err != nil {
 		return nil, err
 	}
@@ -24,9 +20,9 @@ func (s *jobOfferService) JobOffersWithStatus(statusID string) ([]*dtos.JobOffer
 	result := make([]*dtos.JobOffer, len(jobOffers))
 	for i, jobOffer := range jobOffers {
 		result[i] = &dtos.JobOffer{
-			ID:        jobOffer.ID.String(),
+			ID:        jobOffer.ID,
 			Slug:      jobOffer.Slug,
-			StatusID:  jobOffer.StatusID.String(),
+			StatusID:  jobOffer.StatusID,
 			CreatedAt: jobOffer.CreatedAt.Time,
 			UpdatedAt: jobOffer.UpdatedAt.Time,
 			DeletedAt: getTimeOrNil(jobOffer.DeletedAt),

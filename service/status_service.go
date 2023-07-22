@@ -105,7 +105,7 @@ func (s *statusService) UpdateStatus(id string, input dtos.StatusUpdateInput) (*
 
 func (s *statusService) BuildFromEntity(entity *models.Status) *dtos.Status {
 	dto := &dtos.Status{
-		ID:        entity.ID.String(),
+		ID:        entity.ID,
 		Name:      entity.Name,
 		CreatedAt: entity.CreatedAt.Time,
 		UpdatedAt: entity.UpdatedAt.Time,
@@ -114,10 +114,10 @@ func (s *statusService) BuildFromEntity(entity *models.Status) *dtos.Status {
 	return dto
 }
 
-func (s *statusService) BuildFromEntities(entities []*models.Status) []dtos.Status {
-	dtos := make([]dtos.Status, len(entities))
+func (s *statusService) BuildFromEntities(entities []*models.Status) []*dtos.Status {
+	dtos := make([]*dtos.Status, len(entities))
 	for i, entity := range entities {
-		dtos[i] = *s.BuildFromEntity(entity)
+		dtos[i] = s.BuildFromEntity(entity)
 	}
 	return dtos
 }

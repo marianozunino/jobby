@@ -1,4 +1,4 @@
-package resolvers
+package graph
 
 // This file will be automatically regenerated based on the schema, any resolver implementations
 // will be copied through when generating and any unknown code will be moved to the end.
@@ -13,7 +13,7 @@ import (
 
 // JobOffers is the resolver for the jobOffers field.
 func (r *statusResolver) JobOffers(ctx context.Context, obj *dtos.Status) ([]*dtos.JobOffer, error) {
-	return r.JobOffersWithStatus(obj.ID)
+	return r.DataLoaders.Retrieve(ctx).JobOffersByStatusId.Load(obj.ID)
 }
 
 // Status returns generated.StatusResolver implementation.

@@ -1,4 +1,4 @@
-package resolvers
+package graph
 
 // This file will be automatically regenerated based on the schema, any resolver implementations
 // will be copied through when generating and any unknown code will be moved to the end.
@@ -7,6 +7,7 @@ package resolvers
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
 	"github.com/marianozunino/cc-backend-go/graph/generated"
 )
@@ -44,6 +45,21 @@ func (r *mutationResolver) DeleteMessage(ctx context.Context, id string) (*dtos.
 // UpdateMessage implements generated.MutationResolver.
 func (r *mutationResolver) UpdateMessage(ctx context.Context, id string, input dtos.MessageUpdateInput) (*dtos.Message, error) {
 	return r.Service.UpdateMessage(id, input)
+}
+
+// CreateCategory is the resolver for the createCategory field.
+func (r *mutationResolver) CreateCategory(ctx context.Context, input dtos.CategoryCreateInput) (*dtos.Category, error) {
+	return r.Service.CreateCategory(input)
+}
+
+// DeleteCategory is the resolver for the deleteCategory field.
+func (r *mutationResolver) DeleteCategory(ctx context.Context, id uuid.UUID) (*dtos.Category, error) {
+	return r.Service.DeleteCategory(id)
+}
+
+// UpdateCategory is the resolver for the updateCategory field.
+func (r *mutationResolver) UpdateCategory(ctx context.Context, id uuid.UUID, input dtos.CategoryUpdateInput) (*dtos.Category, error) {
+	return r.Service.UpdateCategory(id, input)
 }
 
 // Mutation returns generated.MutationResolver implementation.

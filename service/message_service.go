@@ -98,7 +98,7 @@ func (m *messageService) PaginatedMessages(orderBy *dtos.MessageAggregationInput
 
 func (s *messageService) BuildFromEntity(entity *models.ContactUsMessages) *dtos.Message {
 	dto := &dtos.Message{
-		ID:        entity.ID.String(),
+		ID:        entity.ID,
 		Name:      entity.Name,
 		Email:     entity.Email,
 		Phone:     entity.Phone.String,
@@ -110,10 +110,10 @@ func (s *messageService) BuildFromEntity(entity *models.ContactUsMessages) *dtos
 	return dto
 }
 
-func (s *messageService) BuildFromEntities(entities []*models.ContactUsMessages) []dtos.Message {
-	dtos := make([]dtos.Message, len(entities))
+func (s *messageService) BuildFromEntities(entities []*models.ContactUsMessages) []*dtos.Message {
+	dtos := make([]*dtos.Message, len(entities))
 	for i, entity := range entities {
-		dtos[i] = *s.BuildFromEntity(entity)
+		dtos[i] = s.BuildFromEntity(entity)
 	}
 	return dtos
 }

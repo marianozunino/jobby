@@ -2,3 +2,24 @@ enum SortOrder {
   asc
   desc
 }
+
+input IDFilter {
+  eq: ID
+}
+
+input StringFilter {
+  eq: String
+}
+
+input BooleanFilter {
+  eq: Boolean
+}
+
+input TimestampFilter {
+  eq: Timestamp
+  gt: Timestamp
+  gte: Timestamp
+  lt: Timestamp
+  lte: Timestamp
+}
+

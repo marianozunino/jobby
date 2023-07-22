@@ -25,7 +25,7 @@ type StatusStore interface {
 }
 
 type JobOfferStore interface {
-	JobOffersWithStatus(statusID uuid.UUID) ([]*models.JobOffers, error)
+	JobOffersWithStatus(statusID []uuid.UUID) ([]*models.JobOffers, error)
 }
 
 type MessageStore interface {
@@ -37,8 +37,21 @@ type MessageStore interface {
 	UpdateMessage(message models.ContactUsMessages) (*models.ContactUsMessages, error)
 }
 
+type CategoryStore interface {
+	Category(id uuid.UUID) (*models.Categories, error)
+	PaginatedCategories(orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) ([]*models.Categories, error)
+	CountCategories() (int, error)
+	CreateCategory(category models.Categories) (*models.Categories, error)
+	UpdateCategory(category models.Categories) (*models.Categories, error)
+	DeleteCategory(id uuid.UUID) (*models.Categories, error)
+	ChildCategoriesFor(parentIDs []uuid.UUID) ([]*models.Categories, error)
+	ParentCategoriesFor(childIDs []uuid.UUID) ([]*models.Categories, error)
+	IsSlugTaken(slug string) (bool, error)
+}
+
 type Store interface {
 	StatusStore
 	JobOfferStore
 	MessageStore
+	CategoryStore
 }

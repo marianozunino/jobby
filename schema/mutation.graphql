@@ -9,4 +9,8 @@ type Mutation {
   sendMessage(input: MessageCreateInput!): Message!
   deleteMessage(id: UUIDv4!): Message!
   updateMessage(id: UUIDv4!, input: MessageUpdateInput!): Message!
+
+  createCategory(input: CategoryCreateInput!): Category!
+  deleteCategory(id: ID!): Category!
+  updateCategory(id: ID!, input: CategoryUpdateInput!): Category!
 }

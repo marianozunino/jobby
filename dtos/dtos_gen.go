@@ -7,10 +7,12 @@ import (
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Auth struct {
-	AccessToken string `json:"accessToken"`
+	AccessToken uuid.UUID `json:"accessToken"`
 }
 
 type AuthInput struct {
@@ -18,18 +20,69 @@ type AuthInput struct {
 	Password string `json:"password"`
 }
 
+type BooleanFilter struct {
+	Eq *bool `json:"eq,omitempty"`
+}
+
+type Category struct {
+	ID        uuid.UUID   `json:"id"`
+	Name      string      `json:"name"`
+	Slug      string      `json:"slug"`
+	ParentID  *uuid.UUID  `json:"parentId,omitempty"`
+	IsRoot    bool        `json:"isRoot"`
+	Children  []*Category `json:"children"`
+	Parent    *Category   `json:"parent,omitempty"`
+	CreatedAt time.Time   `json:"createdAt"`
+	UpdatedAt time.Time   `json:"updatedAt"`
+	DeletedAt *time.Time  `json:"deletedAt,omitempty"`
+}
+
+type CategoryAggregationInput struct {
+	ID        *SortOrder `json:"id,omitempty"`
+	Name      *SortOrder `json:"name,omitempty"`
+	Slug      *SortOrder `json:"slug,omitempty"`
+	IsRoot    *SortOrder `json:"isRoot,omitempty"`
+	CreatedAt *SortOrder `json:"createdAt,omitempty"`
+	UpdatedAt *SortOrder `json:"updatedAt,omitempty"`
+	DeletedAt *SortOrder `json:"deletedAt,omitempty"`
+}
+
+type CategoryCreateInput struct {
+	Name     string     `json:"name"`
+	Slug     *string    `json:"slug,omitempty"`
+	IsRoot   bool       `json:"isRoot"`
+	ParentID *uuid.UUID `json:"parentId,omitempty"`
+}
+
+type CategoryUpdateInput struct {
+	Name     string     `json:"name"`
+	IsRoot   bool       `json:"isRoot"`
+	ParentID *uuid.UUID `json:"parentId,omitempty"`
+}
+
+type CategoryWhereInput struct {
+	ID     *uuid.UUID `json:"id,omitempty"`
+	Name   *string    `json:"name,omitempty"`
+	Slug   *string    `json:"slug,omitempty"`
+	IsRoot *bool      `json:"isRoot,omitempty"`
+}
+
+type IDFilter struct {
+	Eq *uuid.UUID `json:"eq,omitempty"`
+}
+
 type JobOffer struct {
-	ID        string     `json:"id"`
+	ID        uuid.UUID  `json:"id"`
 	Slug      string     `json:"slug"`
 	Title     string     `json:"title"`
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
 	DeletedAt *time.Time `json:"deletedAt,omitempty"`
-	StatusID  string     `json:"statusId"`
+	StatusID  uuid.UUID  `json:"statusId"`
 }
 
 type Message struct {
-	ID        string     `json:"id"`
+	ID        uuid.UUID  `json:"id"`
 	Name      string     `json:"name"`
 	Email     string     `json:"email"`
 	Phone     string     `json:"phone"`
@@ -63,22 +116,29 @@ type MessageUpdateInput struct {
 	Message *string `json:"message,omitempty"`
 }
 
+type PaginatedCategoryResponse struct {
+	Edges []*Category `json:"edges"`
+	Total int         `json:"total"`
+	Take  *int        `json:"take,omitempty"`
+	Skip  *int        `json:"skip,omitempty"`
+}
+
 type PaginatedMessageResponse struct {
-	Edges []Message `json:"edges"`
+	Edges []*Message `json:"edges"`
+	Total int        `json:"total"`
+	Take  *int       `json:"take,omitempty"`
+	Skip  *int       `json:"skip,omitempty"`
+}
+
+type PaginatedStatusResponse struct {
+	Edges []*Status `json:"edges"`
 	Total int       `json:"total"`
 	Take  *int      `json:"take,omitempty"`
 	Skip  *int      `json:"skip,omitempty"`
 }
 
-type PaginatedStatusResponse struct {
-	Edges []Status `json:"edges"`
-	Total int      `json:"total"`
-	Take  *int     `json:"take,omitempty"`
-	Skip  *int     `json:"skip,omitempty"`
-}
-
 type Status struct {
-	ID        string      `json:"id"`
+	ID        uuid.UUID   `json:"id"`
 	Name      string      `json:"name"`
 	CreatedAt time.Time   `json:"createdAt"`
 	UpdatedAt time.Time   `json:"updatedAt"`
@@ -100,6 +160,18 @@ type StatusCreateInput struct {
 
 type StatusUpdateInput struct {
 	Name string `json:"name"`
+}
+
+type StringFilter struct {
+	Eq *string `json:"eq,omitempty"`
+}
+
+type TimestampFilter struct {
+	Eq  *time.Time `json:"eq,omitempty"`
+	Gt  *time.Time `json:"gt,omitempty"`
+	Gte *time.Time `json:"gte,omitempty"`
+	Lt  *time.Time `json:"lt,omitempty"`
+	Lte *time.Time `json:"lte,omitempty"`
 }
 
 type SortOrder string
