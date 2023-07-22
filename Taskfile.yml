@@ -1,0 +1,21 @@
+version: 3
+
+tasks:
+  gen:
+    cmds:
+      - go generate ./...
+  build:
+    cmds:
+      - CGO_ENABLED=0 GOOS=linux go build -a -gcflags='-N -l' -installsuffix cgo -o main .
+  dev:
+    cmds:
+      - chmod +x ./tmp/main
+      - air
+  lint:
+    cmds:
+      - go vet ./...
+  default:
+    cmds:
+      - task gen
+      - task build
+      - task lint
