@@ -55,11 +55,20 @@ type CategoryService interface {
 	ParentCategoriesFor(childIDs []uuid.UUID) ([]*dtos.Category, error)
 }
 
+type DegreeLevelService interface {
+	GetDegreeLevel(id uuid.UUID) (*dtos.DegreeLevel, error)
+	PaginatedDegreeLevels(orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) (*dtos.PaginatedDegreeLevelResponse, error)
+	CreateDegreeLevel(degreeLevel dtos.DegreeLevelCreateInput) (*dtos.DegreeLevel, error)
+	UpdateDegreeLevel(id uuid.UUID, degreeLevel dtos.DegreeLevelUpdateInput) (*dtos.DegreeLevel, error)
+	DeleteDegreeLevel(id uuid.UUID) (*dtos.DegreeLevel, error)
+}
+
 type Service interface {
 	StatusService
 	JobOfferService
 	MessageService
 	CategoryService
+	DegreeLevelService
 }
 
 type service struct {
@@ -67,6 +76,7 @@ type service struct {
 	JobOfferService
 	MessageService
 	CategoryService
+	DegreeLevelService
 }
 
 func NewService(store store.Store) Service {
@@ -81,6 +91,9 @@ func NewService(store store.Store) Service {
 			Store: store,
 		},
 		CategoryService: &categoryService{
+			Store: store,
+		},
+		DegreeLevelService: &degreeLevelService{
 			Store: store,
 		},
 	}

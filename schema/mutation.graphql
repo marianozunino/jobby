@@ -13,4 +13,8 @@ type Mutation {
   createCategory(input: CategoryCreateInput!): Category!
   deleteCategory(id: ID!): Category!
   updateCategory(id: ID!, input: CategoryUpdateInput!): Category!
+
+  createDegreeLevel(input: DegreeLevelCreateInput!): DegreeLevel!
+  deleteDegreeLevel(id: ID!): DegreeLevel!
+  updateDegreeLevel(id: ID!, input: DegreeLevelUpdateInput!): DegreeLevel!
 }

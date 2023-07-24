@@ -6,6 +6,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
@@ -40,6 +41,17 @@ func (r *queryResolver) Category(ctx context.Context, id uuid.UUID) (*dtos.Categ
 // Categories is the resolver for the categories field.
 func (r *queryResolver) Categories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error) {
 	return r.PaginatedCategories(orderBy, take, skip, where)
+}
+
+// DegreeLevel is the resolver for the degreeLevel field.
+func (r *queryResolver) DegreeLevel(ctx context.Context, id uuid.UUID) (*dtos.DegreeLevel, error) {
+	fmt.Println("queryResolver.DegreeLevel")
+	return r.GetDegreeLevel(id)
+}
+
+// DegreeLevels is the resolver for the degreeLevels field.
+func (r *queryResolver) DegreeLevels(ctx context.Context, orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) (*dtos.PaginatedDegreeLevelResponse, error) {
+	return r.PaginatedDegreeLevels(orderBy, take, skip, where)
 }
 
 // Query returns generated.QueryResolver implementation.

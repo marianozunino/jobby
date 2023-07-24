@@ -67,6 +67,35 @@ type CategoryWhereInput struct {
 	IsRoot *bool      `json:"isRoot,omitempty"`
 }
 
+type DegreeLevel struct {
+	ID        uuid.UUID  `json:"id"`
+	Name      string     `json:"name"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
+}
+
+type DegreeLevelAggregationInput struct {
+	ID        *SortOrder `json:"id,omitempty"`
+	Name      *SortOrder `json:"name,omitempty"`
+	CreatedAt *SortOrder `json:"createdAt,omitempty"`
+	UpdatedAt *SortOrder `json:"updatedAt,omitempty"`
+	DeletedAt *SortOrder `json:"deletedAt,omitempty"`
+}
+
+type DegreeLevelCreateInput struct {
+	Name string `json:"name"`
+}
+
+type DegreeLevelUpdateInput struct {
+	Name string `json:"name"`
+}
+
+type DegreeLevelWhereInput struct {
+	ID   *uuid.UUID `json:"id,omitempty"`
+	Name *string    `json:"name,omitempty"`
+}
+
 type IDFilter struct {
 	Eq *uuid.UUID `json:"eq,omitempty"`
 }
@@ -121,6 +150,13 @@ type PaginatedCategoryResponse struct {
 	Total int         `json:"total"`
 	Take  *int        `json:"take,omitempty"`
 	Skip  *int        `json:"skip,omitempty"`
+}
+
+type PaginatedDegreeLevelResponse struct {
+	Edges []*DegreeLevel `json:"edges"`
+	Total int            `json:"total"`
+	Take  *int           `json:"take,omitempty"`
+	Skip  *int           `json:"skip,omitempty"`
 }
 
 type PaginatedMessageResponse struct {

@@ -65,6 +65,14 @@ type ComplexityRoot struct {
 		UpdatedAt func(childComplexity int) int
 	}
 
+	DegreeLevel struct {
+		CreatedAt func(childComplexity int) int
+		DeletedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
 	JobOffer struct {
 		CreatedAt func(childComplexity int) int
 		DeletedAt func(childComplexity int) int
@@ -87,19 +95,29 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateCategory func(childComplexity int, input dtos.CategoryCreateInput) int
-		CreateStatus   func(childComplexity int, input dtos.StatusCreateInput) int
-		DeleteCategory func(childComplexity int, id uuid.UUID) int
-		DeleteMessage  func(childComplexity int, id string) int
-		DeleteStatus   func(childComplexity int, id string) int
-		Login          func(childComplexity int, input dtos.AuthInput) int
-		SendMessage    func(childComplexity int, input dtos.MessageCreateInput) int
-		UpdateCategory func(childComplexity int, id uuid.UUID, input dtos.CategoryUpdateInput) int
-		UpdateMessage  func(childComplexity int, id string, input dtos.MessageUpdateInput) int
-		UpdateStatus   func(childComplexity int, id string, input dtos.StatusUpdateInput) int
+		CreateCategory    func(childComplexity int, input dtos.CategoryCreateInput) int
+		CreateDegreeLevel func(childComplexity int, input dtos.DegreeLevelCreateInput) int
+		CreateStatus      func(childComplexity int, input dtos.StatusCreateInput) int
+		DeleteCategory    func(childComplexity int, id uuid.UUID) int
+		DeleteDegreeLevel func(childComplexity int, id uuid.UUID) int
+		DeleteMessage     func(childComplexity int, id string) int
+		DeleteStatus      func(childComplexity int, id string) int
+		Login             func(childComplexity int, input dtos.AuthInput) int
+		SendMessage       func(childComplexity int, input dtos.MessageCreateInput) int
+		UpdateCategory    func(childComplexity int, id uuid.UUID, input dtos.CategoryUpdateInput) int
+		UpdateDegreeLevel func(childComplexity int, id uuid.UUID, input dtos.DegreeLevelUpdateInput) int
+		UpdateMessage     func(childComplexity int, id string, input dtos.MessageUpdateInput) int
+		UpdateStatus      func(childComplexity int, id string, input dtos.StatusUpdateInput) int
 	}
 
 	PaginatedCategoryResponse struct {
+		Edges func(childComplexity int) int
+		Skip  func(childComplexity int) int
+		Take  func(childComplexity int) int
+		Total func(childComplexity int) int
+	}
+
+	PaginatedDegreeLevelResponse struct {
 		Edges func(childComplexity int) int
 		Skip  func(childComplexity int) int
 		Take  func(childComplexity int) int
@@ -121,12 +139,14 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Categories func(childComplexity int, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) int
-		Category   func(childComplexity int, id uuid.UUID) int
-		Message    func(childComplexity int, id string) int
-		Messages   func(childComplexity int, orderBy *dtos.MessageAggregationInput, take *int, skip *int) int
-		Status     func(childComplexity int, id string) int
-		Statuses   func(childComplexity int, orderBy *dtos.StatusAggregationInput, take *int, skip *int) int
+		Categories   func(childComplexity int, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) int
+		Category     func(childComplexity int, id uuid.UUID) int
+		DegreeLevel  func(childComplexity int, id uuid.UUID) int
+		DegreeLevels func(childComplexity int, orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) int
+		Message      func(childComplexity int, id string) int
+		Messages     func(childComplexity int, orderBy *dtos.MessageAggregationInput, take *int, skip *int) int
+		Status       func(childComplexity int, id string) int
+		Statuses     func(childComplexity int, orderBy *dtos.StatusAggregationInput, take *int, skip *int) int
 	}
 
 	Status struct {
@@ -154,6 +174,9 @@ type MutationResolver interface {
 	CreateCategory(ctx context.Context, input dtos.CategoryCreateInput) (*dtos.Category, error)
 	DeleteCategory(ctx context.Context, id uuid.UUID) (*dtos.Category, error)
 	UpdateCategory(ctx context.Context, id uuid.UUID, input dtos.CategoryUpdateInput) (*dtos.Category, error)
+	CreateDegreeLevel(ctx context.Context, input dtos.DegreeLevelCreateInput) (*dtos.DegreeLevel, error)
+	DeleteDegreeLevel(ctx context.Context, id uuid.UUID) (*dtos.DegreeLevel, error)
+	UpdateDegreeLevel(ctx context.Context, id uuid.UUID, input dtos.DegreeLevelUpdateInput) (*dtos.DegreeLevel, error)
 }
 type QueryResolver interface {
 	Status(ctx context.Context, id string) (*dtos.Status, error)
@@ -162,6 +185,8 @@ type QueryResolver interface {
 	Message(ctx context.Context, id string) (*dtos.Message, error)
 	Category(ctx context.Context, id uuid.UUID) (*dtos.Category, error)
 	Categories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error)
+	DegreeLevel(ctx context.Context, id uuid.UUID) (*dtos.DegreeLevel, error)
+	DegreeLevels(ctx context.Context, orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) (*dtos.PaginatedDegreeLevelResponse, error)
 }
 type StatusResolver interface {
 	JobOffers(ctx context.Context, obj *dtos.Status) ([]*dtos.JobOffer, error)
@@ -258,6 +283,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Category.UpdatedAt(childComplexity), true
+
+	case "DegreeLevel.createdAt":
+		if e.complexity.DegreeLevel.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.DegreeLevel.CreatedAt(childComplexity), true
+
+	case "DegreeLevel.deletedAt":
+		if e.complexity.DegreeLevel.DeletedAt == nil {
+			break
+		}
+
+		return e.complexity.DegreeLevel.DeletedAt(childComplexity), true
+
+	case "DegreeLevel.id":
+		if e.complexity.DegreeLevel.ID == nil {
+			break
+		}
+
+		return e.complexity.DegreeLevel.ID(childComplexity), true
+
+	case "DegreeLevel.name":
+		if e.complexity.DegreeLevel.Name == nil {
+			break
+		}
+
+		return e.complexity.DegreeLevel.Name(childComplexity), true
+
+	case "DegreeLevel.updatedAt":
+		if e.complexity.DegreeLevel.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.DegreeLevel.UpdatedAt(childComplexity), true
 
 	case "JobOffer.createdAt":
 		if e.complexity.JobOffer.CreatedAt == nil {
@@ -376,6 +436,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateCategory(childComplexity, args["input"].(dtos.CategoryCreateInput)), true
 
+	case "Mutation.createDegreeLevel":
+		if e.complexity.Mutation.CreateDegreeLevel == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createDegreeLevel_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateDegreeLevel(childComplexity, args["input"].(dtos.DegreeLevelCreateInput)), true
+
 	case "Mutation.createStatus":
 		if e.complexity.Mutation.CreateStatus == nil {
 			break
@@ -399,6 +471,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteCategory(childComplexity, args["id"].(uuid.UUID)), true
+
+	case "Mutation.deleteDegreeLevel":
+		if e.complexity.Mutation.DeleteDegreeLevel == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteDegreeLevel_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteDegreeLevel(childComplexity, args["id"].(uuid.UUID)), true
 
 	case "Mutation.deleteMessage":
 		if e.complexity.Mutation.DeleteMessage == nil {
@@ -460,6 +544,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateCategory(childComplexity, args["id"].(uuid.UUID), args["input"].(dtos.CategoryUpdateInput)), true
 
+	case "Mutation.updateDegreeLevel":
+		if e.complexity.Mutation.UpdateDegreeLevel == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateDegreeLevel_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateDegreeLevel(childComplexity, args["id"].(uuid.UUID), args["input"].(dtos.DegreeLevelUpdateInput)), true
+
 	case "Mutation.updateMessage":
 		if e.complexity.Mutation.UpdateMessage == nil {
 			break
@@ -511,6 +607,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PaginatedCategoryResponse.Total(childComplexity), true
+
+	case "PaginatedDegreeLevelResponse.edges":
+		if e.complexity.PaginatedDegreeLevelResponse.Edges == nil {
+			break
+		}
+
+		return e.complexity.PaginatedDegreeLevelResponse.Edges(childComplexity), true
+
+	case "PaginatedDegreeLevelResponse.skip":
+		if e.complexity.PaginatedDegreeLevelResponse.Skip == nil {
+			break
+		}
+
+		return e.complexity.PaginatedDegreeLevelResponse.Skip(childComplexity), true
+
+	case "PaginatedDegreeLevelResponse.take":
+		if e.complexity.PaginatedDegreeLevelResponse.Take == nil {
+			break
+		}
+
+		return e.complexity.PaginatedDegreeLevelResponse.Take(childComplexity), true
+
+	case "PaginatedDegreeLevelResponse.total":
+		if e.complexity.PaginatedDegreeLevelResponse.Total == nil {
+			break
+		}
+
+		return e.complexity.PaginatedDegreeLevelResponse.Total(childComplexity), true
 
 	case "PaginatedMessageResponse.edges":
 		if e.complexity.PaginatedMessageResponse.Edges == nil {
@@ -591,6 +715,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Category(childComplexity, args["id"].(uuid.UUID)), true
+
+	case "Query.degreeLevel":
+		if e.complexity.Query.DegreeLevel == nil {
+			break
+		}
+
+		args, err := ec.field_Query_degreeLevel_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DegreeLevel(childComplexity, args["id"].(uuid.UUID)), true
+
+	case "Query.degreeLevels":
+		if e.complexity.Query.DegreeLevels == nil {
+			break
+		}
+
+		args, err := ec.field_Query_degreeLevels_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DegreeLevels(childComplexity, args["orderBy"].(*dtos.DegreeLevelAggregationInput), args["take"].(*int), args["skip"].(*int), args["where"].(*dtos.DegreeLevelWhereInput)), true
 
 	case "Query.message":
 		if e.complexity.Query.Message == nil {
@@ -696,6 +844,10 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCategoryCreateInput,
 		ec.unmarshalInputCategoryUpdateInput,
 		ec.unmarshalInputCategoryWhereInput,
+		ec.unmarshalInputDegreeLevelAggregationInput,
+		ec.unmarshalInputDegreeLevelCreateInput,
+		ec.unmarshalInputDegreeLevelUpdateInput,
+		ec.unmarshalInputDegreeLevelWhereInput,
 		ec.unmarshalInputIDFilter,
 		ec.unmarshalInputMessageAggregationInput,
 		ec.unmarshalInputMessageCreateInput,
@@ -817,6 +969,10 @@ type Mutation {
   createCategory(input: CategoryCreateInput!): Category!
   deleteCategory(id: ID!): Category!
   updateCategory(id: ID!, input: CategoryUpdateInput!): Category!
+
+  createDegreeLevel(input: DegreeLevelCreateInput!): DegreeLevel!
+  deleteDegreeLevel(id: ID!): DegreeLevel!
+  updateDegreeLevel(id: ID!, input: DegreeLevelUpdateInput!): DegreeLevel!
 }
 `, BuiltIn: false},
 	{Name: "../../schema/query.graphql", Input: `
@@ -842,6 +998,14 @@ type Query {
     skip: Int = 0
     where: CategoryWhereInput
   ): PaginatedCategoryResponse!
+
+  degreeLevel(id: ID!): DegreeLevel!
+  degreeLevels(
+    orderBy: DegreeLevelAggregationInput
+    take: Int = 10
+    skip: Int = 0
+    where: DegreeLevelWhereInput
+  ): PaginatedDegreeLevelResponse!
 }
 `, BuiltIn: false},
 	{Name: "../../schema/scalars.graphql", Input: `
@@ -939,6 +1103,45 @@ input CategoryUpdateInput {
 
 type PaginatedCategoryResponse {
   edges: [Category!]!
+  total: Int!
+  take: Int
+  skip: Int
+}
+`, BuiltIn: false},
+	{Name: "../../schema/types/degree-level.graphql", Input: `type DegreeLevel {
+  id: ID!
+  name: String!
+
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  deletedAt: Timestamp
+}
+
+input DegreeLevelAggregationInput {
+  id: SortOrder
+  name: SortOrder
+
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrder
+}
+
+input DegreeLevelWhereInput {
+  id: ID
+  name: String
+}
+
+input DegreeLevelCreateInput {
+  name: String!
+
+}
+
+input DegreeLevelUpdateInput {
+  name: String!
+}
+
+type PaginatedDegreeLevelResponse {
+  edges: [DegreeLevel!]!
   total: Int!
   take: Int
   skip: Int
@@ -1080,6 +1283,21 @@ func (ec *executionContext) field_Mutation_createCategory_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createDegreeLevel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 dtos.DegreeLevelCreateInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDegreeLevelCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelCreateInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createStatus_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1096,6 +1314,21 @@ func (ec *executionContext) field_Mutation_createStatus_args(ctx context.Context
 }
 
 func (ec *executionContext) field_Mutation_deleteCategory_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 uuid.UUID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteDegreeLevel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 uuid.UUID
@@ -1186,6 +1419,30 @@ func (ec *executionContext) field_Mutation_updateCategory_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg1, err = ec.unmarshalNCategoryUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryUpdateInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateDegreeLevel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 uuid.UUID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 dtos.DegreeLevelUpdateInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNDegreeLevelUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1311,6 +1568,63 @@ func (ec *executionContext) field_Query_category_args(ctx context.Context, rawAr
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_degreeLevel_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 uuid.UUID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_degreeLevels_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *dtos.DegreeLevelAggregationInput
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg0, err = ec.unmarshalODegreeLevelAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelAggregationInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["take"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("take"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["take"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["skip"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skip"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["skip"] = arg2
+	var arg3 *dtos.DegreeLevelWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg3, err = ec.unmarshalODegreeLevelWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg3
 	return args, nil
 }
 
@@ -1957,6 +2271,223 @@ func (ec *executionContext) _Category_deletedAt(ctx context.Context, field graph
 func (ec *executionContext) fieldContext_Category_deletedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Category",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Timestamp does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DegreeLevel_id(ctx context.Context, field graphql.CollectedField, obj *dtos.DegreeLevel) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DegreeLevel_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uuid.UUID)
+	fc.Result = res
+	return ec.marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DegreeLevel_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DegreeLevel",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DegreeLevel_name(ctx context.Context, field graphql.CollectedField, obj *dtos.DegreeLevel) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DegreeLevel_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DegreeLevel_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DegreeLevel",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DegreeLevel_createdAt(ctx context.Context, field graphql.CollectedField, obj *dtos.DegreeLevel) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DegreeLevel_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTimestamp2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DegreeLevel_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DegreeLevel",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Timestamp does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DegreeLevel_updatedAt(ctx context.Context, field graphql.CollectedField, obj *dtos.DegreeLevel) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DegreeLevel_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTimestamp2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DegreeLevel_updatedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DegreeLevel",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Timestamp does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _DegreeLevel_deletedAt(ctx context.Context, field graphql.CollectedField, obj *dtos.DegreeLevel) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DegreeLevel_deletedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeletedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DegreeLevel_deletedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DegreeLevel",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -3337,6 +3868,207 @@ func (ec *executionContext) fieldContext_Mutation_updateCategory(ctx context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createDegreeLevel(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createDegreeLevel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateDegreeLevel(rctx, fc.Args["input"].(dtos.DegreeLevelCreateInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dtos.DegreeLevel)
+	fc.Result = res
+	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createDegreeLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DegreeLevel_id(ctx, field)
+			case "name":
+				return ec.fieldContext_DegreeLevel_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DegreeLevel_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DegreeLevel_updatedAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_DegreeLevel_deletedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DegreeLevel", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createDegreeLevel_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteDegreeLevel(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteDegreeLevel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteDegreeLevel(rctx, fc.Args["id"].(uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dtos.DegreeLevel)
+	fc.Result = res
+	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteDegreeLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DegreeLevel_id(ctx, field)
+			case "name":
+				return ec.fieldContext_DegreeLevel_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DegreeLevel_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DegreeLevel_updatedAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_DegreeLevel_deletedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DegreeLevel", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteDegreeLevel_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateDegreeLevel(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateDegreeLevel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateDegreeLevel(rctx, fc.Args["id"].(uuid.UUID), fc.Args["input"].(dtos.DegreeLevelUpdateInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dtos.DegreeLevel)
+	fc.Result = res
+	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateDegreeLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DegreeLevel_id(ctx, field)
+			case "name":
+				return ec.fieldContext_DegreeLevel_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DegreeLevel_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DegreeLevel_updatedAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_DegreeLevel_deletedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DegreeLevel", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateDegreeLevel_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PaginatedCategoryResponse_edges(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedCategoryResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PaginatedCategoryResponse_edges(ctx, field)
 	if err != nil {
@@ -3519,6 +4251,188 @@ func (ec *executionContext) _PaginatedCategoryResponse_skip(ctx context.Context,
 func (ec *executionContext) fieldContext_PaginatedCategoryResponse_skip(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PaginatedCategoryResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PaginatedDegreeLevelResponse_edges(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedDegreeLevelResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaginatedDegreeLevelResponse_edges(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*dtos.DegreeLevel)
+	fc.Result = res
+	return ec.marshalNDegreeLevel2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PaginatedDegreeLevelResponse_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PaginatedDegreeLevelResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DegreeLevel_id(ctx, field)
+			case "name":
+				return ec.fieldContext_DegreeLevel_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DegreeLevel_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DegreeLevel_updatedAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_DegreeLevel_deletedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DegreeLevel", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PaginatedDegreeLevelResponse_total(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedDegreeLevelResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaginatedDegreeLevelResponse_total(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Total, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PaginatedDegreeLevelResponse_total(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PaginatedDegreeLevelResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PaginatedDegreeLevelResponse_take(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedDegreeLevelResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaginatedDegreeLevelResponse_take(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Take, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PaginatedDegreeLevelResponse_take(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PaginatedDegreeLevelResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PaginatedDegreeLevelResponse_skip(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedDegreeLevelResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaginatedDegreeLevelResponse_skip(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Skip, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PaginatedDegreeLevelResponse_skip(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PaginatedDegreeLevelResponse",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -4309,6 +5223,138 @@ func (ec *executionContext) fieldContext_Query_categories(ctx context.Context, f
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_categories_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_degreeLevel(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_degreeLevel(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DegreeLevel(rctx, fc.Args["id"].(uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dtos.DegreeLevel)
+	fc.Result = res
+	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_degreeLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_DegreeLevel_id(ctx, field)
+			case "name":
+				return ec.fieldContext_DegreeLevel_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_DegreeLevel_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_DegreeLevel_updatedAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_DegreeLevel_deletedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DegreeLevel", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_degreeLevel_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_degreeLevels(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_degreeLevels(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DegreeLevels(rctx, fc.Args["orderBy"].(*dtos.DegreeLevelAggregationInput), fc.Args["take"].(*int), fc.Args["skip"].(*int), fc.Args["where"].(*dtos.DegreeLevelWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dtos.PaginatedDegreeLevelResponse)
+	fc.Result = res
+	return ec.marshalNPaginatedDegreeLevelResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedDegreeLevelResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_degreeLevels(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_PaginatedDegreeLevelResponse_edges(ctx, field)
+			case "total":
+				return ec.fieldContext_PaginatedDegreeLevelResponse_total(ctx, field)
+			case "take":
+				return ec.fieldContext_PaginatedDegreeLevelResponse_take(ctx, field)
+			case "skip":
+				return ec.fieldContext_PaginatedDegreeLevelResponse_skip(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PaginatedDegreeLevelResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_degreeLevels_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -6803,6 +7849,167 @@ func (ec *executionContext) unmarshalInputCategoryWhereInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDegreeLevelAggregationInput(ctx context.Context, obj interface{}) (dtos.DegreeLevelAggregationInput, error) {
+	var it dtos.DegreeLevelAggregationInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "name", "createdAt", "updatedAt", "deletedAt"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UpdatedAt = data
+		case "deletedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DeletedAt = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDegreeLevelCreateInput(ctx context.Context, obj interface{}) (dtos.DegreeLevelCreateInput, error) {
+	var it dtos.DegreeLevelCreateInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDegreeLevelUpdateInput(ctx context.Context, obj interface{}) (dtos.DegreeLevelUpdateInput, error) {
+	var it dtos.DegreeLevelUpdateInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDegreeLevelWhereInput(ctx context.Context, obj interface{}) (dtos.DegreeLevelWhereInput, error) {
+	var it dtos.DegreeLevelWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "name"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputIDFilter(ctx context.Context, obj interface{}) (dtos.IDFilter, error) {
 	var it dtos.IDFilter
 	asMap := map[string]interface{}{}
@@ -7428,6 +8635,62 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var degreeLevelImplementors = []string{"DegreeLevel"}
+
+func (ec *executionContext) _DegreeLevel(ctx context.Context, sel ast.SelectionSet, obj *dtos.DegreeLevel) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, degreeLevelImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DegreeLevel")
+		case "id":
+			out.Values[i] = ec._DegreeLevel_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "name":
+			out.Values[i] = ec._DegreeLevel_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._DegreeLevel_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._DegreeLevel_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deletedAt":
+			out.Values[i] = ec._DegreeLevel_deletedAt(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var jobOfferImplementors = []string{"JobOffer"}
 
 func (ec *executionContext) _JobOffer(ctx context.Context, sel ast.SelectionSet, obj *dtos.JobOffer) graphql.Marshaler {
@@ -7654,6 +8917,27 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createDegreeLevel":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createDegreeLevel(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteDegreeLevel":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteDegreeLevel(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateDegreeLevel":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateDegreeLevel(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7702,6 +8986,54 @@ func (ec *executionContext) _PaginatedCategoryResponse(ctx context.Context, sel 
 			out.Values[i] = ec._PaginatedCategoryResponse_take(ctx, field, obj)
 		case "skip":
 			out.Values[i] = ec._PaginatedCategoryResponse_skip(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var paginatedDegreeLevelResponseImplementors = []string{"PaginatedDegreeLevelResponse"}
+
+func (ec *executionContext) _PaginatedDegreeLevelResponse(ctx context.Context, sel ast.SelectionSet, obj *dtos.PaginatedDegreeLevelResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, paginatedDegreeLevelResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("PaginatedDegreeLevelResponse")
+		case "edges":
+			out.Values[i] = ec._PaginatedDegreeLevelResponse_edges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "total":
+			out.Values[i] = ec._PaginatedDegreeLevelResponse_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "take":
+			out.Values[i] = ec._PaginatedDegreeLevelResponse_take(ctx, field, obj)
+		case "skip":
+			out.Values[i] = ec._PaginatedDegreeLevelResponse_skip(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7960,6 +9292,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_categories(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "degreeLevel":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_degreeLevel(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "degreeLevels":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_degreeLevels(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -8523,6 +9899,74 @@ func (ec *executionContext) unmarshalNCategoryUpdateInput2githubᚗcomᚋmariano
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNDegreeLevel2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx context.Context, sel ast.SelectionSet, v dtos.DegreeLevel) graphql.Marshaler {
+	return ec._DegreeLevel(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDegreeLevel2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.DegreeLevel) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx context.Context, sel ast.SelectionSet, v *dtos.DegreeLevel) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DegreeLevel(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNDegreeLevelCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelCreateInput(ctx context.Context, v interface{}) (dtos.DegreeLevelCreateInput, error) {
+	res, err := ec.unmarshalInputDegreeLevelCreateInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDegreeLevelUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelUpdateInput(ctx context.Context, v interface{}) (dtos.DegreeLevelUpdateInput, error) {
+	res, err := ec.unmarshalInputDegreeLevelUpdateInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx context.Context, v interface{}) (uuid.UUID, error) {
 	res, err := dtos.UnmarshalUUID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -8671,6 +10115,20 @@ func (ec *executionContext) marshalNPaginatedCategoryResponse2ᚖgithubᚗcomᚋ
 		return graphql.Null
 	}
 	return ec._PaginatedCategoryResponse(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPaginatedDegreeLevelResponse2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedDegreeLevelResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedDegreeLevelResponse) graphql.Marshaler {
+	return ec._PaginatedDegreeLevelResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPaginatedDegreeLevelResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedDegreeLevelResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedDegreeLevelResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._PaginatedDegreeLevelResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPaginatedMessageResponse2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedMessageResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedMessageResponse) graphql.Marshaler {
@@ -9113,6 +10571,22 @@ func (ec *executionContext) unmarshalOCategoryWhereInput2ᚖgithubᚗcomᚋmaria
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputCategoryWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalODegreeLevelAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelAggregationInput(ctx context.Context, v interface{}) (*dtos.DegreeLevelAggregationInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputDegreeLevelAggregationInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalODegreeLevelWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelWhereInput(ctx context.Context, v interface{}) (*dtos.DegreeLevelWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputDegreeLevelWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

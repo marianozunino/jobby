@@ -49,9 +49,19 @@ type CategoryStore interface {
 	IsSlugTaken(slug string) (bool, error)
 }
 
+type DegreeLevelStore interface {
+	DegreeLevel(id uuid.UUID) (*models.DegreeLevels, error)
+	PaginatedDegreeLevels(orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) ([]*models.DegreeLevels, error)
+	CountDegreeLevels() (int, error)
+	CreateDegreeLevel(degreeLevel models.DegreeLevels) (*models.DegreeLevels, error)
+	UpdateDegreeLevel(degreeLevel models.DegreeLevels) (*models.DegreeLevels, error)
+	DeleteDegreeLevel(id uuid.UUID) (*models.DegreeLevels, error)
+}
+
 type Store interface {
 	StatusStore
 	JobOfferStore
 	MessageStore
 	CategoryStore
+	DegreeLevelStore
 }

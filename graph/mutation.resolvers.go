@@ -62,6 +62,21 @@ func (r *mutationResolver) UpdateCategory(ctx context.Context, id uuid.UUID, inp
 	return r.Service.UpdateCategory(id, input)
 }
 
+// CreateDegreeLevel is the resolver for the createDegreeLevel field.
+func (r *mutationResolver) CreateDegreeLevel(ctx context.Context, input dtos.DegreeLevelCreateInput) (*dtos.DegreeLevel, error) {
+	return r.Service.CreateDegreeLevel(input)
+}
+
+// DeleteDegreeLevel is the resolver for the deleteDegreeLevel field.
+func (r *mutationResolver) DeleteDegreeLevel(ctx context.Context, id uuid.UUID) (*dtos.DegreeLevel, error) {
+	return r.Service.DeleteDegreeLevel(id)
+}
+
+// UpdateDegreeLevel is the resolver for the updateDegreeLevel field.
+func (r *mutationResolver) UpdateDegreeLevel(ctx context.Context, id uuid.UUID, input dtos.DegreeLevelUpdateInput) (*dtos.DegreeLevel, error) {
+	return r.Service.UpdateDegreeLevel(id, input)
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

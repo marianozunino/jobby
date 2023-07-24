@@ -17,6 +17,7 @@ type Store struct {
 	store.JobOfferStore
 	store.MessageStore
 	store.CategoryStore
+	store.DegreeLevelStore
 }
 
 // assert that Store implements store.Store
@@ -50,9 +51,10 @@ func NewStore(databaseURL string) store.Store {
 	}
 
 	return &Store{
-		StatusStore:   &StatusStore{db},
-		JobOfferStore: &JobOfferStore{db},
-		MessageStore:  &MessageStore{db},
-		CategoryStore: &CategoryStore{db},
+		StatusStore:      &StatusStore{db},
+		JobOfferStore:    &JobOfferStore{db},
+		MessageStore:     &MessageStore{db},
+		CategoryStore:    &CategoryStore{db},
+		DegreeLevelStore: &DegreeLevelStore{db},
 	}
 }
