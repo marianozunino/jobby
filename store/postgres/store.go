@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"os"
 
+	"entgo.io/ent/dialect"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/marianozunino/cc-backend-go/ent"
 	"github.com/marianozunino/cc-backend-go/store"
 	"github.com/rs/zerolog"
 	sqldblogger "github.com/simukti/sqldb-logger"
@@ -24,6 +26,10 @@ type Store struct {
 var _ store.Store = &Store{}
 
 func NewStore(databaseURL string) store.Store {
+	client, err := ent.Open(dialect.Postgres, os.Getenv("DATABASE_URL"))
+	if err != nil {
+		panic(err)
+	}
 
 	db, err := sqlx.Open("postgres", databaseURL)
 	if err != nil {
@@ -51,7 +57,7 @@ func NewStore(databaseURL string) store.Store {
 	}
 
 	return &Store{
-		StatusStore:      &StatusStore{db},
+		StatusStore:      &StatusStore{client},
 		JobOfferStore:    &JobOfferStore{db},
 		MessageStore:     &MessageStore{db},
 		CategoryStore:    &CategoryStore{db},

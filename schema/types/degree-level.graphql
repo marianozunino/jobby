@@ -1,0 +1,38 @@
+type DegreeLevel {
+  id: ID!
+  name: String!
+
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  deletedAt: Timestamp
+}
+
+input DegreeLevelAggregationInput {
+  id: SortOrder
+  name: SortOrder
+
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  deletedAt: SortOrder
+}
+
+input DegreeLevelWhereInput {
+  id: ID
+  name: String
+}
+
+input DegreeLevelCreateInput {
+  name: String!
+
+}
+
+input DegreeLevelUpdateInput {
+  name: String!
+}
+
+type PaginatedDegreeLevelResponse {
+  edges: [DegreeLevel!]!
+  total: Int!
+  take: Int
+  skip: Int
+}

@@ -1,8 +1,11 @@
 package store
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/cc-backend-go/ent"
 	"github.com/marianozunino/cc-backend-go/store/models"
 )
 
@@ -15,13 +18,13 @@ func (r *ErrNotFound) Error() string {
 }
 
 type StatusStore interface {
-	Status(id uuid.UUID) (*models.Status, error)
-	Statuses() ([]*models.Status, error)
-	CreateStatus(status models.Status) (*models.Status, error)
-	UpdateStatus(status models.Status) (*models.Status, error)
-	DeleteStatus(id uuid.UUID) (*models.Status, error)
-	PaginatedStatuses(orderBy *dtos.StatusAggregationInput, take *int, skip *int) ([]*models.Status, error)
-	CountStatuses() (int, error)
+	Status(ctx context.Context, id uuid.UUID) (*ent.Status, error)
+	Statuses(ctx context.Context) (ent.StatusSlice, error)
+	CreateStatus(ctx context.Context, status *ent.Status) (*ent.Status, error)
+	UpdateStatus(ctx context.Context, status *ent.Status) (*ent.Status, error)
+	DeleteStatus(ctx context.Context, id uuid.UUID) (*ent.Status, error)
+	PaginatedStatuses(ctx context.Context, orderBy *dtos.StatusAggregationInput, take *int, skip *int) (ent.StatusSlice, error)
+	CountStatuses(ctx context.Context) (int, error)
 }
 
 type JobOfferStore interface {

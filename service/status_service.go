@@ -1,10 +1,12 @@
 package service
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/cc-backend-go/ent"
 	"github.com/marianozunino/cc-backend-go/store"
-	"github.com/marianozunino/cc-backend-go/store/models"
 )
 
 type statusService struct {
@@ -12,18 +14,18 @@ type statusService struct {
 }
 
 // GetStatuses implements StatusService.
-func (*statusService) GetStatuses() ([]dtos.Status, error) {
+func (*statusService) GetStatuses(ctx context.Context) ([]dtos.Status, error) {
 	panic("unimplemented")
 }
 
 // DeleteStatus implements StatusService.
-func (s *statusService) DeleteStatus(id string) (*dtos.Status, error) {
+func (s *statusService) DeleteStatus(ctx context.Context, id string) (*dtos.Status, error) {
 	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return nil, err
 	}
 
-	status, err := s.Store.DeleteStatus(parsedId)
+	status, err := s.Store.DeleteStatus(ctx, parsedId)
 
 	if err != nil {
 		return nil, err
@@ -33,13 +35,14 @@ func (s *statusService) DeleteStatus(id string) (*dtos.Status, error) {
 }
 
 // CreateStatus implements StatusService.
-func (s *statusService) CreateStatus(input dtos.StatusCreateInput) (*dtos.Status, error) {
+func (s *statusService) CreateStatus(ctx context.Context,
+	input dtos.StatusCreateInput) (*dtos.Status, error) {
 
-	model := models.Status{
+	model := &ent.Status{
 		Name: input.Name,
 	}
 
-	status, err := s.Store.CreateStatus(model)
+	status, err := s.Store.CreateStatus(ctx, model)
 	if err != nil {
 		return nil, err
 	}
@@ -48,12 +51,14 @@ func (s *statusService) CreateStatus(input dtos.StatusCreateInput) (*dtos.Status
 }
 
 // GetStatus implements StatusService.
-func (s *statusService) GetStatus(id string) (*dtos.Status, error) {
+func (s *statusService) GetStatus(
+	ctx context.Context,
+	id string) (*dtos.Status, error) {
 	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return nil, err
 	}
-	status, err := s.Store.Status(parsedId)
+	status, err := s.Store.Status(ctx, parsedId)
 	if err != nil {
 		return nil, err
 	}
@@ -62,15 +67,17 @@ func (s *statusService) GetStatus(id string) (*dtos.Status, error) {
 }
 
 // PaginatedStatuses implements StatusService.
-func (s *statusService) PaginatedStatuses(orderBy *dtos.StatusAggregationInput, take *int, skip *int) (*dtos.PaginatedStatusResponse, error) {
-	data, err := s.Store.PaginatedStatuses(orderBy, take, skip)
+func (s *statusService) PaginatedStatuses(
+	ctx context.Context,
+	orderBy *dtos.StatusAggregationInput, take *int, skip *int) (*dtos.PaginatedStatusResponse, error) {
+	data, err := s.Store.PaginatedStatuses(ctx, orderBy, take, skip)
 	if err != nil {
 		return nil, err
 	}
 
 	statuses := s.BuildFromEntities(data)
 
-	count, err := s.Store.CountStatuses()
+	count, err := s.Store.CountStatuses(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -85,17 +92,21 @@ func (s *statusService) PaginatedStatuses(orderBy *dtos.StatusAggregationInput, 
 }
 
 // UpdateStatus implements StatusService.
-func (s *statusService) UpdateStatus(id string, input dtos.StatusUpdateInput) (*dtos.Status, error) {
+func (s *statusService) UpdateStatus(
+	ctx context.Context,
+	id string, input dtos.StatusUpdateInput) (*dtos.Status, error) {
 	parsedId, err := uuid.Parse(id)
+
 	if err != nil {
 		return nil, err
 	}
-	model := models.Status{
+
+	model := &ent.Status{
 		ID:   parsedId,
 		Name: input.Name,
 	}
 
-	status, err := s.Store.UpdateStatus(model)
+	status, err := s.Store.UpdateStatus(ctx, model)
 	if err != nil {
 		return nil, err
 	}
@@ -103,18 +114,18 @@ func (s *statusService) UpdateStatus(id string, input dtos.StatusUpdateInput) (*
 
 }
 
-func (s *statusService) BuildFromEntity(entity *models.Status) *dtos.Status {
+func (s *statusService) BuildFromEntity(entity *ent.Status) *dtos.Status {
 	dto := &dtos.Status{
 		ID:        entity.ID,
 		Name:      entity.Name,
-		CreatedAt: entity.CreatedAt.Time,
-		UpdatedAt: entity.UpdatedAt.Time,
-		DeletedAt: getTimeOrNil(entity.DeletedAt),
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+		DeletedAt: entity.DeletedAt,
 	}
 	return dto
 }
 
-func (s *statusService) BuildFromEntities(entities []*models.Status) []*dtos.Status {
+func (s *statusService) BuildFromEntities(entities ent.StatusSlice) []*dtos.Status {
 	dtos := make([]*dtos.Status, len(entities))
 	for i, entity := range entities {
 		dtos[i] = s.BuildFromEntity(entity)

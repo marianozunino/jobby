@@ -15,12 +15,12 @@ import (
 
 // Status is the resolver for the status field.
 func (r *queryResolver) Status(ctx context.Context, id string) (*dtos.Status, error) {
-	return r.GetStatus(id)
+	return r.GetStatus(ctx, id)
 }
 
 // Statuses is the resolver for the statuses field.
 func (r *queryResolver) Statuses(ctx context.Context, orderBy *dtos.StatusAggregationInput, take *int, skip *int) (*dtos.PaginatedStatusResponse, error) {
-	return r.PaginatedStatuses(orderBy, take, skip)
+	return r.PaginatedStatuses(ctx, orderBy, take, skip)
 }
 
 // Messages implements generated.QueryResolver.

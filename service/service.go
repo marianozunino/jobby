@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"database/sql"
 	"time"
 
@@ -24,12 +25,12 @@ func getStringOrNil(s sql.NullString) *string {
 }
 
 type StatusService interface {
-	CreateStatus(input dtos.StatusCreateInput) (*dtos.Status, error)
-	DeleteStatus(id string) (*dtos.Status, error)
-	UpdateStatus(id string, input dtos.StatusUpdateInput) (*dtos.Status, error)
-	GetStatus(id string) (*dtos.Status, error)
-	GetStatuses() ([]dtos.Status, error)
-	PaginatedStatuses(orderBy *dtos.StatusAggregationInput, take *int, skip *int) (*dtos.PaginatedStatusResponse, error)
+	CreateStatus(ctx context.Context, input dtos.StatusCreateInput) (*dtos.Status, error)
+	DeleteStatus(ctx context.Context, id string) (*dtos.Status, error)
+	UpdateStatus(ctx context.Context, id string, input dtos.StatusUpdateInput) (*dtos.Status, error)
+	GetStatus(ctx context.Context, id string) (*dtos.Status, error)
+	GetStatuses(ctx context.Context) ([]dtos.Status, error)
+	PaginatedStatuses(ctx context.Context, orderBy *dtos.StatusAggregationInput, take *int, skip *int) (*dtos.PaginatedStatusResponse, error)
 }
 
 type JobOfferService interface {

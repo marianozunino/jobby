@@ -19,17 +19,17 @@ func (r *mutationResolver) Login(ctx context.Context, input dtos.AuthInput) (*dt
 
 // CreateStatus is the resolver for the createStatus field.
 func (r *mutationResolver) CreateStatus(ctx context.Context, input dtos.StatusCreateInput) (*dtos.Status, error) {
-	return r.Service.CreateStatus(input)
+	return r.Service.CreateStatus(ctx, input)
 }
 
 // DeleteStatus is the resolver for the deleteStatus field.
 func (r *mutationResolver) DeleteStatus(ctx context.Context, id string) (*dtos.Status, error) {
-	return r.Service.DeleteStatus(id)
+	return r.Service.DeleteStatus(ctx, id)
 }
 
 // UpdateStatus is the resolver for the updateStatus field.
 func (r *mutationResolver) UpdateStatus(ctx context.Context, id string, input dtos.StatusUpdateInput) (*dtos.Status, error) {
-	return r.Service.UpdateStatus(id, input)
+	return r.Service.UpdateStatus(ctx, id, input)
 }
 
 // SendMessages implements generated.MutationResolver.
