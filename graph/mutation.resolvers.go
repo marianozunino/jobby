@@ -49,17 +49,17 @@ func (r *mutationResolver) UpdateMessage(ctx context.Context, id string, input d
 
 // CreateCategory is the resolver for the createCategory field.
 func (r *mutationResolver) CreateCategory(ctx context.Context, input dtos.CategoryCreateInput) (*dtos.Category, error) {
-	return r.Service.CreateCategory(input)
+	return r.Service.CreateCategory(ctx, input)
 }
 
 // DeleteCategory is the resolver for the deleteCategory field.
 func (r *mutationResolver) DeleteCategory(ctx context.Context, id uuid.UUID) (*dtos.Category, error) {
-	return r.Service.DeleteCategory(id)
+	return r.Service.DeleteCategory(ctx, id)
 }
 
 // UpdateCategory is the resolver for the updateCategory field.
 func (r *mutationResolver) UpdateCategory(ctx context.Context, id uuid.UUID, input dtos.CategoryUpdateInput) (*dtos.Category, error) {
-	return r.Service.UpdateCategory(id, input)
+	return r.Service.UpdateCategory(ctx, id, input)
 }
 
 // CreateDegreeLevel is the resolver for the createDegreeLevel field.

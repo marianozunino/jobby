@@ -29,7 +29,7 @@ type Category struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// IsRoot holds the value of the "is_root" field.
 	IsRoot bool `json:"is_root,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -42,11 +42,15 @@ type Category struct {
 type CategoryEdges struct {
 	// ApplicantInterests holds the value of the applicant_interests edge.
 	ApplicantInterests []*ApplicantInterest `json:"applicant_interests,omitempty"`
+	// ChildCategories holds the value of the child_categories edge.
+	ChildCategories []*Category `json:"child_categories,omitempty"`
+	// ParentCategory holds the value of the parent_category edge.
+	ParentCategory *Category `json:"parent_category,omitempty"`
 	// JobOfferCategories holds the value of the job_offer_categories edge.
 	JobOfferCategories []*JobOfferCategory `json:"job_offer_categories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [4]bool
 }
 
 // ApplicantInterestsOrErr returns the ApplicantInterests value or an error if the edge
@@ -58,10 +62,32 @@ func (e CategoryEdges) ApplicantInterestsOrErr() ([]*ApplicantInterest, error) {
 	return nil, &NotLoadedError{edge: "applicant_interests"}
 }
 
+// ChildCategoriesOrErr returns the ChildCategories value or an error if the edge
+// was not loaded in eager-loading.
+func (e CategoryEdges) ChildCategoriesOrErr() ([]*Category, error) {
+	if e.loadedTypes[1] {
+		return e.ChildCategories, nil
+	}
+	return nil, &NotLoadedError{edge: "child_categories"}
+}
+
+// ParentCategoryOrErr returns the ParentCategory value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CategoryEdges) ParentCategoryOrErr() (*Category, error) {
+	if e.loadedTypes[2] {
+		if e.ParentCategory == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: category.Label}
+		}
+		return e.ParentCategory, nil
+	}
+	return nil, &NotLoadedError{edge: "parent_category"}
+}
+
 // JobOfferCategoriesOrErr returns the JobOfferCategories value or an error if the edge
 // was not loaded in eager-loading.
 func (e CategoryEdges) JobOfferCategoriesOrErr() ([]*JobOfferCategory, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[3] {
 		return e.JobOfferCategories, nil
 	}
 	return nil, &NotLoadedError{edge: "job_offer_categories"}
@@ -138,7 +164,8 @@ func (c *Category) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				c.DeletedAt = value.Time
+				c.DeletedAt = new(time.Time)
+				*c.DeletedAt = value.Time
 			}
 		case category.FieldIsRoot:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -162,6 +189,16 @@ func (c *Category) Value(name string) (ent.Value, error) {
 // QueryApplicantInterests queries the "applicant_interests" edge of the Category entity.
 func (c *Category) QueryApplicantInterests() *ApplicantInterestQuery {
 	return NewCategoryClient(c.config).QueryApplicantInterests(c)
+}
+
+// QueryChildCategories queries the "child_categories" edge of the Category entity.
+func (c *Category) QueryChildCategories() *CategoryQuery {
+	return NewCategoryClient(c.config).QueryChildCategories(c)
+}
+
+// QueryParentCategory queries the "parent_category" edge of the Category entity.
+func (c *Category) QueryParentCategory() *CategoryQuery {
+	return NewCategoryClient(c.config).QueryParentCategory(c)
 }
 
 // QueryJobOfferCategories queries the "job_offer_categories" edge of the Category entity.
@@ -209,8 +246,10 @@ func (c *Category) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(c.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("deleted_at=")
-	builder.WriteString(c.DeletedAt.Format(time.ANSIC))
+	if v := c.DeletedAt; v != nil {
+		builder.WriteString("deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("is_root=")
 	builder.WriteString(fmt.Sprintf("%v", c.IsRoot))

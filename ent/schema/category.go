@@ -15,13 +15,22 @@ type Category struct {
 }
 
 func (Category) Fields() []ent.Field {
-	return []ent.Field{field.UUID("id", uuid.UUID{}), field.String("name"), field.String("slug"), field.UUID("parent_id", uuid.UUID{}).Optional().Nillable(), field.Time("created_at").Optional(), field.Time("updated_at").Optional(), field.Time("deleted_at").Optional(), field.Bool("is_root")}
+	return []ent.Field{
+		field.UUID("id", uuid.UUID{}),
+		field.String("name"),
+		field.String("slug"),
+		field.UUID("parent_id", uuid.UUID{}).Optional().Nillable(),
+		field.Time("created_at").Optional(),
+		field.Time("updated_at").Optional(),
+		field.Time("deleted_at").Optional().Nillable(),
+		field.Bool("is_root"),
+	}
 }
 func (Category) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("applicant_interests", ApplicantInterest.Type),
-		// edge.To("child_categories", Category.Type),
-		// edge.From("parent_category", Category.Type).Ref("child_categories").Unique().Field("parent_id"),
+		edge.To("child_categories", Category.Type),
+		edge.From("parent_category", Category.Type).Ref("child_categories").Unique().Field("parent_id"),
 		edge.To("job_offer_categories", JobOfferCategory.Type),
 	}
 }

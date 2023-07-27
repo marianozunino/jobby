@@ -118,6 +118,40 @@ func (cc *CategoryCreate) AddApplicantInterests(a ...*ApplicantInterest) *Catego
 	return cc.AddApplicantInterestIDs(ids...)
 }
 
+// AddChildCategoryIDs adds the "child_categories" edge to the Category entity by IDs.
+func (cc *CategoryCreate) AddChildCategoryIDs(ids ...uuid.UUID) *CategoryCreate {
+	cc.mutation.AddChildCategoryIDs(ids...)
+	return cc
+}
+
+// AddChildCategories adds the "child_categories" edges to the Category entity.
+func (cc *CategoryCreate) AddChildCategories(c ...*Category) *CategoryCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cc.AddChildCategoryIDs(ids...)
+}
+
+// SetParentCategoryID sets the "parent_category" edge to the Category entity by ID.
+func (cc *CategoryCreate) SetParentCategoryID(id uuid.UUID) *CategoryCreate {
+	cc.mutation.SetParentCategoryID(id)
+	return cc
+}
+
+// SetNillableParentCategoryID sets the "parent_category" edge to the Category entity by ID if the given value is not nil.
+func (cc *CategoryCreate) SetNillableParentCategoryID(id *uuid.UUID) *CategoryCreate {
+	if id != nil {
+		cc = cc.SetParentCategoryID(*id)
+	}
+	return cc
+}
+
+// SetParentCategory sets the "parent_category" edge to the Category entity.
+func (cc *CategoryCreate) SetParentCategory(c *Category) *CategoryCreate {
+	return cc.SetParentCategoryID(c.ID)
+}
+
 // AddJobOfferCategoryIDs adds the "job_offer_categories" edge to the JobOfferCategory entity by IDs.
 func (cc *CategoryCreate) AddJobOfferCategoryIDs(ids ...uuid.UUID) *CategoryCreate {
 	cc.mutation.AddJobOfferCategoryIDs(ids...)
@@ -219,10 +253,6 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 		_spec.SetField(category.FieldSlug, field.TypeString, value)
 		_node.Slug = value
 	}
-	if value, ok := cc.mutation.ParentID(); ok {
-		_spec.SetField(category.FieldParentID, field.TypeUUID, value)
-		_node.ParentID = &value
-	}
 	if value, ok := cc.mutation.CreatedAt(); ok {
 		_spec.SetField(category.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -233,7 +263,7 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := cc.mutation.DeletedAt(); ok {
 		_spec.SetField(category.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if value, ok := cc.mutation.IsRoot(); ok {
 		_spec.SetField(category.FieldIsRoot, field.TypeBool, value)
@@ -253,6 +283,39 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.ChildCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.ChildCategoriesTable,
+			Columns: []string{category.ChildCategoriesColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.ParentCategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   category.ParentCategoryTable,
+			Columns: []string{category.ParentCategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ParentID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cc.mutation.JobOfferCategoriesIDs(); len(nodes) > 0 {

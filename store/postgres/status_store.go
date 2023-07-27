@@ -106,9 +106,7 @@ func (ss *StatusStore) PaginatedStatuses(ctx context.Context, orderBy *dtos.Stat
 
 // CountStatuses implements store.StatusStore.
 func (ss *StatusStore) CountStatuses(ctx context.Context) (int, error) {
-	return ss.Client.Status.Query().Where(func(s *sql.Selector) {
-		s.Where(sql.IsNull(status.FieldDeletedAt))
-	}).Count(ctx)
+	return ss.Client.Status.Query().Where(status.DeletedAtIsNil()).Count(ctx)
 }
 
 // assert that StatusStore implements store.StatusStore

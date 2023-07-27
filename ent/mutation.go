@@ -3958,7 +3958,6 @@ type CategoryMutation struct {
 	id                          *uuid.UUID
 	name                        *string
 	slug                        *string
-	parent_id                   *uuid.UUID
 	created_at                  *time.Time
 	updated_at                  *time.Time
 	deleted_at                  *time.Time
@@ -3967,6 +3966,11 @@ type CategoryMutation struct {
 	applicant_interests         map[uuid.UUID]struct{}
 	removedapplicant_interests  map[uuid.UUID]struct{}
 	clearedapplicant_interests  bool
+	child_categories            map[uuid.UUID]struct{}
+	removedchild_categories     map[uuid.UUID]struct{}
+	clearedchild_categories     bool
+	parent_category             *uuid.UUID
+	clearedparent_category      bool
 	job_offer_categories        map[uuid.UUID]struct{}
 	removedjob_offer_categories map[uuid.UUID]struct{}
 	clearedjob_offer_categories bool
@@ -4153,12 +4157,12 @@ func (m *CategoryMutation) ResetSlug() {
 
 // SetParentID sets the "parent_id" field.
 func (m *CategoryMutation) SetParentID(u uuid.UUID) {
-	m.parent_id = &u
+	m.parent_category = &u
 }
 
 // ParentID returns the value of the "parent_id" field in the mutation.
 func (m *CategoryMutation) ParentID() (r uuid.UUID, exists bool) {
-	v := m.parent_id
+	v := m.parent_category
 	if v == nil {
 		return
 	}
@@ -4184,7 +4188,7 @@ func (m *CategoryMutation) OldParentID(ctx context.Context) (v *uuid.UUID, err e
 
 // ClearParentID clears the value of the "parent_id" field.
 func (m *CategoryMutation) ClearParentID() {
-	m.parent_id = nil
+	m.parent_category = nil
 	m.clearedFields[category.FieldParentID] = struct{}{}
 }
 
@@ -4196,7 +4200,7 @@ func (m *CategoryMutation) ParentIDCleared() bool {
 
 // ResetParentID resets all changes to the "parent_id" field.
 func (m *CategoryMutation) ResetParentID() {
-	m.parent_id = nil
+	m.parent_category = nil
 	delete(m.clearedFields, category.FieldParentID)
 }
 
@@ -4315,7 +4319,7 @@ func (m *CategoryMutation) DeletedAt() (r time.Time, exists bool) {
 // OldDeletedAt returns the old "deleted_at" field's value of the Category entity.
 // If the Category object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CategoryMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+func (m *CategoryMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -4437,6 +4441,99 @@ func (m *CategoryMutation) ResetApplicantInterests() {
 	m.removedapplicant_interests = nil
 }
 
+// AddChildCategoryIDs adds the "child_categories" edge to the Category entity by ids.
+func (m *CategoryMutation) AddChildCategoryIDs(ids ...uuid.UUID) {
+	if m.child_categories == nil {
+		m.child_categories = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.child_categories[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChildCategories clears the "child_categories" edge to the Category entity.
+func (m *CategoryMutation) ClearChildCategories() {
+	m.clearedchild_categories = true
+}
+
+// ChildCategoriesCleared reports if the "child_categories" edge to the Category entity was cleared.
+func (m *CategoryMutation) ChildCategoriesCleared() bool {
+	return m.clearedchild_categories
+}
+
+// RemoveChildCategoryIDs removes the "child_categories" edge to the Category entity by IDs.
+func (m *CategoryMutation) RemoveChildCategoryIDs(ids ...uuid.UUID) {
+	if m.removedchild_categories == nil {
+		m.removedchild_categories = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.child_categories, ids[i])
+		m.removedchild_categories[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChildCategories returns the removed IDs of the "child_categories" edge to the Category entity.
+func (m *CategoryMutation) RemovedChildCategoriesIDs() (ids []uuid.UUID) {
+	for id := range m.removedchild_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChildCategoriesIDs returns the "child_categories" edge IDs in the mutation.
+func (m *CategoryMutation) ChildCategoriesIDs() (ids []uuid.UUID) {
+	for id := range m.child_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChildCategories resets all changes to the "child_categories" edge.
+func (m *CategoryMutation) ResetChildCategories() {
+	m.child_categories = nil
+	m.clearedchild_categories = false
+	m.removedchild_categories = nil
+}
+
+// SetParentCategoryID sets the "parent_category" edge to the Category entity by id.
+func (m *CategoryMutation) SetParentCategoryID(id uuid.UUID) {
+	m.parent_category = &id
+}
+
+// ClearParentCategory clears the "parent_category" edge to the Category entity.
+func (m *CategoryMutation) ClearParentCategory() {
+	m.clearedparent_category = true
+}
+
+// ParentCategoryCleared reports if the "parent_category" edge to the Category entity was cleared.
+func (m *CategoryMutation) ParentCategoryCleared() bool {
+	return m.ParentIDCleared() || m.clearedparent_category
+}
+
+// ParentCategoryID returns the "parent_category" edge ID in the mutation.
+func (m *CategoryMutation) ParentCategoryID() (id uuid.UUID, exists bool) {
+	if m.parent_category != nil {
+		return *m.parent_category, true
+	}
+	return
+}
+
+// ParentCategoryIDs returns the "parent_category" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentCategoryID instead. It exists only for internal usage by the builders.
+func (m *CategoryMutation) ParentCategoryIDs() (ids []uuid.UUID) {
+	if id := m.parent_category; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParentCategory resets all changes to the "parent_category" edge.
+func (m *CategoryMutation) ResetParentCategory() {
+	m.parent_category = nil
+	m.clearedparent_category = false
+}
+
 // AddJobOfferCategoryIDs adds the "job_offer_categories" edge to the JobOfferCategory entity by ids.
 func (m *CategoryMutation) AddJobOfferCategoryIDs(ids ...uuid.UUID) {
 	if m.job_offer_categories == nil {
@@ -4532,7 +4629,7 @@ func (m *CategoryMutation) Fields() []string {
 	if m.slug != nil {
 		fields = append(fields, category.FieldSlug)
 	}
-	if m.parent_id != nil {
+	if m.parent_category != nil {
 		fields = append(fields, category.FieldParentID)
 	}
 	if m.created_at != nil {
@@ -4753,9 +4850,15 @@ func (m *CategoryMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CategoryMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.applicant_interests != nil {
 		edges = append(edges, category.EdgeApplicantInterests)
+	}
+	if m.child_categories != nil {
+		edges = append(edges, category.EdgeChildCategories)
+	}
+	if m.parent_category != nil {
+		edges = append(edges, category.EdgeParentCategory)
 	}
 	if m.job_offer_categories != nil {
 		edges = append(edges, category.EdgeJobOfferCategories)
@@ -4773,6 +4876,16 @@ func (m *CategoryMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case category.EdgeChildCategories:
+		ids := make([]ent.Value, 0, len(m.child_categories))
+		for id := range m.child_categories {
+			ids = append(ids, id)
+		}
+		return ids
+	case category.EdgeParentCategory:
+		if id := m.parent_category; id != nil {
+			return []ent.Value{*id}
+		}
 	case category.EdgeJobOfferCategories:
 		ids := make([]ent.Value, 0, len(m.job_offer_categories))
 		for id := range m.job_offer_categories {
@@ -4785,9 +4898,12 @@ func (m *CategoryMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CategoryMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.removedapplicant_interests != nil {
 		edges = append(edges, category.EdgeApplicantInterests)
+	}
+	if m.removedchild_categories != nil {
+		edges = append(edges, category.EdgeChildCategories)
 	}
 	if m.removedjob_offer_categories != nil {
 		edges = append(edges, category.EdgeJobOfferCategories)
@@ -4805,6 +4921,12 @@ func (m *CategoryMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case category.EdgeChildCategories:
+		ids := make([]ent.Value, 0, len(m.removedchild_categories))
+		for id := range m.removedchild_categories {
+			ids = append(ids, id)
+		}
+		return ids
 	case category.EdgeJobOfferCategories:
 		ids := make([]ent.Value, 0, len(m.removedjob_offer_categories))
 		for id := range m.removedjob_offer_categories {
@@ -4817,9 +4939,15 @@ func (m *CategoryMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CategoryMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.clearedapplicant_interests {
 		edges = append(edges, category.EdgeApplicantInterests)
+	}
+	if m.clearedchild_categories {
+		edges = append(edges, category.EdgeChildCategories)
+	}
+	if m.clearedparent_category {
+		edges = append(edges, category.EdgeParentCategory)
 	}
 	if m.clearedjob_offer_categories {
 		edges = append(edges, category.EdgeJobOfferCategories)
@@ -4833,6 +4961,10 @@ func (m *CategoryMutation) EdgeCleared(name string) bool {
 	switch name {
 	case category.EdgeApplicantInterests:
 		return m.clearedapplicant_interests
+	case category.EdgeChildCategories:
+		return m.clearedchild_categories
+	case category.EdgeParentCategory:
+		return m.clearedparent_category
 	case category.EdgeJobOfferCategories:
 		return m.clearedjob_offer_categories
 	}
@@ -4843,6 +4975,9 @@ func (m *CategoryMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *CategoryMutation) ClearEdge(name string) error {
 	switch name {
+	case category.EdgeParentCategory:
+		m.ClearParentCategory()
+		return nil
 	}
 	return fmt.Errorf("unknown Category unique edge %s", name)
 }
@@ -4853,6 +4988,12 @@ func (m *CategoryMutation) ResetEdge(name string) error {
 	switch name {
 	case category.EdgeApplicantInterests:
 		m.ResetApplicantInterests()
+		return nil
+	case category.EdgeChildCategories:
+		m.ResetChildCategories()
+		return nil
+	case category.EdgeParentCategory:
+		m.ResetParentCategory()
 		return nil
 	case category.EdgeJobOfferCategories:
 		m.ResetJobOfferCategories()

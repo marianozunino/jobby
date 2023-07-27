@@ -35,12 +35,12 @@ func (r *queryResolver) Message(ctx context.Context, id string) (*dtos.Message, 
 
 // Category is the resolver for the category field.
 func (r *queryResolver) Category(ctx context.Context, id uuid.UUID) (*dtos.Category, error) {
-	return r.GetCategory(id)
+	return r.GetCategory(ctx, id)
 }
 
 // Categories is the resolver for the categories field.
 func (r *queryResolver) Categories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error) {
-	return r.PaginatedCategories(orderBy, take, skip, where)
+	return r.PaginatedCategories(ctx, orderBy, take, skip, where)
 }
 
 // DegreeLevel is the resolver for the degreeLevel field.

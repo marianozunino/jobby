@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -30,7 +31,6 @@ func main() {
 
 	r.Get("/", graph.NewPlaygroundHandler("/graphql"))
 
-	// fmt.Printf("connect to http://localhost%s/ for GraphQL playground", port)
 	// client, err := ent.Open(dialect.Postgres, os.Getenv("DATABASE_URL"))
 	// if err != nil {
 	// 	panic(err)
@@ -45,5 +45,6 @@ func main() {
 	// 	fmt.Printf("%v\n\n", d.Edges.ParentCategory)
 	// }
 
+	fmt.Printf("connect to http://localhost%s/ for GraphQL playground", port)
 	panic(http.ListenAndServe(port, r))
 }

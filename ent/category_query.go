@@ -26,6 +26,8 @@ type CategoryQuery struct {
 	inters                 []Interceptor
 	predicates             []predicate.Category
 	withApplicantInterests *ApplicantInterestQuery
+	withChildCategories    *CategoryQuery
+	withParentCategory     *CategoryQuery
 	withJobOfferCategories *JobOfferCategoryQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -78,6 +80,50 @@ func (cq *CategoryQuery) QueryApplicantInterests() *ApplicantInterestQuery {
 			sqlgraph.From(category.Table, category.FieldID, selector),
 			sqlgraph.To(applicantinterest.Table, applicantinterest.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, category.ApplicantInterestsTable, category.ApplicantInterestsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryChildCategories chains the current query on the "child_categories" edge.
+func (cq *CategoryQuery) QueryChildCategories() *CategoryQuery {
+	query := (&CategoryClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, selector),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, category.ChildCategoriesTable, category.ChildCategoriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryParentCategory chains the current query on the "parent_category" edge.
+func (cq *CategoryQuery) QueryParentCategory() *CategoryQuery {
+	query := (&CategoryClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, selector),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, category.ParentCategoryTable, category.ParentCategoryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -300,6 +346,8 @@ func (cq *CategoryQuery) Clone() *CategoryQuery {
 		inters:                 append([]Interceptor{}, cq.inters...),
 		predicates:             append([]predicate.Category{}, cq.predicates...),
 		withApplicantInterests: cq.withApplicantInterests.Clone(),
+		withChildCategories:    cq.withChildCategories.Clone(),
+		withParentCategory:     cq.withParentCategory.Clone(),
 		withJobOfferCategories: cq.withJobOfferCategories.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
@@ -315,6 +363,28 @@ func (cq *CategoryQuery) WithApplicantInterests(opts ...func(*ApplicantInterestQ
 		opt(query)
 	}
 	cq.withApplicantInterests = query
+	return cq
+}
+
+// WithChildCategories tells the query-builder to eager-load the nodes that are connected to
+// the "child_categories" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CategoryQuery) WithChildCategories(opts ...func(*CategoryQuery)) *CategoryQuery {
+	query := (&CategoryClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withChildCategories = query
+	return cq
+}
+
+// WithParentCategory tells the query-builder to eager-load the nodes that are connected to
+// the "parent_category" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CategoryQuery) WithParentCategory(opts ...func(*CategoryQuery)) *CategoryQuery {
+	query := (&CategoryClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withParentCategory = query
 	return cq
 }
 
@@ -407,8 +477,10 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 	var (
 		nodes       = []*Category{}
 		_spec       = cq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [4]bool{
 			cq.withApplicantInterests != nil,
+			cq.withChildCategories != nil,
+			cq.withParentCategory != nil,
 			cq.withJobOfferCategories != nil,
 		}
 	)
@@ -436,6 +508,19 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 			func(n *Category, e *ApplicantInterest) {
 				n.Edges.ApplicantInterests = append(n.Edges.ApplicantInterests, e)
 			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withChildCategories; query != nil {
+		if err := cq.loadChildCategories(ctx, query, nodes,
+			func(n *Category) { n.Edges.ChildCategories = []*Category{} },
+			func(n *Category, e *Category) { n.Edges.ChildCategories = append(n.Edges.ChildCategories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withParentCategory; query != nil {
+		if err := cq.loadParentCategory(ctx, query, nodes, nil,
+			func(n *Category, e *Category) { n.Edges.ParentCategory = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -478,6 +563,71 @@ func (cq *CategoryQuery) loadApplicantInterests(ctx context.Context, query *Appl
 			return fmt.Errorf(`unexpected referenced foreign-key "category_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (cq *CategoryQuery) loadChildCategories(ctx context.Context, query *CategoryQuery, nodes []*Category, init func(*Category), assign func(*Category, *Category)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Category)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(category.FieldParentID)
+	}
+	query.Where(predicate.Category(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(category.ChildCategoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ParentID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "parent_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (cq *CategoryQuery) loadParentCategory(ctx context.Context, query *CategoryQuery, nodes []*Category, init func(*Category), assign func(*Category, *Category)) error {
+	ids := make([]uuid.UUID, 0, len(nodes))
+	nodeids := make(map[uuid.UUID][]*Category)
+	for i := range nodes {
+		if nodes[i].ParentID == nil {
+			continue
+		}
+		fk := *nodes[i].ParentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(category.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }
@@ -536,6 +686,9 @@ func (cq *CategoryQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != category.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withParentCategory != nil {
+			_spec.Node.AddColumnOnce(category.FieldParentID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {

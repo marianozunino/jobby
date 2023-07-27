@@ -28,7 +28,7 @@ func newLoaders(ctx context.Context, service service.Service) *Loaders {
 	return &Loaders{
 		// individual loaders will be initialized here
 		JobOffersByStatusId:        newJobOffersByStatusID(ctx, service),
-		ChildCategoriesForParentId: newCategoriesForParentIDs(ctx, service),
+		ChildCategoriesForParentId: newChildCategoriesForParentID(ctx, service),
 		ParentCategoryForChildId:   newParentCategoryForChildID(ctx, service),
 	}
 }
@@ -82,13 +82,13 @@ func newJobOffersByStatusID(ctx context.Context, service service.Service) *JobOf
 	})
 }
 
-func newCategoriesForParentIDs(ctx context.Context, service service.Service) *ChildCategoriesLoader {
+func newChildCategoriesForParentID(ctx context.Context, service service.Service) *ChildCategoriesLoader {
 	return NewChildCategoriesLoader(ChildCategoriesLoaderConfig{
 		MaxBatch: 100,
 		Wait:     5 * time.Millisecond,
 		Fetch: func(parentIDs []uuid.UUID) ([][]*dtos.Category, []error) {
 			// Fetch categories from the service directly
-			dbRecords, err := service.ChildCategoriesFor(parentIDs)
+			dbRecords, err := service.ChildCategoriesFor(ctx, parentIDs)
 			if err != nil {
 				return nil, []error{err}
 			}
@@ -117,15 +117,16 @@ func newParentCategoryForChildID(ctx context.Context, service service.Service) *
 	return NewParentCategoryLoader(ParentCategoryLoaderConfig{
 		MaxBatch: 100,
 		Wait:     5 * time.Millisecond,
-		Fetch: func(childIDs []uuid.UUID) ([]*dtos.Category, []error) {
+		Fetch: func(parentIDs []uuid.UUID) ([]*dtos.Category, []error) {
 			// Fetch categories from the service directly
-			dbRecords, err := service.ParentCategoriesFor(childIDs)
+			dbRecords, err := service.ParentCategoriesFor(ctx, parentIDs)
 			if err != nil {
 				return nil, []error{err}
 			}
 
 			// Prepare a map to hold the results
 			results := make(map[string]*dtos.Category)
+
 
 			// Group the records based on their ChildID
 			for _, record := range dbRecords {
@@ -134,7 +135,7 @@ func newParentCategoryForChildID(ctx context.Context, service service.Service) *
 
 			// Prepare the final results slice using the original order of childIDs
 			var finalResults []*dtos.Category
-			for _, id := range childIDs {
+			for _, id := range parentIDs {
 				finalResults = append(finalResults, results[id.String()])
 			}
 

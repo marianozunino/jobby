@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-
 	"github.com/marianozunino/cc-backend-go/dtos"
 	"github.com/marianozunino/cc-backend-go/graph/generated"
 )
@@ -18,7 +17,10 @@ func (r *categoryResolver) Children(ctx context.Context, obj *dtos.Category) ([]
 
 // Parent is the resolver for the parent field.
 func (r *categoryResolver) Parent(ctx context.Context, obj *dtos.Category) (*dtos.Category, error) {
-	return r.DataLoaders.Retrieve(ctx).ParentCategoryForChildId.Load(obj.ID)
+	if obj.ParentID == nil {
+		return nil, nil
+	}
+	return r.DataLoaders.Retrieve(ctx).ParentCategoryForChildId.Load(*obj.ParentID)
 }
 
 // Category returns generated.CategoryResolver implementation.

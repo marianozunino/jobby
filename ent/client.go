@@ -1144,6 +1144,38 @@ func (c *CategoryClient) QueryApplicantInterests(ca *Category) *ApplicantInteres
 	return query
 }
 
+// QueryChildCategories queries the child_categories edge of a Category.
+func (c *CategoryClient) QueryChildCategories(ca *Category) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, category.ChildCategoriesTable, category.ChildCategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParentCategory queries the parent_category edge of a Category.
+func (c *CategoryClient) QueryParentCategory(ca *Category) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, category.ParentCategoryTable, category.ParentCategoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryJobOfferCategories queries the job_offer_categories edge of a Category.
 func (c *CategoryClient) QueryJobOfferCategories(ca *Category) *JobOfferCategoryQuery {
 	query := (&JobOfferCategoryClient{config: c.config}).Query()

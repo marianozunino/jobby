@@ -1,13 +1,14 @@
 package service
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/cc-backend-go/ent"
 	"github.com/marianozunino/cc-backend-go/store"
-	"github.com/marianozunino/cc-backend-go/store/models"
 )
 
 type categoryService struct {
@@ -17,8 +18,8 @@ type categoryService struct {
 var _ CategoryService = &categoryService{}
 
 // CategoriesWithChildrens implements CategoryService
-func (c *categoryService) ChildCategoriesFor(parentIDs []uuid.UUID) ([]*dtos.Category, error) {
-	categories, err := c.Store.ChildCategoriesFor(parentIDs)
+func (c *categoryService) ChildCategoriesFor(ctx context.Context, parentIDs []uuid.UUID) ([]*dtos.Category, error) {
+	categories, err := c.Store.ChildCategoriesFor(ctx, parentIDs)
 	if err != nil {
 		return nil, err
 	}
@@ -27,8 +28,8 @@ func (c *categoryService) ChildCategoriesFor(parentIDs []uuid.UUID) ([]*dtos.Cat
 }
 
 // CategoriesWithParents implements CategoryService.
-func (c *categoryService) ParentCategoriesFor(childIDs []uuid.UUID) ([]*dtos.Category, error) {
-	categories, err := c.Store.ParentCategoriesFor(childIDs)
+func (c *categoryService) ParentCategoriesFor(ctx context.Context, childIDs []uuid.UUID) ([]*dtos.Category, error) {
+	categories, err := c.Store.ParentCategoriesFor(ctx, childIDs)
 	if err != nil {
 		return nil, err
 	}
@@ -36,19 +37,20 @@ func (c *categoryService) ParentCategoriesFor(childIDs []uuid.UUID) ([]*dtos.Cat
 }
 
 // CreateCategory implements CategoryService
-func (c *categoryService) CreateCategory(input dtos.CategoryCreateInput) (*dtos.Category, error) {
-	slug, err := c.FindUniqueSlug(input.Name)
+func (c *categoryService) CreateCategory(ctx context.Context, input dtos.CategoryCreateInput) (*dtos.Category, error) {
+	slug, err := c.FindUniqueSlug(ctx, input.Name)
 	if err != nil {
 		return nil, fmt.Errorf("error getting count of categories: %w", err)
 	}
-	model := models.Categories{
+
+	model := &ent.Category{
 		Name:     input.Name,
 		Slug:     slug,
 		IsRoot:   input.IsRoot,
 		ParentID: input.ParentID,
 	}
 
-	category, err := c.Store.CreateCategory(model)
+	category, err := c.Store.CreateCategory(ctx, model)
 	if err != nil {
 		return nil, err
 	}
@@ -57,8 +59,8 @@ func (c *categoryService) CreateCategory(input dtos.CategoryCreateInput) (*dtos.
 }
 
 // DeleteCategory implements CategoryService
-func (c *categoryService) DeleteCategory(id uuid.UUID) (*dtos.Category, error) {
-	category, err := c.Store.DeleteCategory(id)
+func (c *categoryService) DeleteCategory(ctx context.Context, id uuid.UUID) (*dtos.Category, error) {
+	category, err := c.Store.DeleteCategory(ctx, id)
 
 	if err != nil {
 		return nil, err
@@ -68,13 +70,13 @@ func (c *categoryService) DeleteCategory(id uuid.UUID) (*dtos.Category, error) {
 }
 
 // GetCategories implements CategoryService
-func (c *categoryService) GetCategories() ([]dtos.Category, error) {
+func (c *categoryService) GetCategories(ctx context.Context) ([]dtos.Category, error) {
 	panic("unimplemented")
 }
 
 // GetCategory implements CategoryService
-func (c *categoryService) GetCategory(id uuid.UUID) (*dtos.Category, error) {
-	category, err := c.Store.Category(id)
+func (c *categoryService) GetCategory(ctx context.Context, id uuid.UUID) (*dtos.Category, error) {
+	category, err := c.Store.Category(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -83,15 +85,15 @@ func (c *categoryService) GetCategory(id uuid.UUID) (*dtos.Category, error) {
 }
 
 // PaginatedCategories implements CategoryService
-func (c *categoryService) PaginatedCategories(orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error) {
-	data, err := c.Store.PaginatedCategories(orderBy, take, skip, where)
+func (c *categoryService) PaginatedCategories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error) {
+	data, err := c.Store.PaginatedCategories(ctx, orderBy, take, skip, where)
 	if err != nil {
 		return nil, err
 	}
 
 	categories := c.BuildFromEntities(data)
 
-	count, err := c.Store.CountCategories()
+	count, err := c.Store.CountCategories(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -105,36 +107,63 @@ func (c *categoryService) PaginatedCategories(orderBy *dtos.CategoryAggregationI
 }
 
 // UpdateCategory implements CategoryService
-func (c *categoryService) UpdateCategory(id uuid.UUID, input dtos.CategoryUpdateInput) (*dtos.Category, error) {
-	model := models.Categories{
+func (c *categoryService) UpdateCategory(ctx context.Context, id uuid.UUID, input dtos.CategoryUpdateInput) (*dtos.Category, error) {
+	// if isRoot is true, then parentID should be null
+
+	if input.IsRoot && input.ParentID != nil {
+		return nil, fmt.Errorf("parentID should be null if isRoot is true")
+	}
+
+	if !input.IsRoot && input.ParentID == nil {
+		return nil, fmt.Errorf("parentID should not be null if isRoot is false")
+	}
+
+	if input.ParentID != nil {
+		if *input.ParentID == id {
+			return nil, fmt.Errorf("parentID should not be equal to id")
+		}
+
+		parent, err := c.Store.Category(ctx, *input.ParentID)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if !parent.IsRoot {
+			return nil, fmt.Errorf("parentID should be a root category")
+		}
+
+	}
+
+	model := &ent.Category{
 		ID:       id,
 		Name:     input.Name,
 		IsRoot:   input.IsRoot,
 		ParentID: input.ParentID,
 	}
 
-	category, err := c.Store.UpdateCategory(model)
+	category, err := c.Store.UpdateCategory(ctx, model)
 	if err != nil {
 		return nil, err
 	}
 	return c.BuildFromEntity(category), nil
 }
 
-func (s *categoryService) BuildFromEntity(entity *models.Categories) *dtos.Category {
+func (s *categoryService) BuildFromEntity(entity *ent.Category) *dtos.Category {
 	dto := &dtos.Category{
 		ID:        entity.ID,
 		Name:      entity.Name,
 		Slug:      entity.Slug,
 		IsRoot:    entity.IsRoot,
 		ParentID:  entity.ParentID,
-		CreatedAt: entity.CreatedAt.Time,
-		UpdatedAt: entity.UpdatedAt.Time,
-		DeletedAt: getTimeOrNil(entity.DeletedAt),
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+		DeletedAt: entity.DeletedAt,
 	}
 	return dto
 }
 
-func (s *categoryService) BuildFromEntities(entities []*models.Categories) []*dtos.Category {
+func (s *categoryService) BuildFromEntities(entities ent.Categories) []*dtos.Category {
 	dtos := make([]*dtos.Category, len(entities))
 	for i, entity := range entities {
 		dtos[i] = s.BuildFromEntity(entity)
@@ -146,14 +175,14 @@ func createSlugForCategory(name string) string {
 	return slug.Make(name)
 }
 
-func (s *categoryService) FindUniqueSlug(name string) (string, error) {
+func (s *categoryService) FindUniqueSlug(ctx context.Context, name string) (string, error) {
 	initialSlug := createSlugForCategory(name)
 	slug := initialSlug
 
 	counter := 1
 	maxIterations := 10
 	for counter < maxIterations {
-		isTaken, err := s.Store.IsSlugTaken(slug)
+		isTaken, err := s.Store.IsSlugTaken(ctx, slug)
 
 		if err != nil {
 			return "", err

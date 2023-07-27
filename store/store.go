@@ -41,15 +41,15 @@ type MessageStore interface {
 }
 
 type CategoryStore interface {
-	Category(id uuid.UUID) (*models.Categories, error)
-	PaginatedCategories(orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) ([]*models.Categories, error)
-	CountCategories() (int, error)
-	CreateCategory(category models.Categories) (*models.Categories, error)
-	UpdateCategory(category models.Categories) (*models.Categories, error)
-	DeleteCategory(id uuid.UUID) (*models.Categories, error)
-	ChildCategoriesFor(parentIDs []uuid.UUID) ([]*models.Categories, error)
-	ParentCategoriesFor(childIDs []uuid.UUID) ([]*models.Categories, error)
-	IsSlugTaken(slug string) (bool, error)
+	Category(ctx context.Context, id uuid.UUID) (*ent.Category, error)
+	PaginatedCategories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (ent.Categories, error)
+	CountCategories(ctx context.Context) (int, error)
+	CreateCategory(ctx context.Context, category *ent.Category) (*ent.Category, error)
+	UpdateCategory(ctx context.Context, category *ent.Category) (*ent.Category, error)
+	DeleteCategory(ctx context.Context, id uuid.UUID) (*ent.Category, error)
+	ChildCategoriesFor(ctx context.Context, parentIDs []uuid.UUID) (ent.Categories, error)
+	ParentCategoriesFor(ctx context.Context, childIDs []uuid.UUID) (ent.Categories, error)
+	IsSlugTaken(ctx context.Context, slug string) (bool, error)
 }
 
 type DegreeLevelStore interface {

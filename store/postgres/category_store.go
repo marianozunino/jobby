@@ -1,194 +1,155 @@
 package postgres
 
 import (
-	"fmt"
-	"strings"
+	"context"
+	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
 	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/cc-backend-go/ent"
+	"github.com/marianozunino/cc-backend-go/ent/category"
 	"github.com/marianozunino/cc-backend-go/store"
-	"github.com/marianozunino/cc-backend-go/store/models"
 )
 
 // assert that StatusStore implements store.StatusStore
 var _ store.CategoryStore = &CategoryStore{}
 
 type CategoryStore struct {
-	*sqlx.DB
+	*ent.Client
 }
 
 // FindCategoryBySlug implements store.CategoryStore.
-func (c *CategoryStore) IsSlugTaken(slug string) (bool, error) {
-	var count int
-	if err := c.DB.Get(&count, "SELECT COUNT(*) FROM categories WHERE slug=$1", slug); err != nil {
-		return false, fmt.Errorf("error getting count of categories: %w", err)
-	}
-	return count > 0, nil
-
+func (c *CategoryStore) IsSlugTaken(ctx context.Context, slug string) (bool, error) {
+	return c.Client.Category.Query().Where(func(s *sql.Selector) {
+		s.Where(sql.EQ("slug", slug))
+	}).Exist(ctx)
 }
 
 // Category implements store.CategoryStore
-func (c *CategoryStore) Category(id uuid.UUID) (*models.Categories, error) {
-	query := "SELECT * FROM categories WHERE id=$1"
-	category := &models.Categories{}
-	if err := c.DB.Get(category, query, id); err != nil {
-		return nil, fmt.Errorf("error getting category: %w", err)
-	}
-	return category, nil
+func (c *CategoryStore) Category(ctx context.Context, id uuid.UUID) (*ent.Category, error) {
+	return c.Client.Category.Query().Where(category.ID(id), category.DeletedAtIsNil()).First(ctx)
 }
 
 // CountCategories implements store.CategoryStore
-func (c *CategoryStore) CountCategories() (int, error) {
-	var count int
-	if err := c.DB.Get(&count, "SELECT COUNT(*) FROM categories"); err != nil {
-		return 0, fmt.Errorf("error getting count of categories: %w", err)
-	}
-	return count, nil
+func (c *CategoryStore) CountCategories(ctx context.Context) (int, error) {
+	return c.Client.Category.Query().Where(category.DeletedAtIsNil()).Count(ctx)
 }
 
 // CreateCategory implements store.CategoryStore
-func (c *CategoryStore) CreateCategory(category models.Categories) (*models.Categories, error) {
-	var output *models.Categories = &models.Categories{}
-	if err := c.DB.Get(
-		output,
-		"INSERT INTO categories (name, slug, is_root, parent_id) VALUES ($1, $2, $3, $4) RETURNING *",
-		category.Name,
-		category.Slug,
-		category.IsRoot,
-		category.ParentID,
-	); err != nil {
-		return nil, fmt.Errorf("error creating category: %w", err)
-	}
-	return output, nil
+func (c *CategoryStore) CreateCategory(ctx context.Context, category *ent.Category) (*ent.Category, error) {
+	return c.Client.Category.Create().
+		SetName(category.Name).
+		SetSlug(category.Slug).
+		SetIsRoot(category.IsRoot).
+		SetNillableParentID(category.ParentID).
+		Save(ctx)
+
 }
 
 // DeleteCategory implements store.CategoryStore
-func (c *CategoryStore) DeleteCategory(id uuid.UUID) (*models.Categories, error) {
-	category := &models.Categories{}
-	if err := c.DB.Get(category, "DELETE FROM categories WHERE id=$1 RETURNING *", id); err != nil {
-		return nil, fmt.Errorf("error deleting category: %w", err)
-	}
-	return category, nil
+func (c *CategoryStore) DeleteCategory(ctx context.Context, id uuid.UUID) (*ent.Category, error) {
+	return c.Client.Category.UpdateOneID(id).Where(category.DeletedAtIsNil()).SetDeletedAt(time.Now()).Save(ctx)
 }
 
 // PaginatedCategories implements store.CategoryStore
-
-func (c *CategoryStore) PaginatedCategories(orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) ([]*models.Categories, error) {
-	query := "SELECT * FROM categories"
+func (c *CategoryStore) PaginatedCategories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (ent.Categories, error) {
+	query := c.Client.Category.Query().Where(category.DeletedAtIsNil())
 
 	if where != nil {
-		query += " WHERE deleted_at IS NULL AND "
-		var whereFields []string
-		switch {
-		case where.ID != nil:
-			whereFields = append(whereFields, fmt.Sprintf("id = '%s'", where.ID))
-		case where.Name != nil:
-			whereFields = append(whereFields, fmt.Sprintf("name ilike '%%%s%%'", *where.Name))
-		case where.Slug != nil:
-			whereFields = append(whereFields, fmt.Sprintf("slug ilike '%%%s%%'", *where.Slug))
-		case where.IsRoot != nil:
-			whereFields = append(whereFields, fmt.Sprintf("is_root = %t", *where.IsRoot))
+		if where.ID != nil {
+			query = query.Where(category.ID(*where.ID))
 		}
-		query += strings.Join(whereFields, " AND ")
+		if where.Name != nil {
+			query = query.Where(category.NameContains(*where.Name))
+		}
+		if where.Slug != nil {
+			query = query.Where(category.SlugContains(*where.Slug))
+		}
+		if where.IsRoot != nil {
+			query = query.Where(category.IsRoot(*where.IsRoot))
+		}
 	}
 
-	if orderBy != nil {
-		query += " ORDER BY "
-		var sortFields []string
+	order := []category.OrderOption{}
 
+	if orderBy != nil {
 		if orderBy.ID != nil {
-			sortFields = append(sortFields, fmt.Sprintf("id %s", orderBy.ID))
+			if *orderBy.ID == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(category.FieldID))
+			} else {
+				order = append(order, ent.Desc(category.FieldID))
+			}
 		}
 		if orderBy.Name != nil {
-			sortFields = append(sortFields, fmt.Sprintf("name %s", orderBy.Name))
+			if *orderBy.Name == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(category.FieldName))
+			} else {
+				order = append(order, ent.Desc(category.FieldName))
+			}
 		}
 		if orderBy.Slug != nil {
-			sortFields = append(sortFields, fmt.Sprintf("slug %s", orderBy.Slug))
+			if *orderBy.Slug == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(category.FieldSlug))
+			} else {
+				order = append(order, ent.Desc(category.FieldSlug))
+			}
 		}
 		if orderBy.IsRoot != nil {
-			sortFields = append(sortFields, fmt.Sprintf("is_root %s", orderBy.IsRoot))
+			if *orderBy.IsRoot == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(category.FieldIsRoot))
+			} else {
+				order = append(order, ent.Desc(category.FieldIsRoot))
+			}
 		}
 		if orderBy.CreatedAt != nil {
-			sortFields = append(sortFields, fmt.Sprintf("created_at %s", orderBy.CreatedAt))
+			if *orderBy.CreatedAt == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(category.FieldCreatedAt))
+			} else {
+				order = append(order, ent.Desc(category.FieldCreatedAt))
+			}
 		}
 		if orderBy.UpdatedAt != nil {
-			sortFields = append(sortFields, fmt.Sprintf("updated_at %s", orderBy.UpdatedAt))
+			if *orderBy.UpdatedAt == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(category.FieldUpdatedAt))
+			} else {
+				order = append(order, ent.Desc(category.FieldUpdatedAt))
+			}
 		}
 		if orderBy.DeletedAt != nil {
-			sortFields = append(sortFields, fmt.Sprintf("deleted_at %s", orderBy.DeletedAt))
+			if *orderBy.DeletedAt == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(category.FieldDeletedAt))
+			} else {
+				order = append(order, ent.Desc(category.FieldDeletedAt))
+			}
 		}
-		query += strings.Join(sortFields, ", ")
 	}
 
 	if take != nil {
-		query += fmt.Sprintf(" LIMIT %d", *take)
+		query = query.Limit(*take)
 	}
 	if skip != nil {
-		query += fmt.Sprintf(" OFFSET %d", *skip)
+		query = query.Offset(*skip)
 	}
 
-	categories := []*models.Categories{}
-
-	if err := c.DB.Select(&categories, query); err != nil {
-		return nil, fmt.Errorf("error getting paginated categories: %w", err)
+	if len(order) > 0 {
+		query = query.Order(order...)
 	}
 
-	return categories, nil
+	return query.All(ctx)
 }
 
 // UpdateCategory implements store.CategoryStore
-func (c *CategoryStore) UpdateCategory(category models.Categories) (*models.Categories, error) {
-	var output *models.Categories = &models.Categories{}
-	if err := c.DB.Get(
-		output,
-		"UPDATE categories SET name=$1, slug=$2, is_root=$3, parent_id=$4 WHERE id=$5 RETURNING *",
-		category.Name,
-		category.Slug,
-		category.IsRoot,
-		category.ParentID,
-		category.ID,
-	); err != nil {
-		return nil, fmt.Errorf("error updating category: %w", err)
-	}
-	return output, nil
-
+func (c *CategoryStore) UpdateCategory(ctx context.Context, category *ent.Category) (*ent.Category, error) {
+	return c.Client.Debug().Category.UpdateOneID(category.ID).SetName(category.Name).SetIsRoot(category.IsRoot).SetNillableParentID(category.ParentID).Save(ctx)
 }
 
 // CategoriesWithChildrens implements store.CategoryStore
-func (c *CategoryStore) ChildCategoriesFor(parentIDs []uuid.UUID) ([]*models.Categories, error) {
-	query, args, err := sqlx.In("SELECT * FROM categories WHERE parent_id IN (?)", parentIDs)
-
-	if err != nil {
-		return nil, fmt.Errorf("error building query: %w", err)
-	}
-	query = c.Rebind(query)
-
-	var categories []*models.Categories
-
-	err = c.Select(&categories, query, args...)
-	if err != nil {
-		return nil, fmt.Errorf("error querying job offers: %w", err)
-	}
-
-	return categories, nil
+func (c *CategoryStore) ChildCategoriesFor(ctx context.Context, ids []uuid.UUID) (ent.Categories, error) {
+	return c.Client.Category.Query().Where(category.ParentIDIn(ids...)).All(ctx)
 }
 
 // CategoriesWithParents implements store.CategoryStore.
-func (c *CategoryStore) ParentCategoriesFor(childIDs []uuid.UUID) ([]*models.Categories, error) {
-	query, args, err := sqlx.In("SELECT * FROM categories WHERE id IN (?)", childIDs)
-
-	if err != nil {
-		return nil, fmt.Errorf("error building query: %w", err)
-	}
-	query = c.Rebind(query)
-
-	var categories []*models.Categories
-
-	err = c.Select(&categories, query, args...)
-	if err != nil {
-		return nil, fmt.Errorf("error querying job offers: %w", err)
-	}
-
-	return categories, nil
+func (c *CategoryStore) ParentCategoriesFor(ctx context.Context, ids []uuid.UUID) (ent.Categories, error) {
+	return c.Client.Category.Query().Where(category.IDIn(ids...)).All(ctx)
 }

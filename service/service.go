@@ -46,14 +46,14 @@ type MessageService interface {
 }
 
 type CategoryService interface {
-	CreateCategory(input dtos.CategoryCreateInput) (*dtos.Category, error)
-	DeleteCategory(id uuid.UUID) (*dtos.Category, error)
-	UpdateCategory(id uuid.UUID, input dtos.CategoryUpdateInput) (*dtos.Category, error)
-	GetCategory(id uuid.UUID) (*dtos.Category, error)
-	GetCategories() ([]dtos.Category, error)
-	PaginatedCategories(orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error)
-	ChildCategoriesFor(parentIDs []uuid.UUID) ([]*dtos.Category, error)
-	ParentCategoriesFor(childIDs []uuid.UUID) ([]*dtos.Category, error)
+	CreateCategory(ctx context.Context, input dtos.CategoryCreateInput) (*dtos.Category, error)
+	DeleteCategory(ctx context.Context, id uuid.UUID) (*dtos.Category, error)
+	UpdateCategory(ctx context.Context, id uuid.UUID, input dtos.CategoryUpdateInput) (*dtos.Category, error)
+	GetCategory(ctx context.Context, id uuid.UUID) (*dtos.Category, error)
+	GetCategories(ctx context.Context) ([]dtos.Category, error)
+	PaginatedCategories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error)
+	ChildCategoriesFor(ctx context.Context, parentIDs []uuid.UUID) ([]*dtos.Category, error)
+	ParentCategoriesFor(ctx context.Context, childIDs []uuid.UUID) ([]*dtos.Category, error)
 }
 
 type DegreeLevelService interface {

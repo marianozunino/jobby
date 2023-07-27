@@ -133,17 +133,25 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "slug", Type: field.TypeString},
-		{Name: "parent_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime, Nullable: true},
 		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "is_root", Type: field.TypeBool},
+		{Name: "parent_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// CategoriesTable holds the schema information for the "categories" table.
 	CategoriesTable = &schema.Table{
 		Name:       "categories",
 		Columns:    CategoriesColumns,
 		PrimaryKey: []*schema.Column{CategoriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "categories_categories_child_categories",
+				Columns:    []*schema.Column{CategoriesColumns[7]},
+				RefColumns: []*schema.Column{CategoriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// ContactUsMessagesColumns holds the columns for the "contact_us_messages" table.
 	ContactUsMessagesColumns = []*schema.Column{
@@ -518,6 +526,7 @@ func init() {
 	ApplicantProfileSkillsTable.ForeignKeys[1].RefTable = SkillsTable
 	ApplicationsTable.ForeignKeys[0].RefTable = ApplicantProfilesTable
 	ApplicationsTable.ForeignKeys[1].RefTable = JobOffersTable
+	CategoriesTable.ForeignKeys[0].RefTable = CategoriesTable
 	EducationTable.ForeignKeys[0].RefTable = ApplicantProfilesTable
 	EducationTable.ForeignKeys[1].RefTable = DegreeLevelsTable
 	EducationTable.Annotation = &entsql.Annotation{

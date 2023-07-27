@@ -28,6 +28,10 @@ const (
 	FieldIsRoot = "is_root"
 	// EdgeApplicantInterests holds the string denoting the applicant_interests edge name in mutations.
 	EdgeApplicantInterests = "applicant_interests"
+	// EdgeChildCategories holds the string denoting the child_categories edge name in mutations.
+	EdgeChildCategories = "child_categories"
+	// EdgeParentCategory holds the string denoting the parent_category edge name in mutations.
+	EdgeParentCategory = "parent_category"
 	// EdgeJobOfferCategories holds the string denoting the job_offer_categories edge name in mutations.
 	EdgeJobOfferCategories = "job_offer_categories"
 	// Table holds the table name of the category in the database.
@@ -39,6 +43,14 @@ const (
 	ApplicantInterestsInverseTable = "applicant_interests"
 	// ApplicantInterestsColumn is the table column denoting the applicant_interests relation/edge.
 	ApplicantInterestsColumn = "category_id"
+	// ChildCategoriesTable is the table that holds the child_categories relation/edge.
+	ChildCategoriesTable = "categories"
+	// ChildCategoriesColumn is the table column denoting the child_categories relation/edge.
+	ChildCategoriesColumn = "parent_id"
+	// ParentCategoryTable is the table that holds the parent_category relation/edge.
+	ParentCategoryTable = "categories"
+	// ParentCategoryColumn is the table column denoting the parent_category relation/edge.
+	ParentCategoryColumn = "parent_id"
 	// JobOfferCategoriesTable is the table that holds the job_offer_categories relation/edge.
 	JobOfferCategoriesTable = "job_offer_categories"
 	// JobOfferCategoriesInverseTable is the table name for the JobOfferCategory entity.
@@ -127,6 +139,27 @@ func ByApplicantInterests(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOptio
 	}
 }
 
+// ByChildCategoriesCount orders the results by child_categories count.
+func ByChildCategoriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newChildCategoriesStep(), opts...)
+	}
+}
+
+// ByChildCategories orders the results by child_categories terms.
+func ByChildCategories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newChildCategoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByParentCategoryField orders the results by parent_category field.
+func ByParentCategoryField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newParentCategoryStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByJobOfferCategoriesCount orders the results by job_offer_categories count.
 func ByJobOfferCategoriesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -145,6 +178,20 @@ func newApplicantInterestsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ApplicantInterestsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ApplicantInterestsTable, ApplicantInterestsColumn),
+	)
+}
+func newChildCategoriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ChildCategoriesTable, ChildCategoriesColumn),
+	)
+}
+func newParentCategoryStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, ParentCategoryTable, ParentCategoryColumn),
 	)
 }
 func newJobOfferCategoriesStep() *sqlgraph.Step {

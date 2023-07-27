@@ -241,26 +241,6 @@ func ParentIDNotIn(vs ...uuid.UUID) predicate.Category {
 	return predicate.Category(sql.FieldNotIn(FieldParentID, vs...))
 }
 
-// ParentIDGT applies the GT predicate on the "parent_id" field.
-func ParentIDGT(v uuid.UUID) predicate.Category {
-	return predicate.Category(sql.FieldGT(FieldParentID, v))
-}
-
-// ParentIDGTE applies the GTE predicate on the "parent_id" field.
-func ParentIDGTE(v uuid.UUID) predicate.Category {
-	return predicate.Category(sql.FieldGTE(FieldParentID, v))
-}
-
-// ParentIDLT applies the LT predicate on the "parent_id" field.
-func ParentIDLT(v uuid.UUID) predicate.Category {
-	return predicate.Category(sql.FieldLT(FieldParentID, v))
-}
-
-// ParentIDLTE applies the LTE predicate on the "parent_id" field.
-func ParentIDLTE(v uuid.UUID) predicate.Category {
-	return predicate.Category(sql.FieldLTE(FieldParentID, v))
-}
-
 // ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
 func ParentIDIsNil() predicate.Category {
 	return predicate.Category(sql.FieldIsNull(FieldParentID))
@@ -446,6 +426,52 @@ func HasApplicantInterests() predicate.Category {
 func HasApplicantInterestsWith(preds ...predicate.ApplicantInterest) predicate.Category {
 	return predicate.Category(func(s *sql.Selector) {
 		step := newApplicantInterestsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasChildCategories applies the HasEdge predicate on the "child_categories" edge.
+func HasChildCategories() predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChildCategoriesTable, ChildCategoriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasChildCategoriesWith applies the HasEdge predicate on the "child_categories" edge with a given conditions (other predicates).
+func HasChildCategoriesWith(preds ...predicate.Category) predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := newChildCategoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasParentCategory applies the HasEdge predicate on the "parent_category" edge.
+func HasParentCategory() predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentCategoryTable, ParentCategoryColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasParentCategoryWith applies the HasEdge predicate on the "parent_category" edge with a given conditions (other predicates).
+func HasParentCategoryWith(preds ...predicate.Category) predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := newParentCategoryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

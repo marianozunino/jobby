@@ -1,0 +1,23 @@
+{{ define "nullsetter" }}
+	{{/* Add the base header for the generated file */}}
+	{{ $pkg := base $.Config.Package }}
+	{{ template "header" $ }}
+
+	{{/* Loop over all updaters and implement the "SetOrClear" method for all optional fields */}}
+	{{ range $n := $.Nodes }}
+		{{ range $updater := list $n.UpdateName $n.UpdateOneName }}
+      {{ range $f := $n.Fields }}
+        {{ if $f.Optional }}
+          {{ $set := print "Set" $f.StructField }}
+          {{ $clear := print "Clear" $f.StructField }}
+          func (u *{{ $updater }}) SetOrClear{{ $f.StructField }}(value *{{ $f.Type }}) *{{ $updater }} {
+            if value == nil {
+              return u.{{ $clear }}()
+            }
+            return u.{{ $set }}(*value)
+          }
+        {{ end }}
+      {{ end }}
+    {{ end }}
+	{{ end }}
+{{ end }}

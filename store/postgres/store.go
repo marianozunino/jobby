@@ -60,7 +60,7 @@ func NewStore(databaseURL string) store.Store {
 		StatusStore:      &StatusStore{client},
 		JobOfferStore:    &JobOfferStore{db},
 		MessageStore:     &MessageStore{db},
-		CategoryStore:    &CategoryStore{db},
+		CategoryStore:    &CategoryStore{client},
 		DegreeLevelStore: &DegreeLevelStore{db},
 	}
 }
