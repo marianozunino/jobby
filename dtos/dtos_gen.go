@@ -114,7 +114,7 @@ type Message struct {
 	ID        uuid.UUID  `json:"id"`
 	Name      string     `json:"name"`
 	Email     string     `json:"email"`
-	Phone     string     `json:"phone"`
+	Phone     *string    `json:"phone,omitempty"`
 	Message   string     `json:"message"`
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
@@ -132,10 +132,10 @@ type MessageAggregationInput struct {
 }
 
 type MessageCreateInput struct {
-	Name    string `json:"name"`
-	Email   string `json:"email"`
-	Phone   string `json:"phone"`
-	Message string `json:"message"`
+	Name    string  `json:"name"`
+	Email   string  `json:"email"`
+	Phone   *string `json:"phone,omitempty"`
+	Message string  `json:"message"`
 }
 
 type MessageUpdateInput struct {

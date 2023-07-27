@@ -46,6 +46,26 @@ func (cumu *ContactUsMessageUpdate) SetMessage(s string) *ContactUsMessageUpdate
 	return cumu
 }
 
+// SetPhone sets the "phone" field.
+func (cumu *ContactUsMessageUpdate) SetPhone(s string) *ContactUsMessageUpdate {
+	cumu.mutation.SetPhone(s)
+	return cumu
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (cumu *ContactUsMessageUpdate) SetNillablePhone(s *string) *ContactUsMessageUpdate {
+	if s != nil {
+		cumu.SetPhone(*s)
+	}
+	return cumu
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (cumu *ContactUsMessageUpdate) ClearPhone() *ContactUsMessageUpdate {
+	cumu.mutation.ClearPhone()
+	return cumu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cumu *ContactUsMessageUpdate) SetCreatedAt(t time.Time) *ContactUsMessageUpdate {
 	cumu.mutation.SetCreatedAt(t)
@@ -106,26 +126,6 @@ func (cumu *ContactUsMessageUpdate) ClearDeletedAt() *ContactUsMessageUpdate {
 	return cumu
 }
 
-// SetPhone sets the "phone" field.
-func (cumu *ContactUsMessageUpdate) SetPhone(s string) *ContactUsMessageUpdate {
-	cumu.mutation.SetPhone(s)
-	return cumu
-}
-
-// SetNillablePhone sets the "phone" field if the given value is not nil.
-func (cumu *ContactUsMessageUpdate) SetNillablePhone(s *string) *ContactUsMessageUpdate {
-	if s != nil {
-		cumu.SetPhone(*s)
-	}
-	return cumu
-}
-
-// ClearPhone clears the value of the "phone" field.
-func (cumu *ContactUsMessageUpdate) ClearPhone() *ContactUsMessageUpdate {
-	cumu.mutation.ClearPhone()
-	return cumu
-}
-
 // Mutation returns the ContactUsMessageMutation object of the builder.
 func (cumu *ContactUsMessageUpdate) Mutation() *ContactUsMessageMutation {
 	return cumu.mutation
@@ -176,6 +176,12 @@ func (cumu *ContactUsMessageUpdate) sqlSave(ctx context.Context) (n int, err err
 	if value, ok := cumu.mutation.Message(); ok {
 		_spec.SetField(contactusmessage.FieldMessage, field.TypeString, value)
 	}
+	if value, ok := cumu.mutation.Phone(); ok {
+		_spec.SetField(contactusmessage.FieldPhone, field.TypeString, value)
+	}
+	if cumu.mutation.PhoneCleared() {
+		_spec.ClearField(contactusmessage.FieldPhone, field.TypeString)
+	}
 	if value, ok := cumu.mutation.CreatedAt(); ok {
 		_spec.SetField(contactusmessage.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -193,12 +199,6 @@ func (cumu *ContactUsMessageUpdate) sqlSave(ctx context.Context) (n int, err err
 	}
 	if cumu.mutation.DeletedAtCleared() {
 		_spec.ClearField(contactusmessage.FieldDeletedAt, field.TypeTime)
-	}
-	if value, ok := cumu.mutation.Phone(); ok {
-		_spec.SetField(contactusmessage.FieldPhone, field.TypeString, value)
-	}
-	if cumu.mutation.PhoneCleared() {
-		_spec.ClearField(contactusmessage.FieldPhone, field.TypeString)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cumu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -235,6 +235,26 @@ func (cumuo *ContactUsMessageUpdateOne) SetEmail(s string) *ContactUsMessageUpda
 // SetMessage sets the "message" field.
 func (cumuo *ContactUsMessageUpdateOne) SetMessage(s string) *ContactUsMessageUpdateOne {
 	cumuo.mutation.SetMessage(s)
+	return cumuo
+}
+
+// SetPhone sets the "phone" field.
+func (cumuo *ContactUsMessageUpdateOne) SetPhone(s string) *ContactUsMessageUpdateOne {
+	cumuo.mutation.SetPhone(s)
+	return cumuo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (cumuo *ContactUsMessageUpdateOne) SetNillablePhone(s *string) *ContactUsMessageUpdateOne {
+	if s != nil {
+		cumuo.SetPhone(*s)
+	}
+	return cumuo
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (cumuo *ContactUsMessageUpdateOne) ClearPhone() *ContactUsMessageUpdateOne {
+	cumuo.mutation.ClearPhone()
 	return cumuo
 }
 
@@ -295,26 +315,6 @@ func (cumuo *ContactUsMessageUpdateOne) SetNillableDeletedAt(t *time.Time) *Cont
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (cumuo *ContactUsMessageUpdateOne) ClearDeletedAt() *ContactUsMessageUpdateOne {
 	cumuo.mutation.ClearDeletedAt()
-	return cumuo
-}
-
-// SetPhone sets the "phone" field.
-func (cumuo *ContactUsMessageUpdateOne) SetPhone(s string) *ContactUsMessageUpdateOne {
-	cumuo.mutation.SetPhone(s)
-	return cumuo
-}
-
-// SetNillablePhone sets the "phone" field if the given value is not nil.
-func (cumuo *ContactUsMessageUpdateOne) SetNillablePhone(s *string) *ContactUsMessageUpdateOne {
-	if s != nil {
-		cumuo.SetPhone(*s)
-	}
-	return cumuo
-}
-
-// ClearPhone clears the value of the "phone" field.
-func (cumuo *ContactUsMessageUpdateOne) ClearPhone() *ContactUsMessageUpdateOne {
-	cumuo.mutation.ClearPhone()
 	return cumuo
 }
 
@@ -398,6 +398,12 @@ func (cumuo *ContactUsMessageUpdateOne) sqlSave(ctx context.Context) (_node *Con
 	if value, ok := cumuo.mutation.Message(); ok {
 		_spec.SetField(contactusmessage.FieldMessage, field.TypeString, value)
 	}
+	if value, ok := cumuo.mutation.Phone(); ok {
+		_spec.SetField(contactusmessage.FieldPhone, field.TypeString, value)
+	}
+	if cumuo.mutation.PhoneCleared() {
+		_spec.ClearField(contactusmessage.FieldPhone, field.TypeString)
+	}
 	if value, ok := cumuo.mutation.CreatedAt(); ok {
 		_spec.SetField(contactusmessage.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -415,12 +421,6 @@ func (cumuo *ContactUsMessageUpdateOne) sqlSave(ctx context.Context) (_node *Con
 	}
 	if cumuo.mutation.DeletedAtCleared() {
 		_spec.ClearField(contactusmessage.FieldDeletedAt, field.TypeTime)
-	}
-	if value, ok := cumuo.mutation.Phone(); ok {
-		_spec.SetField(contactusmessage.FieldPhone, field.TypeString, value)
-	}
-	if cumuo.mutation.PhoneCleared() {
-		_spec.ClearField(contactusmessage.FieldPhone, field.TypeString)
 	}
 	_node = &ContactUsMessage{config: cumuo.config}
 	_spec.Assign = _node.assignValues

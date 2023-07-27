@@ -14,11 +14,22 @@ type ContactUsMessage struct {
 }
 
 func (ContactUsMessage) Fields() []ent.Field {
-	return []ent.Field{field.UUID("id", uuid.UUID{}), field.String("name"), field.String("email"), field.String("message"), field.Time("created_at").Optional(), field.Time("updated_at").Optional(), field.Time("deleted_at").Optional(), field.String("phone").Optional()}
+	return []ent.Field{
+		field.UUID("id", uuid.UUID{}),
+		field.String("name"),
+		field.String("email"),
+		field.String("message"),
+		field.String("phone").Optional().Nillable(),
+		field.Time("created_at").Optional(),
+		field.Time("updated_at").Optional(),
+		field.Time("deleted_at").Optional().Nillable(),
+	}
 }
+
 func (ContactUsMessage) Edges() []ent.Edge {
 	return nil
 }
+
 func (ContactUsMessage) Annotations() []schema.Annotation {
 	return nil
 }

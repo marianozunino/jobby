@@ -39,6 +39,20 @@ func (cumc *ContactUsMessageCreate) SetMessage(s string) *ContactUsMessageCreate
 	return cumc
 }
 
+// SetPhone sets the "phone" field.
+func (cumc *ContactUsMessageCreate) SetPhone(s string) *ContactUsMessageCreate {
+	cumc.mutation.SetPhone(s)
+	return cumc
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (cumc *ContactUsMessageCreate) SetNillablePhone(s *string) *ContactUsMessageCreate {
+	if s != nil {
+		cumc.SetPhone(*s)
+	}
+	return cumc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cumc *ContactUsMessageCreate) SetCreatedAt(t time.Time) *ContactUsMessageCreate {
 	cumc.mutation.SetCreatedAt(t)
@@ -77,20 +91,6 @@ func (cumc *ContactUsMessageCreate) SetDeletedAt(t time.Time) *ContactUsMessageC
 func (cumc *ContactUsMessageCreate) SetNillableDeletedAt(t *time.Time) *ContactUsMessageCreate {
 	if t != nil {
 		cumc.SetDeletedAt(*t)
-	}
-	return cumc
-}
-
-// SetPhone sets the "phone" field.
-func (cumc *ContactUsMessageCreate) SetPhone(s string) *ContactUsMessageCreate {
-	cumc.mutation.SetPhone(s)
-	return cumc
-}
-
-// SetNillablePhone sets the "phone" field if the given value is not nil.
-func (cumc *ContactUsMessageCreate) SetNillablePhone(s *string) *ContactUsMessageCreate {
-	if s != nil {
-		cumc.SetPhone(*s)
 	}
 	return cumc
 }
@@ -191,6 +191,10 @@ func (cumc *ContactUsMessageCreate) createSpec() (*ContactUsMessage, *sqlgraph.C
 		_spec.SetField(contactusmessage.FieldMessage, field.TypeString, value)
 		_node.Message = value
 	}
+	if value, ok := cumc.mutation.Phone(); ok {
+		_spec.SetField(contactusmessage.FieldPhone, field.TypeString, value)
+		_node.Phone = &value
+	}
 	if value, ok := cumc.mutation.CreatedAt(); ok {
 		_spec.SetField(contactusmessage.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -201,11 +205,7 @@ func (cumc *ContactUsMessageCreate) createSpec() (*ContactUsMessage, *sqlgraph.C
 	}
 	if value, ok := cumc.mutation.DeletedAt(); ok {
 		_spec.SetField(contactusmessage.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = value
-	}
-	if value, ok := cumc.mutation.Phone(); ok {
-		_spec.SetField(contactusmessage.FieldPhone, field.TypeString, value)
-		_node.Phone = value
+		_node.DeletedAt = &value
 	}
 	return _node, _spec
 }

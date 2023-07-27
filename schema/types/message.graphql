@@ -3,7 +3,7 @@ type Message {
   id: ID!
   name: String!
   email: String!
-  phone: String!
+  phone: String
   message: String!
 
   createdAt: Timestamp!
@@ -25,7 +25,7 @@ input MessageAggregationInput {
 input MessageCreateInput {
   name: String!
   email: String!
-  phone: String!
+  phone: String
   message: String!
 }
 

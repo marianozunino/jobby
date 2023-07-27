@@ -70,6 +70,11 @@ func Message(v string) predicate.ContactUsMessage {
 	return predicate.ContactUsMessage(sql.FieldEQ(FieldMessage, v))
 }
 
+// Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
+func Phone(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldEQ(FieldPhone, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ContactUsMessage {
 	return predicate.ContactUsMessage(sql.FieldEQ(FieldCreatedAt, v))
@@ -83,11 +88,6 @@ func UpdatedAt(v time.Time) predicate.ContactUsMessage {
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.ContactUsMessage {
 	return predicate.ContactUsMessage(sql.FieldEQ(FieldDeletedAt, v))
-}
-
-// Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
-func Phone(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldEQ(FieldPhone, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -285,6 +285,81 @@ func MessageContainsFold(v string) predicate.ContactUsMessage {
 	return predicate.ContactUsMessage(sql.FieldContainsFold(FieldMessage, v))
 }
 
+// PhoneEQ applies the EQ predicate on the "phone" field.
+func PhoneEQ(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldEQ(FieldPhone, v))
+}
+
+// PhoneNEQ applies the NEQ predicate on the "phone" field.
+func PhoneNEQ(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldNEQ(FieldPhone, v))
+}
+
+// PhoneIn applies the In predicate on the "phone" field.
+func PhoneIn(vs ...string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldIn(FieldPhone, vs...))
+}
+
+// PhoneNotIn applies the NotIn predicate on the "phone" field.
+func PhoneNotIn(vs ...string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldNotIn(FieldPhone, vs...))
+}
+
+// PhoneGT applies the GT predicate on the "phone" field.
+func PhoneGT(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldGT(FieldPhone, v))
+}
+
+// PhoneGTE applies the GTE predicate on the "phone" field.
+func PhoneGTE(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldGTE(FieldPhone, v))
+}
+
+// PhoneLT applies the LT predicate on the "phone" field.
+func PhoneLT(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldLT(FieldPhone, v))
+}
+
+// PhoneLTE applies the LTE predicate on the "phone" field.
+func PhoneLTE(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldLTE(FieldPhone, v))
+}
+
+// PhoneContains applies the Contains predicate on the "phone" field.
+func PhoneContains(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldContains(FieldPhone, v))
+}
+
+// PhoneHasPrefix applies the HasPrefix predicate on the "phone" field.
+func PhoneHasPrefix(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldHasPrefix(FieldPhone, v))
+}
+
+// PhoneHasSuffix applies the HasSuffix predicate on the "phone" field.
+func PhoneHasSuffix(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldHasSuffix(FieldPhone, v))
+}
+
+// PhoneIsNil applies the IsNil predicate on the "phone" field.
+func PhoneIsNil() predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldIsNull(FieldPhone))
+}
+
+// PhoneNotNil applies the NotNil predicate on the "phone" field.
+func PhoneNotNil() predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldNotNull(FieldPhone))
+}
+
+// PhoneEqualFold applies the EqualFold predicate on the "phone" field.
+func PhoneEqualFold(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldEqualFold(FieldPhone, v))
+}
+
+// PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
+func PhoneContainsFold(v string) predicate.ContactUsMessage {
+	return predicate.ContactUsMessage(sql.FieldContainsFold(FieldPhone, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.ContactUsMessage {
 	return predicate.ContactUsMessage(sql.FieldEQ(FieldCreatedAt, v))
@@ -433,81 +508,6 @@ func DeletedAtIsNil() predicate.ContactUsMessage {
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.ContactUsMessage {
 	return predicate.ContactUsMessage(sql.FieldNotNull(FieldDeletedAt))
-}
-
-// PhoneEQ applies the EQ predicate on the "phone" field.
-func PhoneEQ(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldEQ(FieldPhone, v))
-}
-
-// PhoneNEQ applies the NEQ predicate on the "phone" field.
-func PhoneNEQ(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldNEQ(FieldPhone, v))
-}
-
-// PhoneIn applies the In predicate on the "phone" field.
-func PhoneIn(vs ...string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldIn(FieldPhone, vs...))
-}
-
-// PhoneNotIn applies the NotIn predicate on the "phone" field.
-func PhoneNotIn(vs ...string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldNotIn(FieldPhone, vs...))
-}
-
-// PhoneGT applies the GT predicate on the "phone" field.
-func PhoneGT(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldGT(FieldPhone, v))
-}
-
-// PhoneGTE applies the GTE predicate on the "phone" field.
-func PhoneGTE(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldGTE(FieldPhone, v))
-}
-
-// PhoneLT applies the LT predicate on the "phone" field.
-func PhoneLT(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldLT(FieldPhone, v))
-}
-
-// PhoneLTE applies the LTE predicate on the "phone" field.
-func PhoneLTE(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldLTE(FieldPhone, v))
-}
-
-// PhoneContains applies the Contains predicate on the "phone" field.
-func PhoneContains(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldContains(FieldPhone, v))
-}
-
-// PhoneHasPrefix applies the HasPrefix predicate on the "phone" field.
-func PhoneHasPrefix(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldHasPrefix(FieldPhone, v))
-}
-
-// PhoneHasSuffix applies the HasSuffix predicate on the "phone" field.
-func PhoneHasSuffix(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldHasSuffix(FieldPhone, v))
-}
-
-// PhoneIsNil applies the IsNil predicate on the "phone" field.
-func PhoneIsNil() predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldIsNull(FieldPhone))
-}
-
-// PhoneNotNil applies the NotNil predicate on the "phone" field.
-func PhoneNotNil() predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldNotNull(FieldPhone))
-}
-
-// PhoneEqualFold applies the EqualFold predicate on the "phone" field.
-func PhoneEqualFold(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldEqualFold(FieldPhone, v))
-}
-
-// PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
-func PhoneContainsFold(v string) predicate.ContactUsMessage {
-	return predicate.ContactUsMessage(sql.FieldContainsFold(FieldPhone, v))
 }
 
 // And groups predicates with the AND operator between them.

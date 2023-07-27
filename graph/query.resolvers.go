@@ -25,12 +25,12 @@ func (r *queryResolver) Statuses(ctx context.Context, orderBy *dtos.StatusAggreg
 
 // Messages implements generated.QueryResolver.
 func (r *queryResolver) Messages(ctx context.Context, orderBy *dtos.MessageAggregationInput, take *int, skip *int) (*dtos.PaginatedMessageResponse, error) {
-	return r.PaginatedMessages(orderBy, take, skip)
+	return r.PaginatedMessages(ctx, orderBy, take, skip)
 }
 
 // Message implements generated.QueryResolver.
 func (r *queryResolver) Message(ctx context.Context, id string) (*dtos.Message, error) {
-	return r.GetMessage(id)
+	return r.GetMessage(ctx, id)
 }
 
 // Category is the resolver for the category field.

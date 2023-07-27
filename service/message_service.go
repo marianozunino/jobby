@@ -1,12 +1,12 @@
 package service
 
 import (
-	"database/sql"
+	"context"
 
 	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/cc-backend-go/ent"
 	"github.com/marianozunino/cc-backend-go/store"
-	"github.com/marianozunino/cc-backend-go/store/models"
 )
 
 type messageService struct {
@@ -14,14 +14,14 @@ type messageService struct {
 }
 
 // SendMessage implements MessageService.
-func (m *messageService) SendMessage(input dtos.MessageCreateInput) (*dtos.Message, error) {
-	message := models.ContactUsMessages{
+func (m *messageService) SendMessage(ctx context.Context, input dtos.MessageCreateInput) (*dtos.Message, error) {
+	message := &ent.ContactUsMessage{
 		Name:    input.Name,
 		Email:   input.Email,
-		Phone:   sql.NullString{String: input.Phone, Valid: input.Phone != ""},
+		Phone:   input.Phone,
 		Message: input.Message,
 	}
-	output, err := m.Store.SendMessage(message)
+	output, err := m.Store.SendMessage(ctx, message)
 	if err != nil {
 		return nil, err
 	}
@@ -29,14 +29,17 @@ func (m *messageService) SendMessage(input dtos.MessageCreateInput) (*dtos.Messa
 }
 
 // UpdateMessage implements MessageService.
-func (m *messageService) UpdateMessage(id string, input dtos.MessageUpdateInput) (*dtos.Message, error) {
+func (m *messageService) UpdateMessage(ctx context.Context, id string, input dtos.MessageUpdateInput) (*dtos.Message, error) {
 	parsedId, err := uuid.Parse(id)
+
 	if err != nil {
 		return nil, err
 	}
-	message := models.ContactUsMessages{
-		ID: parsedId,
-	}
+
+	message := &ent.ContactUsMessage{}
+
+	message.ID = parsedId
+
 	if input.Name != nil {
 		message.Name = *input.Name
 	}
@@ -45,11 +48,9 @@ func (m *messageService) UpdateMessage(id string, input dtos.MessageUpdateInput)
 		message.Email = *input.Email
 	}
 
-	if input.Phone != nil {
-		message.Phone = sql.NullString{String: *input.Phone, Valid: *input.Phone != ""}
-	}
+	message.Phone = input.Phone
 
-	output, err := m.Store.UpdateMessage(message)
+	output, err := m.Store.UpdateMessage(ctx, message)
 	if err != nil {
 		return nil, err
 	}
@@ -57,12 +58,12 @@ func (m *messageService) UpdateMessage(id string, input dtos.MessageUpdateInput)
 }
 
 // DeleteMessage implements MessageService.
-func (m *messageService) DeleteMessage(id string) (*dtos.Message, error) {
+func (m *messageService) DeleteMessage(ctx context.Context, id string) (*dtos.Message, error) {
 	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return nil, err
 	}
-	output, err := m.Store.DeleteMessage(parsedId)
+	output, err := m.Store.DeleteMessage(ctx, parsedId)
 	if err != nil {
 		return nil, err
 	}
@@ -71,12 +72,12 @@ func (m *messageService) DeleteMessage(id string) (*dtos.Message, error) {
 }
 
 // GetMessage implements MessageService.
-func (m *messageService) GetMessage(id string) (*dtos.Message, error) {
+func (m *messageService) GetMessage(ctx context.Context, id string) (*dtos.Message, error) {
 	parsedId, err := uuid.Parse(id)
 	if err != nil {
 		return nil, err
 	}
-	output, err := m.Store.Message(parsedId)
+	output, err := m.Store.Message(ctx, parsedId)
 	if err != nil {
 		return nil, err
 	}
@@ -84,8 +85,8 @@ func (m *messageService) GetMessage(id string) (*dtos.Message, error) {
 }
 
 // PaginatedMessages implements MessageService.
-func (m *messageService) PaginatedMessages(orderBy *dtos.MessageAggregationInput, take *int, skip *int) (*dtos.PaginatedMessageResponse, error) {
-	output, err := m.Store.PaginatedMessages(orderBy, take, skip)
+func (m *messageService) PaginatedMessages(ctx context.Context, orderBy *dtos.MessageAggregationInput, take *int, skip *int) (*dtos.PaginatedMessageResponse, error) {
+	output, err := m.Store.PaginatedMessages(ctx, orderBy, take, skip)
 	if err != nil {
 		return nil, err
 	}
@@ -96,21 +97,21 @@ func (m *messageService) PaginatedMessages(orderBy *dtos.MessageAggregationInput
 
 }
 
-func (s *messageService) BuildFromEntity(entity *models.ContactUsMessages) *dtos.Message {
+func (s *messageService) BuildFromEntity(entity *ent.ContactUsMessage) *dtos.Message {
 	dto := &dtos.Message{
 		ID:        entity.ID,
 		Name:      entity.Name,
 		Email:     entity.Email,
-		Phone:     entity.Phone.String,
+		Phone:     entity.Phone,
 		Message:   entity.Message,
-		CreatedAt: entity.CreatedAt.Time,
-		UpdatedAt: entity.UpdatedAt.Time,
-		DeletedAt: getTimeOrNil(entity.DeletedAt),
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+		DeletedAt: entity.DeletedAt,
 	}
 	return dto
 }
 
-func (s *messageService) BuildFromEntities(entities []*models.ContactUsMessages) []*dtos.Message {
+func (s *messageService) BuildFromEntities(entities ent.ContactUsMessages) []*dtos.Message {
 	dtos := make([]*dtos.Message, len(entities))
 	for i, entity := range entities {
 		dtos[i] = s.BuildFromEntity(entity)

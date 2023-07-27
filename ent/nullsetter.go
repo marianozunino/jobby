@@ -260,6 +260,13 @@ func (u *CategoryUpdateOne) SetOrClearDeletedAt(value *time.Time) *CategoryUpdat
 	return u.SetDeletedAt(*value)
 }
 
+func (u *ContactUsMessageUpdate) SetOrClearPhone(value *string) *ContactUsMessageUpdate {
+	if value == nil {
+		return u.ClearPhone()
+	}
+	return u.SetPhone(*value)
+}
+
 func (u *ContactUsMessageUpdate) SetOrClearCreatedAt(value *time.Time) *ContactUsMessageUpdate {
 	if value == nil {
 		return u.ClearCreatedAt()
@@ -281,7 +288,7 @@ func (u *ContactUsMessageUpdate) SetOrClearDeletedAt(value *time.Time) *ContactU
 	return u.SetDeletedAt(*value)
 }
 
-func (u *ContactUsMessageUpdate) SetOrClearPhone(value *string) *ContactUsMessageUpdate {
+func (u *ContactUsMessageUpdateOne) SetOrClearPhone(value *string) *ContactUsMessageUpdateOne {
 	if value == nil {
 		return u.ClearPhone()
 	}
@@ -307,13 +314,6 @@ func (u *ContactUsMessageUpdateOne) SetOrClearDeletedAt(value *time.Time) *Conta
 		return u.ClearDeletedAt()
 	}
 	return u.SetDeletedAt(*value)
-}
-
-func (u *ContactUsMessageUpdateOne) SetOrClearPhone(value *string) *ContactUsMessageUpdateOne {
-	if value == nil {
-		return u.ClearPhone()
-	}
-	return u.SetPhone(*value)
 }
 
 func (u *DegreeLevelUpdate) SetOrClearCreatedAt(value *time.Time) *DegreeLevelUpdate {

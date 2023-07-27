@@ -1,120 +1,97 @@
 package postgres
 
 import (
-	"fmt"
-	"strings"
+	"context"
+	"time"
 
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
+
 	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/cc-backend-go/ent"
+	"github.com/marianozunino/cc-backend-go/ent/contactusmessage"
 	"github.com/marianozunino/cc-backend-go/store"
-	"github.com/marianozunino/cc-backend-go/store/models"
 )
 
 var _ store.MessageStore = &MessageStore{}
 
 type MessageStore struct {
-	*sqlx.DB
+	*ent.Client
 }
 
 // CountMessages implements store.MessageStore.
-func (s *MessageStore) CountMessages() (int, error) {
-	query := `SELECT COUNT(*) FROM contact_us_messages`
-	var count int
-	err := s.Get(&count, query)
-	if err != nil {
-		return 0, err
-	}
-	return count, nil
+func (s *MessageStore) CountMessages(ctx context.Context) (int, error) {
+	return s.Client.ContactUsMessage.Query().Where(contactusmessage.DeletedAtIsNil()).Count(ctx)
 }
 
 // DeleteMessage implements store.MessageStore.
-func (s *MessageStore) DeleteMessage(id uuid.UUID) (*models.ContactUsMessages, error) {
-	query := `DELETE FROM contact_us_messages WHERE id = $1 RETURNING *`
-	output := models.ContactUsMessages{}
+func (s *MessageStore) DeleteMessage(ctx context.Context, id uuid.UUID) (*ent.ContactUsMessage, error) {
+	return s.Client.ContactUsMessage.UpdateOneID(id).Where(contactusmessage.DeletedAtIsNil()).SetDeletedAt(time.Now()).Save(ctx)
 
-	err := s.Get(&output, query, id)
-	if err != nil {
-		return nil, err
-	}
-	return &output, nil
 }
 
 // Message implements store.MessageStore.
-func (s *MessageStore) Message(id uuid.UUID) (*models.ContactUsMessages, error) {
-	query := `SELECT * FROM contact_us_messages WHERE id = $1`
-	output := models.ContactUsMessages{}
+func (s *MessageStore) Message(ctx context.Context, id uuid.UUID) (*ent.ContactUsMessage, error) {
+	return s.Client.ContactUsMessage.Query().Where(contactusmessage.ID(id)).Where(contactusmessage.DeletedAtIsNil()).First(ctx)
 
-	err := s.Get(&output, query, id)
-	if err != nil {
-		return nil, err
-	}
-	return &output, nil
 }
 
 // PaginatedMessages implements store.MessageStore.
-func (s *MessageStore) PaginatedMessages(orderBy *dtos.MessageAggregationInput, take *int, skip *int) ([]*models.ContactUsMessages, error) {
-	query := "SELECT * FROM contact_us_messages"
+func (s *MessageStore) PaginatedMessages(ctx context.Context, orderBy *dtos.MessageAggregationInput, take *int, skip *int) (ent.ContactUsMessages, error) {
+	query := s.Client.ContactUsMessage.Query().Where(contactusmessage.DeletedAtIsNil())
+
+	order := []contactusmessage.OrderOption{}
 
 	if orderBy != nil {
-		query += " ORDER BY "
-		var sortFields []string
-
-		switch {
-		case orderBy.ID != nil:
-			sortFields = append(sortFields, fmt.Sprintf("id %s", orderBy.ID))
-		case orderBy.Name != nil:
-			sortFields = append(sortFields, fmt.Sprintf("name %s", orderBy.Name))
-		case orderBy.Email != nil:
-			sortFields = append(sortFields, fmt.Sprintf("email %s", orderBy.Email))
-		case orderBy.Phone != nil:
-			sortFields = append(sortFields, fmt.Sprintf("phone %s", orderBy.Phone))
-		case orderBy.CreatedAt != nil:
-			sortFields = append(sortFields, fmt.Sprintf("created_at %s", orderBy.CreatedAt))
-		case orderBy.UpdatedAt != nil:
-			sortFields = append(sortFields, fmt.Sprintf("updated_at %s", orderBy.UpdatedAt))
-		case orderBy.DeletedAt != nil:
-			sortFields = append(sortFields, fmt.Sprintf("deleted_at %s", orderBy.DeletedAt))
+		if orderBy.ID != nil {
+			if *orderBy.ID == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(contactusmessage.FieldID))
+			} else {
+				order = append(order, ent.Desc(contactusmessage.FieldID))
+			}
 		}
-		query += strings.Join(sortFields, ", ")
+		if orderBy.Name != nil {
+			if *orderBy.Name == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(contactusmessage.FieldName))
+			} else {
+				order = append(order, ent.Desc(contactusmessage.FieldName))
+			}
+		}
+		if orderBy.Email != nil {
+			if *orderBy.Email == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(contactusmessage.FieldEmail))
+			} else {
+				order = append(order, ent.Desc(contactusmessage.FieldEmail))
+			}
+		}
+		if orderBy.Phone != nil {
+			if *orderBy.Phone == dtos.SortOrderAsc {
+				order = append(order, ent.Asc(contactusmessage.FieldPhone))
+			} else {
+				order = append(order, ent.Desc(contactusmessage.FieldPhone))
+			}
+		}
 	}
 
 	if take != nil {
-		query += fmt.Sprintf(" LIMIT %d", *take)
+		query = query.Limit(*take)
 	}
 	if skip != nil {
-		query += fmt.Sprintf(" OFFSET %d", *skip)
+		query = query.Offset(*skip)
 	}
 
-	output := []*models.ContactUsMessages{}
-	err := s.Select(&output, query)
-	if err != nil {
-		return nil, err
+	if len(order) > 0 {
+		query = query.Order(order...)
 	}
-	return output, nil
+
+	return query.All(ctx)
 }
 
 // SendMessage implements store.MessageStore.
-func (s *MessageStore) SendMessage(message models.ContactUsMessages) (*models.ContactUsMessages, error) {
-	query := `INSERT INTO contact_us_messages (name, email, phone, message) VALUES ($1, $2, $3, $4) RETURNING *`
-	output := models.ContactUsMessages{}
-
-	err := s.Get(&output, query, message.Name, message.Email, message.Phone, message.Message)
-	if err != nil {
-		return nil, err
-	}
-	return &output, nil
-
+func (s *MessageStore) SendMessage(ctx context.Context, message *ent.ContactUsMessage) (*ent.ContactUsMessage, error) {
+	return s.Client.ContactUsMessage.Create().SetID(uuid.New()).SetName(message.Name).SetEmail(message.Email).SetNillablePhone(message.Phone).SetMessage(message.Message).Save(ctx)
 }
 
 // UpdateMessage implements store.MessageStore.
-func (s *MessageStore) UpdateMessage(message models.ContactUsMessages) (*models.ContactUsMessages, error) {
-	query := `UPDATE contact_us_messages SET name = $1, email = $2, phone = $3, message = $4 WHERE id = $5 RETURNING *`
-	output := models.ContactUsMessages{}
-
-	err := s.Get(&output, query, message.Name, message.Email, message.Phone, message.Message, message.ID)
-	if err != nil {
-		return nil, err
-	}
-	return &output, nil
+func (s *MessageStore) UpdateMessage(ctx context.Context, message *ent.ContactUsMessage) (*ent.ContactUsMessage, error) {
+	return s.Client.ContactUsMessage.UpdateOneID(message.ID).SetName(message.Name).SetEmail(message.Email).SetOrClearPhone(message.Phone).SetMessage(message.Message).Save(ctx)
 }

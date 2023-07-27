@@ -34,17 +34,17 @@ func (r *mutationResolver) UpdateStatus(ctx context.Context, id string, input dt
 
 // SendMessages implements generated.MutationResolver.
 func (r *mutationResolver) SendMessage(ctx context.Context, input dtos.MessageCreateInput) (*dtos.Message, error) {
-	return r.Service.SendMessage(input)
+	return r.Service.SendMessage(ctx, input)
 }
 
 // DeleteMessage implements generated.MutationResolver.
 func (r *mutationResolver) DeleteMessage(ctx context.Context, id string) (*dtos.Message, error) {
-	return r.Service.DeleteMessage(id)
+	return r.Service.DeleteMessage(ctx, id)
 }
 
 // UpdateMessage implements generated.MutationResolver.
 func (r *mutationResolver) UpdateMessage(ctx context.Context, id string, input dtos.MessageUpdateInput) (*dtos.Message, error) {
-	return r.Service.UpdateMessage(id, input)
+	return r.Service.UpdateMessage(ctx, id, input)
 }
 
 // CreateCategory is the resolver for the createCategory field.

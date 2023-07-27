@@ -159,10 +159,10 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
 		{Name: "message", Type: field.TypeString},
+		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime, Nullable: true},
 		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "phone", Type: field.TypeString, Nullable: true},
 	}
 	// ContactUsMessagesTable holds the schema information for the "contact_us_messages" table.
 	ContactUsMessagesTable = &schema.Table{

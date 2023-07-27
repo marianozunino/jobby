@@ -32,12 +32,12 @@ type JobOfferStore interface {
 }
 
 type MessageStore interface {
-	Message(id uuid.UUID) (*models.ContactUsMessages, error)
-	PaginatedMessages(orderBy *dtos.MessageAggregationInput, take *int, skip *int) ([]*models.ContactUsMessages, error)
-	CountMessages() (int, error)
-	SendMessage(message models.ContactUsMessages) (*models.ContactUsMessages, error)
-	DeleteMessage(id uuid.UUID) (*models.ContactUsMessages, error)
-	UpdateMessage(message models.ContactUsMessages) (*models.ContactUsMessages, error)
+	Message(ctx context.Context, id uuid.UUID) (*ent.ContactUsMessage, error)
+	PaginatedMessages(ctx context.Context, orderBy *dtos.MessageAggregationInput, take *int, skip *int) (ent.ContactUsMessages, error)
+	CountMessages(ctx context.Context) (int, error)
+	SendMessage(ctx context.Context, message *ent.ContactUsMessage) (*ent.ContactUsMessage, error)
+	UpdateMessage(ctx context.Context, message *ent.ContactUsMessage) (*ent.ContactUsMessage, error)
+	DeleteMessage(ctx context.Context, id uuid.UUID) (*ent.ContactUsMessage, error)
 }
 
 type CategoryStore interface {

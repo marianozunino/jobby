@@ -24,14 +24,14 @@ type ContactUsMessage struct {
 	Email string `json:"email,omitempty"`
 	// Message holds the value of the "message" field.
 	Message string `json:"message,omitempty"`
+	// Phone holds the value of the "phone" field.
+	Phone *string `json:"phone,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
-	// Phone holds the value of the "phone" field.
-	Phone        string `json:"phone,omitempty"`
+	DeletedAt    *time.Time `json:"deleted_at,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -85,6 +85,13 @@ func (cum *ContactUsMessage) assignValues(columns []string, values []any) error 
 			} else if value.Valid {
 				cum.Message = value.String
 			}
+		case contactusmessage.FieldPhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field phone", values[i])
+			} else if value.Valid {
+				cum.Phone = new(string)
+				*cum.Phone = value.String
+			}
 		case contactusmessage.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -101,13 +108,8 @@ func (cum *ContactUsMessage) assignValues(columns []string, values []any) error 
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				cum.DeletedAt = value.Time
-			}
-		case contactusmessage.FieldPhone:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field phone", values[i])
-			} else if value.Valid {
-				cum.Phone = value.String
+				cum.DeletedAt = new(time.Time)
+				*cum.DeletedAt = value.Time
 			}
 		default:
 			cum.selectValues.Set(columns[i], values[i])
@@ -154,17 +156,21 @@ func (cum *ContactUsMessage) String() string {
 	builder.WriteString("message=")
 	builder.WriteString(cum.Message)
 	builder.WriteString(", ")
+	if v := cum.Phone; v != nil {
+		builder.WriteString("phone=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(cum.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(cum.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("deleted_at=")
-	builder.WriteString(cum.DeletedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("phone=")
-	builder.WriteString(cum.Phone)
+	if v := cum.DeletedAt; v != nil {
+		builder.WriteString("deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

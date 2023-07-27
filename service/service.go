@@ -38,11 +38,11 @@ type JobOfferService interface {
 }
 
 type MessageService interface {
-	SendMessage(input dtos.MessageCreateInput) (*dtos.Message, error)
-	UpdateMessage(id string, input dtos.MessageUpdateInput) (*dtos.Message, error)
-	DeleteMessage(id string) (*dtos.Message, error)
-	PaginatedMessages(orderBy *dtos.MessageAggregationInput, take *int, skip *int) (*dtos.PaginatedMessageResponse, error)
-	GetMessage(id string) (*dtos.Message, error)
+	SendMessage(ctx context.Context, input dtos.MessageCreateInput) (*dtos.Message, error)
+	UpdateMessage(ctx context.Context, id string, input dtos.MessageUpdateInput) (*dtos.Message, error)
+	DeleteMessage(ctx context.Context, id string) (*dtos.Message, error)
+	PaginatedMessages(ctx context.Context, orderBy *dtos.MessageAggregationInput, take *int, skip *int) (*dtos.PaginatedMessageResponse, error)
+	GetMessage(ctx context.Context, id string) (*dtos.Message, error)
 }
 
 type CategoryService interface {

@@ -5011,10 +5011,10 @@ type ContactUsMessageMutation struct {
 	name          *string
 	email         *string
 	message       *string
+	phone         *string
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
-	phone         *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*ContactUsMessage, error)
@@ -5233,6 +5233,55 @@ func (m *ContactUsMessageMutation) ResetMessage() {
 	m.message = nil
 }
 
+// SetPhone sets the "phone" field.
+func (m *ContactUsMessageMutation) SetPhone(s string) {
+	m.phone = &s
+}
+
+// Phone returns the value of the "phone" field in the mutation.
+func (m *ContactUsMessageMutation) Phone() (r string, exists bool) {
+	v := m.phone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhone returns the old "phone" field's value of the ContactUsMessage entity.
+// If the ContactUsMessage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContactUsMessageMutation) OldPhone(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPhone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPhone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhone: %w", err)
+	}
+	return oldValue.Phone, nil
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (m *ContactUsMessageMutation) ClearPhone() {
+	m.phone = nil
+	m.clearedFields[contactusmessage.FieldPhone] = struct{}{}
+}
+
+// PhoneCleared returns if the "phone" field was cleared in this mutation.
+func (m *ContactUsMessageMutation) PhoneCleared() bool {
+	_, ok := m.clearedFields[contactusmessage.FieldPhone]
+	return ok
+}
+
+// ResetPhone resets all changes to the "phone" field.
+func (m *ContactUsMessageMutation) ResetPhone() {
+	m.phone = nil
+	delete(m.clearedFields, contactusmessage.FieldPhone)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ContactUsMessageMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -5348,7 +5397,7 @@ func (m *ContactUsMessageMutation) DeletedAt() (r time.Time, exists bool) {
 // OldDeletedAt returns the old "deleted_at" field's value of the ContactUsMessage entity.
 // If the ContactUsMessage object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContactUsMessageMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+func (m *ContactUsMessageMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -5378,55 +5427,6 @@ func (m *ContactUsMessageMutation) DeletedAtCleared() bool {
 func (m *ContactUsMessageMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, contactusmessage.FieldDeletedAt)
-}
-
-// SetPhone sets the "phone" field.
-func (m *ContactUsMessageMutation) SetPhone(s string) {
-	m.phone = &s
-}
-
-// Phone returns the value of the "phone" field in the mutation.
-func (m *ContactUsMessageMutation) Phone() (r string, exists bool) {
-	v := m.phone
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPhone returns the old "phone" field's value of the ContactUsMessage entity.
-// If the ContactUsMessage object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContactUsMessageMutation) OldPhone(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPhone is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPhone requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPhone: %w", err)
-	}
-	return oldValue.Phone, nil
-}
-
-// ClearPhone clears the value of the "phone" field.
-func (m *ContactUsMessageMutation) ClearPhone() {
-	m.phone = nil
-	m.clearedFields[contactusmessage.FieldPhone] = struct{}{}
-}
-
-// PhoneCleared returns if the "phone" field was cleared in this mutation.
-func (m *ContactUsMessageMutation) PhoneCleared() bool {
-	_, ok := m.clearedFields[contactusmessage.FieldPhone]
-	return ok
-}
-
-// ResetPhone resets all changes to the "phone" field.
-func (m *ContactUsMessageMutation) ResetPhone() {
-	m.phone = nil
-	delete(m.clearedFields, contactusmessage.FieldPhone)
 }
 
 // Where appends a list predicates to the ContactUsMessageMutation builder.
@@ -5473,6 +5473,9 @@ func (m *ContactUsMessageMutation) Fields() []string {
 	if m.message != nil {
 		fields = append(fields, contactusmessage.FieldMessage)
 	}
+	if m.phone != nil {
+		fields = append(fields, contactusmessage.FieldPhone)
+	}
 	if m.created_at != nil {
 		fields = append(fields, contactusmessage.FieldCreatedAt)
 	}
@@ -5481,9 +5484,6 @@ func (m *ContactUsMessageMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, contactusmessage.FieldDeletedAt)
-	}
-	if m.phone != nil {
-		fields = append(fields, contactusmessage.FieldPhone)
 	}
 	return fields
 }
@@ -5499,14 +5499,14 @@ func (m *ContactUsMessageMutation) Field(name string) (ent.Value, bool) {
 		return m.Email()
 	case contactusmessage.FieldMessage:
 		return m.Message()
+	case contactusmessage.FieldPhone:
+		return m.Phone()
 	case contactusmessage.FieldCreatedAt:
 		return m.CreatedAt()
 	case contactusmessage.FieldUpdatedAt:
 		return m.UpdatedAt()
 	case contactusmessage.FieldDeletedAt:
 		return m.DeletedAt()
-	case contactusmessage.FieldPhone:
-		return m.Phone()
 	}
 	return nil, false
 }
@@ -5522,14 +5522,14 @@ func (m *ContactUsMessageMutation) OldField(ctx context.Context, name string) (e
 		return m.OldEmail(ctx)
 	case contactusmessage.FieldMessage:
 		return m.OldMessage(ctx)
+	case contactusmessage.FieldPhone:
+		return m.OldPhone(ctx)
 	case contactusmessage.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case contactusmessage.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
 	case contactusmessage.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case contactusmessage.FieldPhone:
-		return m.OldPhone(ctx)
 	}
 	return nil, fmt.Errorf("unknown ContactUsMessage field %s", name)
 }
@@ -5560,6 +5560,13 @@ func (m *ContactUsMessageMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetMessage(v)
 		return nil
+	case contactusmessage.FieldPhone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhone(v)
+		return nil
 	case contactusmessage.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -5580,13 +5587,6 @@ func (m *ContactUsMessageMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
-		return nil
-	case contactusmessage.FieldPhone:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPhone(v)
 		return nil
 	}
 	return fmt.Errorf("unknown ContactUsMessage field %s", name)
@@ -5618,6 +5618,9 @@ func (m *ContactUsMessageMutation) AddField(name string, value ent.Value) error 
 // mutation.
 func (m *ContactUsMessageMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(contactusmessage.FieldPhone) {
+		fields = append(fields, contactusmessage.FieldPhone)
+	}
 	if m.FieldCleared(contactusmessage.FieldCreatedAt) {
 		fields = append(fields, contactusmessage.FieldCreatedAt)
 	}
@@ -5626,9 +5629,6 @@ func (m *ContactUsMessageMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(contactusmessage.FieldDeletedAt) {
 		fields = append(fields, contactusmessage.FieldDeletedAt)
-	}
-	if m.FieldCleared(contactusmessage.FieldPhone) {
-		fields = append(fields, contactusmessage.FieldPhone)
 	}
 	return fields
 }
@@ -5644,6 +5644,9 @@ func (m *ContactUsMessageMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *ContactUsMessageMutation) ClearField(name string) error {
 	switch name {
+	case contactusmessage.FieldPhone:
+		m.ClearPhone()
+		return nil
 	case contactusmessage.FieldCreatedAt:
 		m.ClearCreatedAt()
 		return nil
@@ -5652,9 +5655,6 @@ func (m *ContactUsMessageMutation) ClearField(name string) error {
 		return nil
 	case contactusmessage.FieldDeletedAt:
 		m.ClearDeletedAt()
-		return nil
-	case contactusmessage.FieldPhone:
-		m.ClearPhone()
 		return nil
 	}
 	return fmt.Errorf("unknown ContactUsMessage nullable field %s", name)
@@ -5673,6 +5673,9 @@ func (m *ContactUsMessageMutation) ResetField(name string) error {
 	case contactusmessage.FieldMessage:
 		m.ResetMessage()
 		return nil
+	case contactusmessage.FieldPhone:
+		m.ResetPhone()
+		return nil
 	case contactusmessage.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -5681,9 +5684,6 @@ func (m *ContactUsMessageMutation) ResetField(name string) error {
 		return nil
 	case contactusmessage.FieldDeletedAt:
 		m.ResetDeletedAt()
-		return nil
-	case contactusmessage.FieldPhone:
-		m.ResetPhone()
 		return nil
 	}
 	return fmt.Errorf("unknown ContactUsMessage field %s", name)
