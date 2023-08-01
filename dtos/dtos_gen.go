@@ -177,11 +177,51 @@ type PaginatedMessageResponse struct {
 	Skip  *int       `json:"skip,omitempty"`
 }
 
+type PaginatedPostCategoryResponse struct {
+	Edges []*PostCategory `json:"edges"`
+	Total int             `json:"total"`
+	Take  *int            `json:"take,omitempty"`
+	Skip  *int            `json:"skip,omitempty"`
+}
+
 type PaginatedStatusResponse struct {
 	Edges []*Status `json:"edges"`
 	Total int       `json:"total"`
 	Take  *int      `json:"take,omitempty"`
 	Skip  *int      `json:"skip,omitempty"`
+}
+
+type PostCategory struct {
+	ID        uuid.UUID  `json:"id"`
+	Name      string     `json:"name"`
+	Slug      string     `json:"slug"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
+}
+
+type PostCategoryAggregationInput struct {
+	ID        *SortOrder `json:"id,omitempty"`
+	Name      *SortOrder `json:"name,omitempty"`
+	Slug      *SortOrder `json:"slug,omitempty"`
+	CreatedAt *SortOrder `json:"createdAt,omitempty"`
+	UpdatedAt *SortOrder `json:"updatedAt,omitempty"`
+	DeletedAt *SortOrder `json:"deletedAt,omitempty"`
+}
+
+type PostCategoryCreateInput struct {
+	Name string  `json:"name"`
+	Slug *string `json:"slug,omitempty"`
+}
+
+type PostCategoryUpdateInput struct {
+	Name string `json:"name"`
+}
+
+type PostCategoryWhereInput struct {
+	ID   *uuid.UUID `json:"id,omitempty"`
+	Name *string    `json:"name,omitempty"`
+	Slug *string    `json:"slug,omitempty"`
 }
 
 type Status struct {

@@ -33,9 +33,25 @@ func (pcc *PostCategoryCreate) SetCreatedAt(t time.Time) *PostCategoryCreate {
 	return pcc
 }
 
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pcc *PostCategoryCreate) SetNillableCreatedAt(t *time.Time) *PostCategoryCreate {
+	if t != nil {
+		pcc.SetCreatedAt(*t)
+	}
+	return pcc
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (pcc *PostCategoryCreate) SetUpdatedAt(t time.Time) *PostCategoryCreate {
 	pcc.mutation.SetUpdatedAt(t)
+	return pcc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pcc *PostCategoryCreate) SetNillableUpdatedAt(t *time.Time) *PostCategoryCreate {
+	if t != nil {
+		pcc.SetUpdatedAt(*t)
+	}
 	return pcc
 }
 
@@ -81,6 +97,7 @@ func (pcc *PostCategoryCreate) Mutation() *PostCategoryMutation {
 
 // Save creates the PostCategory in the database.
 func (pcc *PostCategoryCreate) Save(ctx context.Context) (*PostCategory, error) {
+	pcc.defaults()
 	return withHooks(ctx, pcc.sqlSave, pcc.mutation, pcc.hooks)
 }
 
@@ -103,6 +120,18 @@ func (pcc *PostCategoryCreate) Exec(ctx context.Context) error {
 func (pcc *PostCategoryCreate) ExecX(ctx context.Context) {
 	if err := pcc.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (pcc *PostCategoryCreate) defaults() {
+	if _, ok := pcc.mutation.CreatedAt(); !ok {
+		v := postcategory.DefaultCreatedAt()
+		pcc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pcc.mutation.UpdatedAt(); !ok {
+		v := postcategory.DefaultUpdatedAt()
+		pcc.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -166,7 +195,7 @@ func (pcc *PostCategoryCreate) createSpec() (*PostCategory, *sqlgraph.CreateSpec
 	}
 	if value, ok := pcc.mutation.DeletedAt(); ok {
 		_spec.SetField(postcategory.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if nodes := pcc.mutation.PostCategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -201,6 +230,7 @@ func (pccb *PostCategoryCreateBulk) Save(ctx context.Context) ([]*PostCategory, 
 	for i := range pccb.builders {
 		func(i int, root context.Context) {
 			builder := pccb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PostCategoryMutation)
 				if !ok {

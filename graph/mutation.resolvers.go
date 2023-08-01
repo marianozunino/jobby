@@ -62,6 +62,21 @@ func (r *mutationResolver) UpdateCategory(ctx context.Context, id uuid.UUID, inp
 	return r.Service.UpdateCategory(ctx, id, input)
 }
 
+// CreatePostCategory is the resolver for the createPostCategory field.
+func (r *mutationResolver) CreatePostCategory(ctx context.Context, input dtos.PostCategoryCreateInput) (*dtos.PostCategory, error) {
+	return r.Service.CreatePostCategory(ctx, input)
+}
+
+// DeletePostCategory is the resolver for the deletePostCategory field.
+func (r *mutationResolver) DeletePostCategory(ctx context.Context, id uuid.UUID) (*dtos.PostCategory, error) {
+	return r.Service.DeletePostCategory(ctx, id)
+}
+
+// UpdatePostCategory is the resolver for the updatePostCategory field.
+func (r *mutationResolver) UpdatePostCategory(ctx context.Context, id uuid.UUID, input dtos.PostCategoryUpdateInput) (*dtos.PostCategory, error) {
+	return r.Service.UpdatePostCategory(ctx, id, input)
+}
+
 // CreateDegreeLevel is the resolver for the createDegreeLevel field.
 func (r *mutationResolver) CreateDegreeLevel(ctx context.Context, input dtos.DegreeLevelCreateInput) (*dtos.DegreeLevel, error) {
 	return r.Service.CreateDegreeLevel(ctx, input)

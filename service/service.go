@@ -40,6 +40,15 @@ type CategoryService interface {
 	ParentCategoriesFor(ctx context.Context, childIDs []uuid.UUID) ([]*dtos.Category, error)
 }
 
+type PostCategoryService interface {
+	CreatePostCategory(ctx context.Context, input dtos.PostCategoryCreateInput) (*dtos.PostCategory, error)
+	DeletePostCategory(ctx context.Context, id uuid.UUID) (*dtos.PostCategory, error)
+	UpdatePostCategory(ctx context.Context, id uuid.UUID, input dtos.PostCategoryUpdateInput) (*dtos.PostCategory, error)
+	GetPostCategory(ctx context.Context, id uuid.UUID) (*dtos.PostCategory, error)
+	GetPostCategories(ctx context.Context) ([]dtos.PostCategory, error)
+	PaginatedPostCategories(ctx context.Context, orderBy *dtos.PostCategoryAggregationInput, take *int, skip *int, where *dtos.PostCategoryWhereInput) (*dtos.PaginatedPostCategoryResponse, error)
+}
+
 type DegreeLevelService interface {
 	GetDegreeLevel(ctx context.Context, id uuid.UUID) (*dtos.DegreeLevel, error)
 	PaginatedDegreeLevels(ctx context.Context, orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) (*dtos.PaginatedDegreeLevelResponse, error)
@@ -54,6 +63,7 @@ type Service interface {
 	MessageService
 	CategoryService
 	DegreeLevelService
+	PostCategoryService
 }
 
 type service struct {
@@ -62,6 +72,7 @@ type service struct {
 	MessageService
 	CategoryService
 	DegreeLevelService
+	PostCategoryService
 }
 
 func NewService(store store.Store) Service {
@@ -79,6 +90,9 @@ func NewService(store store.Store) Service {
 			Store: store,
 		},
 		DegreeLevelService: &degreeLevelService{
+			Store: store,
+		},
+		PostCategoryService: &postCategoryService{
 			Store: store,
 		},
 	}

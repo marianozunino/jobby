@@ -51,6 +51,15 @@ type CategoryStore interface {
 	IsSlugTaken(ctx context.Context, slug string) (bool, error)
 }
 
+type PostCategoryStore interface {
+	PostCategory(ctx context.Context, id uuid.UUID) (*ent.PostCategory, error)
+	PaginatedPostCategories(ctx context.Context, orderBy *dtos.PostCategoryAggregationInput, take *int, skip *int, where *dtos.PostCategoryWhereInput) (ent.PostCategories, error)
+	CountPostCategories(ctx context.Context) (int, error)
+	CreatePostCategory(ctx context.Context, category *ent.PostCategory) (*ent.PostCategory, error)
+	UpdatePostCategory(ctx context.Context, category *ent.PostCategory) (*ent.PostCategory, error)
+	DeletePostCategory(ctx context.Context, id uuid.UUID) (*ent.PostCategory, error)
+}
+
 type DegreeLevelStore interface {
 	DegreeLevel(ctx context.Context, id uuid.UUID) (*ent.DegreeLevel, error)
 	PaginatedDegreeLevels(ctx context.Context, orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) (ent.DegreeLevels, error)
@@ -66,5 +75,6 @@ type Store interface {
 	MessageStore
 	CategoryStore
 	DegreeLevelStore
+	PostCategoryStore
 	Close() error
 }

@@ -13,6 +13,8 @@ type messageService struct {
 	Store store.Store
 }
 
+var _ MessageService = &messageService{}
+
 // SendMessage implements MessageService.
 func (m *messageService) SendMessage(ctx context.Context, input dtos.MessageCreateInput) (*dtos.Message, error) {
 	message := &ent.ContactUsMessage{
@@ -118,5 +120,3 @@ func (s *messageService) BuildFromEntities(entities ent.ContactUsMessages) []*dt
 	}
 	return dtos
 }
-
-var _ MessageService = &messageService{}

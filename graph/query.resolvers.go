@@ -14,42 +14,52 @@ import (
 
 // Status is the resolver for the status field.
 func (r *queryResolver) Status(ctx context.Context, id string) (*dtos.Status, error) {
-	return r.GetStatus(ctx, id)
+	return r.Service.GetStatus(ctx, id)
 }
 
 // Statuses is the resolver for the statuses field.
 func (r *queryResolver) Statuses(ctx context.Context, orderBy *dtos.StatusAggregationInput, take *int, skip *int) (*dtos.PaginatedStatusResponse, error) {
-	return r.PaginatedStatuses(ctx, orderBy, take, skip)
+	return r.Service.PaginatedStatuses(ctx, orderBy, take, skip)
 }
 
 // Messages implements generated.QueryResolver.
 func (r *queryResolver) Messages(ctx context.Context, orderBy *dtos.MessageAggregationInput, take *int, skip *int) (*dtos.PaginatedMessageResponse, error) {
-	return r.PaginatedMessages(ctx, orderBy, take, skip)
+	return r.Service.PaginatedMessages(ctx, orderBy, take, skip)
 }
 
 // Message implements generated.QueryResolver.
 func (r *queryResolver) Message(ctx context.Context, id string) (*dtos.Message, error) {
-	return r.GetMessage(ctx, id)
+	return r.Service.GetMessage(ctx, id)
 }
 
 // Category is the resolver for the category field.
 func (r *queryResolver) Category(ctx context.Context, id uuid.UUID) (*dtos.Category, error) {
-	return r.GetCategory(ctx, id)
+	return r.Service.GetCategory(ctx, id)
 }
 
 // Categories is the resolver for the categories field.
 func (r *queryResolver) Categories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error) {
-	return r.PaginatedCategories(ctx, orderBy, take, skip, where)
+	return r.Service.PaginatedCategories(ctx, orderBy, take, skip, where)
+}
+
+// PostCategory is the resolver for the postCategory field.
+func (r *queryResolver) PostCategory(ctx context.Context, id uuid.UUID) (*dtos.PostCategory, error) {
+	return r.Service.GetPostCategory(ctx, id)
+}
+
+// PostCategories is the resolver for the postCategories field.
+func (r *queryResolver) PostCategories(ctx context.Context, orderBy *dtos.PostCategoryAggregationInput, take *int, skip *int, where *dtos.PostCategoryWhereInput) (*dtos.PaginatedPostCategoryResponse, error) {
+	return r.Service.PaginatedPostCategories(ctx, orderBy, take, skip, where)
 }
 
 // DegreeLevel is the resolver for the degreeLevel field.
 func (r *queryResolver) DegreeLevel(ctx context.Context, id uuid.UUID) (*dtos.DegreeLevel, error) {
-	return r.GetDegreeLevel(ctx, id)
+	return r.Service.GetDegreeLevel(ctx, id)
 }
 
 // DegreeLevels is the resolver for the degreeLevels field.
 func (r *queryResolver) DegreeLevels(ctx context.Context, orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) (*dtos.PaginatedDegreeLevelResponse, error) {
-	return r.PaginatedDegreeLevels(ctx, orderBy, take, skip, where)
+	return r.Service.PaginatedDegreeLevels(ctx, orderBy, take, skip, where)
 }
 
 // Query returns generated.QueryResolver implementation.

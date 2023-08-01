@@ -22,6 +22,15 @@ type Query {
     where: CategoryWhereInput
   ): PaginatedCategoryResponse!
 
+
+  postCategory(id: ID!): PostCategory!
+  postCategories(
+    orderBy: PostCategoryAggregationInput
+    take: Int = 10
+    skip: Int = 0
+    where: PostCategoryWhereInput
+  ): PaginatedPostCategoryResponse!
+
   degreeLevel(id: ID!): DegreeLevel!
   degreeLevels(
     orderBy: DegreeLevelAggregationInput

@@ -3,6 +3,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -15,7 +17,12 @@ type PostCategory struct {
 }
 
 func (PostCategory) Fields() []ent.Field {
-	return []ent.Field{field.UUID("id", uuid.UUID{}), field.String("name").Unique(), field.Time("created_at"), field.Time("updated_at"), field.Time("deleted_at").Optional()}
+	return []ent.Field{field.UUID("id", uuid.UUID{}),
+		field.String("name").Unique(),
+		field.Time("created_at").Immutable().Default(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
+		field.Time("deleted_at").Optional().Nillable(),
+	}
 }
 func (PostCategory) Edges() []ent.Edge {
 	return []ent.Edge{edge.To("post_categories", PostCategory.Type)}

@@ -35,12 +35,6 @@ func (pcu *PostCategoryUpdate) SetName(s string) *PostCategoryUpdate {
 	return pcu
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (pcu *PostCategoryUpdate) SetCreatedAt(t time.Time) *PostCategoryUpdate {
-	pcu.mutation.SetCreatedAt(t)
-	return pcu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (pcu *PostCategoryUpdate) SetUpdatedAt(t time.Time) *PostCategoryUpdate {
 	pcu.mutation.SetUpdatedAt(t)
@@ -110,6 +104,7 @@ func (pcu *PostCategoryUpdate) RemovePostCategories(p ...*PostCategory) *PostCat
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pcu *PostCategoryUpdate) Save(ctx context.Context) (int, error) {
+	pcu.defaults()
 	return withHooks(ctx, pcu.sqlSave, pcu.mutation, pcu.hooks)
 }
 
@@ -135,6 +130,14 @@ func (pcu *PostCategoryUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pcu *PostCategoryUpdate) defaults() {
+	if _, ok := pcu.mutation.UpdatedAt(); !ok {
+		v := postcategory.UpdateDefaultUpdatedAt()
+		pcu.mutation.SetUpdatedAt(v)
+	}
+}
+
 func (pcu *PostCategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(postcategory.Table, postcategory.Columns, sqlgraph.NewFieldSpec(postcategory.FieldID, field.TypeUUID))
 	if ps := pcu.mutation.predicates; len(ps) > 0 {
@@ -146,9 +149,6 @@ func (pcu *PostCategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pcu.mutation.Name(); ok {
 		_spec.SetField(postcategory.FieldName, field.TypeString, value)
-	}
-	if value, ok := pcu.mutation.CreatedAt(); ok {
-		_spec.SetField(postcategory.FieldCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := pcu.mutation.UpdatedAt(); ok {
 		_spec.SetField(postcategory.FieldUpdatedAt, field.TypeTime, value)
@@ -227,12 +227,6 @@ type PostCategoryUpdateOne struct {
 // SetName sets the "name" field.
 func (pcuo *PostCategoryUpdateOne) SetName(s string) *PostCategoryUpdateOne {
 	pcuo.mutation.SetName(s)
-	return pcuo
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (pcuo *PostCategoryUpdateOne) SetCreatedAt(t time.Time) *PostCategoryUpdateOne {
-	pcuo.mutation.SetCreatedAt(t)
 	return pcuo
 }
 
@@ -318,6 +312,7 @@ func (pcuo *PostCategoryUpdateOne) Select(field string, fields ...string) *PostC
 
 // Save executes the query and returns the updated PostCategory entity.
 func (pcuo *PostCategoryUpdateOne) Save(ctx context.Context) (*PostCategory, error) {
+	pcuo.defaults()
 	return withHooks(ctx, pcuo.sqlSave, pcuo.mutation, pcuo.hooks)
 }
 
@@ -340,6 +335,14 @@ func (pcuo *PostCategoryUpdateOne) Exec(ctx context.Context) error {
 func (pcuo *PostCategoryUpdateOne) ExecX(ctx context.Context) {
 	if err := pcuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (pcuo *PostCategoryUpdateOne) defaults() {
+	if _, ok := pcuo.mutation.UpdatedAt(); !ok {
+		v := postcategory.UpdateDefaultUpdatedAt()
+		pcuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -371,9 +374,6 @@ func (pcuo *PostCategoryUpdateOne) sqlSave(ctx context.Context) (_node *PostCate
 	}
 	if value, ok := pcuo.mutation.Name(); ok {
 		_spec.SetField(postcategory.FieldName, field.TypeString, value)
-	}
-	if value, ok := pcuo.mutation.CreatedAt(); ok {
-		_spec.SetField(postcategory.FieldCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := pcuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(postcategory.FieldUpdatedAt, field.TypeTime, value)

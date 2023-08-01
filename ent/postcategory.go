@@ -25,7 +25,7 @@ type PostCategory struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PostCategoryQuery when eager-loading is set.
 	Edges                PostCategoryEdges `json:"edges"`
@@ -107,7 +107,8 @@ func (pc *PostCategory) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				pc.DeletedAt = value.Time
+				pc.DeletedAt = new(time.Time)
+				*pc.DeletedAt = value.Time
 			}
 		case postcategory.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
@@ -166,8 +167,10 @@ func (pc *PostCategory) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(pc.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("deleted_at=")
-	builder.WriteString(pc.DeletedAt.Format(time.ANSIC))
+	if v := pc.DeletedAt; v != nil {
+		builder.WriteString("deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }
