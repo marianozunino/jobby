@@ -127,6 +127,72 @@ func (jou *JobOfferUpdate) SetSalary(s string) *JobOfferUpdate {
 	return jou
 }
 
+// SetSlug sets the "slug" field.
+func (jou *JobOfferUpdate) SetSlug(s string) *JobOfferUpdate {
+	jou.mutation.SetSlug(s)
+	return jou
+}
+
+// SetIsFeatured sets the "is_featured" field.
+func (jou *JobOfferUpdate) SetIsFeatured(b bool) *JobOfferUpdate {
+	jou.mutation.SetIsFeatured(b)
+	return jou
+}
+
+// SetNillableIsFeatured sets the "is_featured" field if the given value is not nil.
+func (jou *JobOfferUpdate) SetNillableIsFeatured(b *bool) *JobOfferUpdate {
+	if b != nil {
+		jou.SetIsFeatured(*b)
+	}
+	return jou
+}
+
+// ClearIsFeatured clears the value of the "is_featured" field.
+func (jou *JobOfferUpdate) ClearIsFeatured() *JobOfferUpdate {
+	jou.mutation.ClearIsFeatured()
+	return jou
+}
+
+// SetHasBeenEmailed sets the "has_been_emailed" field.
+func (jou *JobOfferUpdate) SetHasBeenEmailed(b bool) *JobOfferUpdate {
+	jou.mutation.SetHasBeenEmailed(b)
+	return jou
+}
+
+// SetNillableHasBeenEmailed sets the "has_been_emailed" field if the given value is not nil.
+func (jou *JobOfferUpdate) SetNillableHasBeenEmailed(b *bool) *JobOfferUpdate {
+	if b != nil {
+		jou.SetHasBeenEmailed(*b)
+	}
+	return jou
+}
+
+// ClearHasBeenEmailed clears the value of the "has_been_emailed" field.
+func (jou *JobOfferUpdate) ClearHasBeenEmailed() *JobOfferUpdate {
+	jou.mutation.ClearHasBeenEmailed()
+	return jou
+}
+
+// SetStatusID sets the "status_id" field.
+func (jou *JobOfferUpdate) SetStatusID(u uuid.UUID) *JobOfferUpdate {
+	jou.mutation.SetStatusID(u)
+	return jou
+}
+
+// SetNillableStatusID sets the "status_id" field if the given value is not nil.
+func (jou *JobOfferUpdate) SetNillableStatusID(u *uuid.UUID) *JobOfferUpdate {
+	if u != nil {
+		jou.SetStatusID(*u)
+	}
+	return jou
+}
+
+// ClearStatusID clears the value of the "status_id" field.
+func (jou *JobOfferUpdate) ClearStatusID() *JobOfferUpdate {
+	jou.mutation.ClearStatusID()
+	return jou
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (jou *JobOfferUpdate) SetCreatedAt(t time.Time) *JobOfferUpdate {
 	jou.mutation.SetCreatedAt(t)
@@ -184,72 +250,6 @@ func (jou *JobOfferUpdate) SetNillableDeletedAt(t *time.Time) *JobOfferUpdate {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (jou *JobOfferUpdate) ClearDeletedAt() *JobOfferUpdate {
 	jou.mutation.ClearDeletedAt()
-	return jou
-}
-
-// SetStatusID sets the "status_id" field.
-func (jou *JobOfferUpdate) SetStatusID(u uuid.UUID) *JobOfferUpdate {
-	jou.mutation.SetStatusID(u)
-	return jou
-}
-
-// SetNillableStatusID sets the "status_id" field if the given value is not nil.
-func (jou *JobOfferUpdate) SetNillableStatusID(u *uuid.UUID) *JobOfferUpdate {
-	if u != nil {
-		jou.SetStatusID(*u)
-	}
-	return jou
-}
-
-// ClearStatusID clears the value of the "status_id" field.
-func (jou *JobOfferUpdate) ClearStatusID() *JobOfferUpdate {
-	jou.mutation.ClearStatusID()
-	return jou
-}
-
-// SetSlug sets the "slug" field.
-func (jou *JobOfferUpdate) SetSlug(s string) *JobOfferUpdate {
-	jou.mutation.SetSlug(s)
-	return jou
-}
-
-// SetIsFeatured sets the "is_featured" field.
-func (jou *JobOfferUpdate) SetIsFeatured(b bool) *JobOfferUpdate {
-	jou.mutation.SetIsFeatured(b)
-	return jou
-}
-
-// SetNillableIsFeatured sets the "is_featured" field if the given value is not nil.
-func (jou *JobOfferUpdate) SetNillableIsFeatured(b *bool) *JobOfferUpdate {
-	if b != nil {
-		jou.SetIsFeatured(*b)
-	}
-	return jou
-}
-
-// ClearIsFeatured clears the value of the "is_featured" field.
-func (jou *JobOfferUpdate) ClearIsFeatured() *JobOfferUpdate {
-	jou.mutation.ClearIsFeatured()
-	return jou
-}
-
-// SetHasBeenEmailed sets the "has_been_emailed" field.
-func (jou *JobOfferUpdate) SetHasBeenEmailed(b bool) *JobOfferUpdate {
-	jou.mutation.SetHasBeenEmailed(b)
-	return jou
-}
-
-// SetNillableHasBeenEmailed sets the "has_been_emailed" field if the given value is not nil.
-func (jou *JobOfferUpdate) SetNillableHasBeenEmailed(b *bool) *JobOfferUpdate {
-	if b != nil {
-		jou.SetHasBeenEmailed(*b)
-	}
-	return jou
-}
-
-// ClearHasBeenEmailed clears the value of the "has_been_emailed" field.
-func (jou *JobOfferUpdate) ClearHasBeenEmailed() *JobOfferUpdate {
-	jou.mutation.ClearHasBeenEmailed()
 	return jou
 }
 
@@ -416,6 +416,21 @@ func (jou *JobOfferUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := jou.mutation.Salary(); ok {
 		_spec.SetField(joboffer.FieldSalary, field.TypeString, value)
 	}
+	if value, ok := jou.mutation.Slug(); ok {
+		_spec.SetField(joboffer.FieldSlug, field.TypeString, value)
+	}
+	if value, ok := jou.mutation.IsFeatured(); ok {
+		_spec.SetField(joboffer.FieldIsFeatured, field.TypeBool, value)
+	}
+	if jou.mutation.IsFeaturedCleared() {
+		_spec.ClearField(joboffer.FieldIsFeatured, field.TypeBool)
+	}
+	if value, ok := jou.mutation.HasBeenEmailed(); ok {
+		_spec.SetField(joboffer.FieldHasBeenEmailed, field.TypeBool, value)
+	}
+	if jou.mutation.HasBeenEmailedCleared() {
+		_spec.ClearField(joboffer.FieldHasBeenEmailed, field.TypeBool)
+	}
 	if value, ok := jou.mutation.CreatedAt(); ok {
 		_spec.SetField(joboffer.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -433,21 +448,6 @@ func (jou *JobOfferUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if jou.mutation.DeletedAtCleared() {
 		_spec.ClearField(joboffer.FieldDeletedAt, field.TypeTime)
-	}
-	if value, ok := jou.mutation.Slug(); ok {
-		_spec.SetField(joboffer.FieldSlug, field.TypeString, value)
-	}
-	if value, ok := jou.mutation.IsFeatured(); ok {
-		_spec.SetField(joboffer.FieldIsFeatured, field.TypeBool, value)
-	}
-	if jou.mutation.IsFeaturedCleared() {
-		_spec.ClearField(joboffer.FieldIsFeatured, field.TypeBool)
-	}
-	if value, ok := jou.mutation.HasBeenEmailed(); ok {
-		_spec.SetField(joboffer.FieldHasBeenEmailed, field.TypeBool, value)
-	}
-	if jou.mutation.HasBeenEmailedCleared() {
-		_spec.ClearField(joboffer.FieldHasBeenEmailed, field.TypeBool)
 	}
 	if jou.mutation.ApplicationsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -683,6 +683,72 @@ func (jouo *JobOfferUpdateOne) SetSalary(s string) *JobOfferUpdateOne {
 	return jouo
 }
 
+// SetSlug sets the "slug" field.
+func (jouo *JobOfferUpdateOne) SetSlug(s string) *JobOfferUpdateOne {
+	jouo.mutation.SetSlug(s)
+	return jouo
+}
+
+// SetIsFeatured sets the "is_featured" field.
+func (jouo *JobOfferUpdateOne) SetIsFeatured(b bool) *JobOfferUpdateOne {
+	jouo.mutation.SetIsFeatured(b)
+	return jouo
+}
+
+// SetNillableIsFeatured sets the "is_featured" field if the given value is not nil.
+func (jouo *JobOfferUpdateOne) SetNillableIsFeatured(b *bool) *JobOfferUpdateOne {
+	if b != nil {
+		jouo.SetIsFeatured(*b)
+	}
+	return jouo
+}
+
+// ClearIsFeatured clears the value of the "is_featured" field.
+func (jouo *JobOfferUpdateOne) ClearIsFeatured() *JobOfferUpdateOne {
+	jouo.mutation.ClearIsFeatured()
+	return jouo
+}
+
+// SetHasBeenEmailed sets the "has_been_emailed" field.
+func (jouo *JobOfferUpdateOne) SetHasBeenEmailed(b bool) *JobOfferUpdateOne {
+	jouo.mutation.SetHasBeenEmailed(b)
+	return jouo
+}
+
+// SetNillableHasBeenEmailed sets the "has_been_emailed" field if the given value is not nil.
+func (jouo *JobOfferUpdateOne) SetNillableHasBeenEmailed(b *bool) *JobOfferUpdateOne {
+	if b != nil {
+		jouo.SetHasBeenEmailed(*b)
+	}
+	return jouo
+}
+
+// ClearHasBeenEmailed clears the value of the "has_been_emailed" field.
+func (jouo *JobOfferUpdateOne) ClearHasBeenEmailed() *JobOfferUpdateOne {
+	jouo.mutation.ClearHasBeenEmailed()
+	return jouo
+}
+
+// SetStatusID sets the "status_id" field.
+func (jouo *JobOfferUpdateOne) SetStatusID(u uuid.UUID) *JobOfferUpdateOne {
+	jouo.mutation.SetStatusID(u)
+	return jouo
+}
+
+// SetNillableStatusID sets the "status_id" field if the given value is not nil.
+func (jouo *JobOfferUpdateOne) SetNillableStatusID(u *uuid.UUID) *JobOfferUpdateOne {
+	if u != nil {
+		jouo.SetStatusID(*u)
+	}
+	return jouo
+}
+
+// ClearStatusID clears the value of the "status_id" field.
+func (jouo *JobOfferUpdateOne) ClearStatusID() *JobOfferUpdateOne {
+	jouo.mutation.ClearStatusID()
+	return jouo
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (jouo *JobOfferUpdateOne) SetCreatedAt(t time.Time) *JobOfferUpdateOne {
 	jouo.mutation.SetCreatedAt(t)
@@ -740,72 +806,6 @@ func (jouo *JobOfferUpdateOne) SetNillableDeletedAt(t *time.Time) *JobOfferUpdat
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (jouo *JobOfferUpdateOne) ClearDeletedAt() *JobOfferUpdateOne {
 	jouo.mutation.ClearDeletedAt()
-	return jouo
-}
-
-// SetStatusID sets the "status_id" field.
-func (jouo *JobOfferUpdateOne) SetStatusID(u uuid.UUID) *JobOfferUpdateOne {
-	jouo.mutation.SetStatusID(u)
-	return jouo
-}
-
-// SetNillableStatusID sets the "status_id" field if the given value is not nil.
-func (jouo *JobOfferUpdateOne) SetNillableStatusID(u *uuid.UUID) *JobOfferUpdateOne {
-	if u != nil {
-		jouo.SetStatusID(*u)
-	}
-	return jouo
-}
-
-// ClearStatusID clears the value of the "status_id" field.
-func (jouo *JobOfferUpdateOne) ClearStatusID() *JobOfferUpdateOne {
-	jouo.mutation.ClearStatusID()
-	return jouo
-}
-
-// SetSlug sets the "slug" field.
-func (jouo *JobOfferUpdateOne) SetSlug(s string) *JobOfferUpdateOne {
-	jouo.mutation.SetSlug(s)
-	return jouo
-}
-
-// SetIsFeatured sets the "is_featured" field.
-func (jouo *JobOfferUpdateOne) SetIsFeatured(b bool) *JobOfferUpdateOne {
-	jouo.mutation.SetIsFeatured(b)
-	return jouo
-}
-
-// SetNillableIsFeatured sets the "is_featured" field if the given value is not nil.
-func (jouo *JobOfferUpdateOne) SetNillableIsFeatured(b *bool) *JobOfferUpdateOne {
-	if b != nil {
-		jouo.SetIsFeatured(*b)
-	}
-	return jouo
-}
-
-// ClearIsFeatured clears the value of the "is_featured" field.
-func (jouo *JobOfferUpdateOne) ClearIsFeatured() *JobOfferUpdateOne {
-	jouo.mutation.ClearIsFeatured()
-	return jouo
-}
-
-// SetHasBeenEmailed sets the "has_been_emailed" field.
-func (jouo *JobOfferUpdateOne) SetHasBeenEmailed(b bool) *JobOfferUpdateOne {
-	jouo.mutation.SetHasBeenEmailed(b)
-	return jouo
-}
-
-// SetNillableHasBeenEmailed sets the "has_been_emailed" field if the given value is not nil.
-func (jouo *JobOfferUpdateOne) SetNillableHasBeenEmailed(b *bool) *JobOfferUpdateOne {
-	if b != nil {
-		jouo.SetHasBeenEmailed(*b)
-	}
-	return jouo
-}
-
-// ClearHasBeenEmailed clears the value of the "has_been_emailed" field.
-func (jouo *JobOfferUpdateOne) ClearHasBeenEmailed() *JobOfferUpdateOne {
-	jouo.mutation.ClearHasBeenEmailed()
 	return jouo
 }
 
@@ -1002,6 +1002,21 @@ func (jouo *JobOfferUpdateOne) sqlSave(ctx context.Context) (_node *JobOffer, er
 	if value, ok := jouo.mutation.Salary(); ok {
 		_spec.SetField(joboffer.FieldSalary, field.TypeString, value)
 	}
+	if value, ok := jouo.mutation.Slug(); ok {
+		_spec.SetField(joboffer.FieldSlug, field.TypeString, value)
+	}
+	if value, ok := jouo.mutation.IsFeatured(); ok {
+		_spec.SetField(joboffer.FieldIsFeatured, field.TypeBool, value)
+	}
+	if jouo.mutation.IsFeaturedCleared() {
+		_spec.ClearField(joboffer.FieldIsFeatured, field.TypeBool)
+	}
+	if value, ok := jouo.mutation.HasBeenEmailed(); ok {
+		_spec.SetField(joboffer.FieldHasBeenEmailed, field.TypeBool, value)
+	}
+	if jouo.mutation.HasBeenEmailedCleared() {
+		_spec.ClearField(joboffer.FieldHasBeenEmailed, field.TypeBool)
+	}
 	if value, ok := jouo.mutation.CreatedAt(); ok {
 		_spec.SetField(joboffer.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -1019,21 +1034,6 @@ func (jouo *JobOfferUpdateOne) sqlSave(ctx context.Context) (_node *JobOffer, er
 	}
 	if jouo.mutation.DeletedAtCleared() {
 		_spec.ClearField(joboffer.FieldDeletedAt, field.TypeTime)
-	}
-	if value, ok := jouo.mutation.Slug(); ok {
-		_spec.SetField(joboffer.FieldSlug, field.TypeString, value)
-	}
-	if value, ok := jouo.mutation.IsFeatured(); ok {
-		_spec.SetField(joboffer.FieldIsFeatured, field.TypeBool, value)
-	}
-	if jouo.mutation.IsFeaturedCleared() {
-		_spec.ClearField(joboffer.FieldIsFeatured, field.TypeBool)
-	}
-	if value, ok := jouo.mutation.HasBeenEmailed(); ok {
-		_spec.SetField(joboffer.FieldHasBeenEmailed, field.TypeBool, value)
-	}
-	if jouo.mutation.HasBeenEmailedCleared() {
-		_spec.ClearField(joboffer.FieldHasBeenEmailed, field.TypeBool)
 	}
 	if jouo.mutation.ApplicationsCleared() {
 		edge := &sqlgraph.EdgeSpec{

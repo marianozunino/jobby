@@ -74,13 +74,24 @@ type ComplexityRoot struct {
 	}
 
 	JobOffer struct {
-		CreatedAt func(childComplexity int) int
-		DeletedAt func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Slug      func(childComplexity int) int
-		StatusID  func(childComplexity int) int
-		Title     func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
+		Address1       func(childComplexity int) int
+		Address2       func(childComplexity int) int
+		CreatedAt      func(childComplexity int) int
+		DeletedAt      func(childComplexity int) int
+		Department     func(childComplexity int) int
+		Description    func(childComplexity int) int
+		EndDate        func(childComplexity int) int
+		HasBeenEmailed func(childComplexity int) int
+		ID             func(childComplexity int) int
+		IsFeatured     func(childComplexity int) int
+		Reference      func(childComplexity int) int
+		Salary         func(childComplexity int) int
+		Slug           func(childComplexity int) int
+		StartDate      func(childComplexity int) int
+		StatusID       func(childComplexity int) int
+		Title          func(childComplexity int) int
+		UpdatedAt      func(childComplexity int) int
+		WorkingHours   func(childComplexity int) int
 	}
 
 	Message struct {
@@ -319,6 +330,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.DegreeLevel.UpdatedAt(childComplexity), true
 
+	case "JobOffer.address1":
+		if e.complexity.JobOffer.Address1 == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.Address1(childComplexity), true
+
+	case "JobOffer.address2":
+		if e.complexity.JobOffer.Address2 == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.Address2(childComplexity), true
+
 	case "JobOffer.createdAt":
 		if e.complexity.JobOffer.CreatedAt == nil {
 			break
@@ -333,6 +358,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.JobOffer.DeletedAt(childComplexity), true
 
+	case "JobOffer.department":
+		if e.complexity.JobOffer.Department == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.Department(childComplexity), true
+
+	case "JobOffer.description":
+		if e.complexity.JobOffer.Description == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.Description(childComplexity), true
+
+	case "JobOffer.endDate":
+		if e.complexity.JobOffer.EndDate == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.EndDate(childComplexity), true
+
+	case "JobOffer.hasBeenEmailed":
+		if e.complexity.JobOffer.HasBeenEmailed == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.HasBeenEmailed(childComplexity), true
+
 	case "JobOffer.id":
 		if e.complexity.JobOffer.ID == nil {
 			break
@@ -340,12 +393,40 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.JobOffer.ID(childComplexity), true
 
+	case "JobOffer.isFeatured":
+		if e.complexity.JobOffer.IsFeatured == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.IsFeatured(childComplexity), true
+
+	case "JobOffer.reference":
+		if e.complexity.JobOffer.Reference == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.Reference(childComplexity), true
+
+	case "JobOffer.salary":
+		if e.complexity.JobOffer.Salary == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.Salary(childComplexity), true
+
 	case "JobOffer.slug":
 		if e.complexity.JobOffer.Slug == nil {
 			break
 		}
 
 		return e.complexity.JobOffer.Slug(childComplexity), true
+
+	case "JobOffer.startDate":
+		if e.complexity.JobOffer.StartDate == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.StartDate(childComplexity), true
 
 	case "JobOffer.statusId":
 		if e.complexity.JobOffer.StatusID == nil {
@@ -367,6 +448,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.JobOffer.UpdatedAt(childComplexity), true
+
+	case "JobOffer.workingHours":
+		if e.complexity.JobOffer.WorkingHours == nil {
+			break
+		}
+
+		return e.complexity.JobOffer.WorkingHours(childComplexity), true
 
 	case "Message.createdAt":
 		if e.complexity.Message.CreatedAt == nil {
@@ -1147,10 +1235,44 @@ type PaginatedDegreeLevelResponse {
   skip: Int
 }
 `, BuiltIn: false},
-	{Name: "../../schema/types/job-offer.graphql", Input: `type JobOffer {
+	{Name: "../../schema/types/job-offer.graphql", Input: `
+
+		# field.UUID("id", uuid.UUID{}),
+		# field.String("title"),
+		# field.Int32("reference"),
+		# field.Time("start_date"),
+		# field.Time("end_date"),
+		# field.String("address1").Optional(),
+		# field.String("address2").Optional(),
+		# field.String("department"),
+		# field.String("description"),
+		# field.String("working_hours"),
+		# field.String("salary"),
+		# field.String("slug").Unique(),
+		# field.Bool("is_featured").Optional(),
+		# field.Bool("has_been_emailed").Optional(),
+		# field.UUID("status_id", uuid.UUID{}).Optional(),
+		# field.Time("created_at").Optional(),
+		# field.Time("updated_at").Optional(),
+		# field.Time("deleted_at").Optional().Nillable(),
+
+type JobOffer {
   id: ID!
   slug: String!
   title: String!
+  reference: Int!
+  startDate: Timestamp!
+  endDate: Timestamp!
+  address1: String!
+  address2: String!
+  department: String!
+  description: String!
+  workingHours: String!
+  salary: String!
+  isFeatured: Boolean!
+  hasBeenEmailed: Boolean!
+
+
   createdAt: Timestamp!
   updatedAt: Timestamp!
   deletedAt: Timestamp
@@ -2625,6 +2747,490 @@ func (ec *executionContext) fieldContext_JobOffer_title(ctx context.Context, fie
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_reference(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_reference(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reference, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_reference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_startDate(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_startDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StartDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTimestamp2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_startDate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Timestamp does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_endDate(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_endDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EndDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTimestamp2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_endDate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Timestamp does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_address1(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_address1(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address1, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_address1(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_address2(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_address2(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address2, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_address2(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_department(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_department(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Department, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_department(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_description(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_description(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_workingHours(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_workingHours(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WorkingHours, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_workingHours(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_salary(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_salary(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Salary, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_salary(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_isFeatured(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_isFeatured(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsFeatured, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_isFeatured(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _JobOffer_hasBeenEmailed(ctx context.Context, field graphql.CollectedField, obj *dtos.JobOffer) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_JobOffer_hasBeenEmailed(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasBeenEmailed, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_JobOffer_hasBeenEmailed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "JobOffer",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5749,6 +6355,28 @@ func (ec *executionContext) fieldContext_Status_jobOffers(ctx context.Context, f
 				return ec.fieldContext_JobOffer_slug(ctx, field)
 			case "title":
 				return ec.fieldContext_JobOffer_title(ctx, field)
+			case "reference":
+				return ec.fieldContext_JobOffer_reference(ctx, field)
+			case "startDate":
+				return ec.fieldContext_JobOffer_startDate(ctx, field)
+			case "endDate":
+				return ec.fieldContext_JobOffer_endDate(ctx, field)
+			case "address1":
+				return ec.fieldContext_JobOffer_address1(ctx, field)
+			case "address2":
+				return ec.fieldContext_JobOffer_address2(ctx, field)
+			case "department":
+				return ec.fieldContext_JobOffer_department(ctx, field)
+			case "description":
+				return ec.fieldContext_JobOffer_description(ctx, field)
+			case "workingHours":
+				return ec.fieldContext_JobOffer_workingHours(ctx, field)
+			case "salary":
+				return ec.fieldContext_JobOffer_salary(ctx, field)
+			case "isFeatured":
+				return ec.fieldContext_JobOffer_isFeatured(ctx, field)
+			case "hasBeenEmailed":
+				return ec.fieldContext_JobOffer_hasBeenEmailed(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_JobOffer_createdAt(ctx, field)
 			case "updatedAt":
@@ -8711,6 +9339,61 @@ func (ec *executionContext) _JobOffer(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "title":
 			out.Values[i] = ec._JobOffer_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "reference":
+			out.Values[i] = ec._JobOffer_reference(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "startDate":
+			out.Values[i] = ec._JobOffer_startDate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "endDate":
+			out.Values[i] = ec._JobOffer_endDate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "address1":
+			out.Values[i] = ec._JobOffer_address1(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "address2":
+			out.Values[i] = ec._JobOffer_address2(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "department":
+			out.Values[i] = ec._JobOffer_department(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "description":
+			out.Values[i] = ec._JobOffer_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "workingHours":
+			out.Values[i] = ec._JobOffer_workingHours(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "salary":
+			out.Values[i] = ec._JobOffer_salary(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "isFeatured":
+			out.Values[i] = ec._JobOffer_isFeatured(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "hasBeenEmailed":
+			out.Values[i] = ec._JobOffer_hasBeenEmailed(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

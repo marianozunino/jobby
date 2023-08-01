@@ -2,27 +2,11 @@ package service
 
 import (
 	"context"
-	"database/sql"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
 	"github.com/marianozunino/cc-backend-go/store"
 )
-
-func getTimeOrNil(t sql.NullTime) *time.Time {
-	if !t.Valid {
-		return nil
-	}
-	return &t.Time
-}
-
-func getStringOrNil(s sql.NullString) *string {
-	if !s.Valid {
-		return nil
-	}
-	return &s.String
-}
 
 type StatusService interface {
 	CreateStatus(ctx context.Context, input dtos.StatusCreateInput) (*dtos.Status, error)
@@ -34,7 +18,7 @@ type StatusService interface {
 }
 
 type JobOfferService interface {
-	JobOffersWithStatus(statusID []uuid.UUID) ([]*dtos.JobOffer, error)
+	JobOffersWithStatus(ctx context.Context, statusID []uuid.UUID) ([]*dtos.JobOffer, error)
 }
 
 type MessageService interface {
@@ -57,11 +41,11 @@ type CategoryService interface {
 }
 
 type DegreeLevelService interface {
-	GetDegreeLevel(id uuid.UUID) (*dtos.DegreeLevel, error)
-	PaginatedDegreeLevels(orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) (*dtos.PaginatedDegreeLevelResponse, error)
-	CreateDegreeLevel(degreeLevel dtos.DegreeLevelCreateInput) (*dtos.DegreeLevel, error)
-	UpdateDegreeLevel(id uuid.UUID, degreeLevel dtos.DegreeLevelUpdateInput) (*dtos.DegreeLevel, error)
-	DeleteDegreeLevel(id uuid.UUID) (*dtos.DegreeLevel, error)
+	GetDegreeLevel(ctx context.Context, id uuid.UUID) (*dtos.DegreeLevel, error)
+	PaginatedDegreeLevels(ctx context.Context, orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) (*dtos.PaginatedDegreeLevelResponse, error)
+	CreateDegreeLevel(ctx context.Context, degreeLevel dtos.DegreeLevelCreateInput) (*dtos.DegreeLevel, error)
+	UpdateDegreeLevel(ctx context.Context, id uuid.UUID, degreeLevel dtos.DegreeLevelUpdateInput) (*dtos.DegreeLevel, error)
+	DeleteDegreeLevel(ctx context.Context, id uuid.UUID) (*dtos.DegreeLevel, error)
 }
 
 type Service interface {

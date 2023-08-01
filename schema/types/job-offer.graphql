@@ -1,7 +1,41 @@
+
+
+		# field.UUID("id", uuid.UUID{}),
+		# field.String("title"),
+		# field.Int32("reference"),
+		# field.Time("start_date"),
+		# field.Time("end_date"),
+		# field.String("address1").Optional(),
+		# field.String("address2").Optional(),
+		# field.String("department"),
+		# field.String("description"),
+		# field.String("working_hours"),
+		# field.String("salary"),
+		# field.String("slug").Unique(),
+		# field.Bool("is_featured").Optional(),
+		# field.Bool("has_been_emailed").Optional(),
+		# field.UUID("status_id", uuid.UUID{}).Optional(),
+		# field.Time("created_at").Optional(),
+		# field.Time("updated_at").Optional(),
+		# field.Time("deleted_at").Optional().Nillable(),
+
 type JobOffer {
   id: ID!
   slug: String!
   title: String!
+  reference: Int!
+  startDate: Timestamp!
+  endDate: Timestamp!
+  address1: String!
+  address2: String!
+  department: String!
+  description: String!
+  workingHours: String!
+  salary: String!
+  isFeatured: Boolean!
+  hasBeenEmailed: Boolean!
+
+
   createdAt: Timestamp!
   updatedAt: Timestamp!
   deletedAt: Timestamp

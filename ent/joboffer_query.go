@@ -556,10 +556,7 @@ func (joq *JobOfferQuery) loadStatus(ctx context.Context, query *StatusQuery, no
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*JobOffer)
 	for i := range nodes {
-		if nodes[i].StatusID == nil {
-			continue
-		}
-		fk := *nodes[i].StatusID
+		fk := nodes[i].StatusID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}

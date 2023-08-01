@@ -1,8 +1,11 @@
 package service
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/cc-backend-go/ent"
 	"github.com/marianozunino/cc-backend-go/store"
 )
 
@@ -10,28 +13,45 @@ type jobOfferService struct {
 	Store store.Store
 }
 
+var _ JobOfferService = &jobOfferService{}
+
 // JobOffersWithStatus implements JobOfferService.
-func (s *jobOfferService) JobOffersWithStatus(statusID []uuid.UUID) ([]*dtos.JobOffer, error) {
-	jobOffers, err := s.Store.JobOffersWithStatus(statusID)
+func (j jobOfferService) JobOffersWithStatus(ctx context.Context, statusID []uuid.UUID) ([]*dtos.JobOffer, error) {
+	jobOffers, err := j.Store.JobOffersWithStatus(ctx, statusID)
 	if err != nil {
 		return nil, err
 	}
-
-	result := make([]*dtos.JobOffer, len(jobOffers))
-	for i, jobOffer := range jobOffers {
-		result[i] = &dtos.JobOffer{
-			ID:        jobOffer.ID,
-			Slug:      jobOffer.Slug,
-			StatusID:  jobOffer.StatusID,
-			CreatedAt: jobOffer.CreatedAt.Time,
-			UpdatedAt: jobOffer.UpdatedAt.Time,
-			DeletedAt: getTimeOrNil(jobOffer.DeletedAt),
-			Title:     jobOffer.Title,
-		}
-	}
-
-	return result, nil
-
+	return j.BuildFromEntities(jobOffers), nil
 }
 
-var _ JobOfferService = &jobOfferService{}
+func (j jobOfferService) BuildFromEntity(entity *ent.JobOffer) *dtos.JobOffer {
+	dto := &dtos.JobOffer{
+		ID:             entity.ID,
+		Slug:           entity.Slug,
+		Title:          entity.Title,
+		StatusID:       entity.StatusID,
+		Salary:         entity.Salary,
+		Description:    entity.Description,
+		EndDate:        entity.EndDate,
+		StartDate:      entity.StartDate,
+		Department:     entity.Department,
+		WorkingHours:   entity.WorkingHours,
+		IsFeatured:     entity.IsFeatured,
+		HasBeenEmailed: entity.HasBeenEmailed,
+		Address1:       entity.Address1,
+		Address2:       entity.Address2,
+		Reference:      int(entity.Reference),
+		CreatedAt:      entity.CreatedAt,
+		UpdatedAt:      entity.UpdatedAt,
+		DeletedAt:      entity.DeletedAt,
+	}
+	return dto
+}
+
+func (j *jobOfferService) BuildFromEntities(entities ent.JobOffers) []*dtos.JobOffer {
+	dtos := make([]*dtos.JobOffer, len(entities))
+	for i, entity := range entities {
+		dtos[i] = j.BuildFromEntity(entity)
+	}
+	return dtos
+}

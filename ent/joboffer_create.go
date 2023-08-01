@@ -100,6 +100,54 @@ func (joc *JobOfferCreate) SetSalary(s string) *JobOfferCreate {
 	return joc
 }
 
+// SetSlug sets the "slug" field.
+func (joc *JobOfferCreate) SetSlug(s string) *JobOfferCreate {
+	joc.mutation.SetSlug(s)
+	return joc
+}
+
+// SetIsFeatured sets the "is_featured" field.
+func (joc *JobOfferCreate) SetIsFeatured(b bool) *JobOfferCreate {
+	joc.mutation.SetIsFeatured(b)
+	return joc
+}
+
+// SetNillableIsFeatured sets the "is_featured" field if the given value is not nil.
+func (joc *JobOfferCreate) SetNillableIsFeatured(b *bool) *JobOfferCreate {
+	if b != nil {
+		joc.SetIsFeatured(*b)
+	}
+	return joc
+}
+
+// SetHasBeenEmailed sets the "has_been_emailed" field.
+func (joc *JobOfferCreate) SetHasBeenEmailed(b bool) *JobOfferCreate {
+	joc.mutation.SetHasBeenEmailed(b)
+	return joc
+}
+
+// SetNillableHasBeenEmailed sets the "has_been_emailed" field if the given value is not nil.
+func (joc *JobOfferCreate) SetNillableHasBeenEmailed(b *bool) *JobOfferCreate {
+	if b != nil {
+		joc.SetHasBeenEmailed(*b)
+	}
+	return joc
+}
+
+// SetStatusID sets the "status_id" field.
+func (joc *JobOfferCreate) SetStatusID(u uuid.UUID) *JobOfferCreate {
+	joc.mutation.SetStatusID(u)
+	return joc
+}
+
+// SetNillableStatusID sets the "status_id" field if the given value is not nil.
+func (joc *JobOfferCreate) SetNillableStatusID(u *uuid.UUID) *JobOfferCreate {
+	if u != nil {
+		joc.SetStatusID(*u)
+	}
+	return joc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (joc *JobOfferCreate) SetCreatedAt(t time.Time) *JobOfferCreate {
 	joc.mutation.SetCreatedAt(t)
@@ -138,54 +186,6 @@ func (joc *JobOfferCreate) SetDeletedAt(t time.Time) *JobOfferCreate {
 func (joc *JobOfferCreate) SetNillableDeletedAt(t *time.Time) *JobOfferCreate {
 	if t != nil {
 		joc.SetDeletedAt(*t)
-	}
-	return joc
-}
-
-// SetStatusID sets the "status_id" field.
-func (joc *JobOfferCreate) SetStatusID(u uuid.UUID) *JobOfferCreate {
-	joc.mutation.SetStatusID(u)
-	return joc
-}
-
-// SetNillableStatusID sets the "status_id" field if the given value is not nil.
-func (joc *JobOfferCreate) SetNillableStatusID(u *uuid.UUID) *JobOfferCreate {
-	if u != nil {
-		joc.SetStatusID(*u)
-	}
-	return joc
-}
-
-// SetSlug sets the "slug" field.
-func (joc *JobOfferCreate) SetSlug(s string) *JobOfferCreate {
-	joc.mutation.SetSlug(s)
-	return joc
-}
-
-// SetIsFeatured sets the "is_featured" field.
-func (joc *JobOfferCreate) SetIsFeatured(b bool) *JobOfferCreate {
-	joc.mutation.SetIsFeatured(b)
-	return joc
-}
-
-// SetNillableIsFeatured sets the "is_featured" field if the given value is not nil.
-func (joc *JobOfferCreate) SetNillableIsFeatured(b *bool) *JobOfferCreate {
-	if b != nil {
-		joc.SetIsFeatured(*b)
-	}
-	return joc
-}
-
-// SetHasBeenEmailed sets the "has_been_emailed" field.
-func (joc *JobOfferCreate) SetHasBeenEmailed(b bool) *JobOfferCreate {
-	joc.mutation.SetHasBeenEmailed(b)
-	return joc
-}
-
-// SetNillableHasBeenEmailed sets the "has_been_emailed" field if the given value is not nil.
-func (joc *JobOfferCreate) SetNillableHasBeenEmailed(b *bool) *JobOfferCreate {
-	if b != nil {
-		joc.SetHasBeenEmailed(*b)
 	}
 	return joc
 }
@@ -367,18 +367,6 @@ func (joc *JobOfferCreate) createSpec() (*JobOffer, *sqlgraph.CreateSpec) {
 		_spec.SetField(joboffer.FieldSalary, field.TypeString, value)
 		_node.Salary = value
 	}
-	if value, ok := joc.mutation.CreatedAt(); ok {
-		_spec.SetField(joboffer.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := joc.mutation.UpdatedAt(); ok {
-		_spec.SetField(joboffer.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
-	}
-	if value, ok := joc.mutation.DeletedAt(); ok {
-		_spec.SetField(joboffer.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = value
-	}
 	if value, ok := joc.mutation.Slug(); ok {
 		_spec.SetField(joboffer.FieldSlug, field.TypeString, value)
 		_node.Slug = value
@@ -390,6 +378,18 @@ func (joc *JobOfferCreate) createSpec() (*JobOffer, *sqlgraph.CreateSpec) {
 	if value, ok := joc.mutation.HasBeenEmailed(); ok {
 		_spec.SetField(joboffer.FieldHasBeenEmailed, field.TypeBool, value)
 		_node.HasBeenEmailed = value
+	}
+	if value, ok := joc.mutation.CreatedAt(); ok {
+		_spec.SetField(joboffer.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := joc.mutation.UpdatedAt(); ok {
+		_spec.SetField(joboffer.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
+	if value, ok := joc.mutation.DeletedAt(); ok {
+		_spec.SetField(joboffer.FieldDeletedAt, field.TypeTime, value)
+		_node.DeletedAt = &value
 	}
 	if nodes := joc.mutation.ApplicationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -437,7 +437,7 @@ func (joc *JobOfferCreate) createSpec() (*JobOffer, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.StatusID = &nodes[0]
+		_node.StatusID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

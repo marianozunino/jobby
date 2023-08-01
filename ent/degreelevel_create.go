@@ -177,7 +177,7 @@ func (dlc *DegreeLevelCreate) createSpec() (*DegreeLevel, *sqlgraph.CreateSpec) 
 	}
 	if value, ok := dlc.mutation.DeletedAt(); ok {
 		_spec.SetField(degreelevel.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = value
+		_node.DeletedAt = &value
 	}
 	if nodes := dlc.mutation.EducationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

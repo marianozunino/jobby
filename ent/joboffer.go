@@ -39,20 +39,20 @@ type JobOffer struct {
 	WorkingHours string `json:"working_hours,omitempty"`
 	// Salary holds the value of the "salary" field.
 	Salary string `json:"salary,omitempty"`
-	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
-	// StatusID holds the value of the "status_id" field.
-	StatusID *uuid.UUID `json:"status_id,omitempty"`
 	// Slug holds the value of the "slug" field.
 	Slug string `json:"slug,omitempty"`
 	// IsFeatured holds the value of the "is_featured" field.
 	IsFeatured bool `json:"is_featured,omitempty"`
 	// HasBeenEmailed holds the value of the "has_been_emailed" field.
 	HasBeenEmailed bool `json:"has_been_emailed,omitempty"`
+	// StatusID holds the value of the "status_id" field.
+	StatusID uuid.UUID `json:"status_id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the JobOfferQuery when eager-loading is set.
 	Edges        JobOfferEdges `json:"edges"`
@@ -108,8 +108,6 @@ func (*JobOffer) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case joboffer.FieldStatusID:
-			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		case joboffer.FieldIsFeatured, joboffer.FieldHasBeenEmailed:
 			values[i] = new(sql.NullBool)
 		case joboffer.FieldReference:
@@ -118,7 +116,7 @@ func (*JobOffer) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case joboffer.FieldStartDate, joboffer.FieldEndDate, joboffer.FieldCreatedAt, joboffer.FieldUpdatedAt, joboffer.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case joboffer.FieldID:
+		case joboffer.FieldID, joboffer.FieldStatusID:
 			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -201,31 +199,6 @@ func (jo *JobOffer) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				jo.Salary = value.String
 			}
-		case joboffer.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				jo.CreatedAt = value.Time
-			}
-		case joboffer.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
-			} else if value.Valid {
-				jo.UpdatedAt = value.Time
-			}
-		case joboffer.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				jo.DeletedAt = value.Time
-			}
-		case joboffer.FieldStatusID:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field status_id", values[i])
-			} else if value.Valid {
-				jo.StatusID = new(uuid.UUID)
-				*jo.StatusID = *value.S.(*uuid.UUID)
-			}
 		case joboffer.FieldSlug:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field slug", values[i])
@@ -243,6 +216,31 @@ func (jo *JobOffer) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field has_been_emailed", values[i])
 			} else if value.Valid {
 				jo.HasBeenEmailed = value.Bool
+			}
+		case joboffer.FieldStatusID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field status_id", values[i])
+			} else if value != nil {
+				jo.StatusID = *value
+			}
+		case joboffer.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				jo.CreatedAt = value.Time
+			}
+		case joboffer.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				jo.UpdatedAt = value.Time
+			}
+		case joboffer.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				jo.DeletedAt = new(time.Time)
+				*jo.DeletedAt = value.Time
 			}
 		default:
 			jo.selectValues.Set(columns[i], values[i])
@@ -325,20 +323,6 @@ func (jo *JobOffer) String() string {
 	builder.WriteString("salary=")
 	builder.WriteString(jo.Salary)
 	builder.WriteString(", ")
-	builder.WriteString("created_at=")
-	builder.WriteString(jo.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
-	builder.WriteString(jo.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("deleted_at=")
-	builder.WriteString(jo.DeletedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := jo.StatusID; v != nil {
-		builder.WriteString("status_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	builder.WriteString("slug=")
 	builder.WriteString(jo.Slug)
 	builder.WriteString(", ")
@@ -347,6 +331,20 @@ func (jo *JobOffer) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("has_been_emailed=")
 	builder.WriteString(fmt.Sprintf("%v", jo.HasBeenEmailed))
+	builder.WriteString(", ")
+	builder.WriteString("status_id=")
+	builder.WriteString(fmt.Sprintf("%v", jo.StatusID))
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(jo.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(jo.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	if v := jo.DeletedAt; v != nil {
+		builder.WriteString("deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

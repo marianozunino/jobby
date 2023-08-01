@@ -141,7 +141,7 @@ func (c *CategoryStore) PaginatedCategories(ctx context.Context, orderBy *dtos.C
 
 // UpdateCategory implements store.CategoryStore
 func (c *CategoryStore) UpdateCategory(ctx context.Context, category *ent.Category) (*ent.Category, error) {
-	return c.Client.Debug().Category.UpdateOneID(category.ID).SetName(category.Name).SetIsRoot(category.IsRoot).SetNillableParentID(category.ParentID).Save(ctx)
+	return c.Client.Category.UpdateOneID(category.ID).SetName(category.Name).SetIsRoot(category.IsRoot).SetNillableParentID(category.ParentID).Save(ctx)
 }
 
 // CategoriesWithChildrens implements store.CategoryStore

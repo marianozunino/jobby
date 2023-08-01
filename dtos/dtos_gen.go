@@ -101,13 +101,24 @@ type IDFilter struct {
 }
 
 type JobOffer struct {
-	ID        uuid.UUID  `json:"id"`
-	Slug      string     `json:"slug"`
-	Title     string     `json:"title"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	DeletedAt *time.Time `json:"deletedAt,omitempty"`
-	StatusID  uuid.UUID  `json:"statusId"`
+	ID             uuid.UUID  `json:"id"`
+	Slug           string     `json:"slug"`
+	Title          string     `json:"title"`
+	Reference      int        `json:"reference"`
+	StartDate      time.Time  `json:"startDate"`
+	EndDate        time.Time  `json:"endDate"`
+	Address1       string     `json:"address1"`
+	Address2       string     `json:"address2"`
+	Department     string     `json:"department"`
+	Description    string     `json:"description"`
+	WorkingHours   string     `json:"workingHours"`
+	Salary         string     `json:"salary"`
+	IsFeatured     bool       `json:"isFeatured"`
+	HasBeenEmailed bool       `json:"hasBeenEmailed"`
+	CreatedAt      time.Time  `json:"createdAt"`
+	UpdatedAt      time.Time  `json:"updatedAt"`
+	DeletedAt      *time.Time `json:"deletedAt,omitempty"`
+	StatusID       uuid.UUID  `json:"statusId"`
 }
 
 type Message struct {

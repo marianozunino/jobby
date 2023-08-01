@@ -425,12 +425,9 @@ func (sq *StatusQuery) loadJobOffers(ctx context.Context, query *JobOfferQuery, 
 	}
 	for _, n := range neighbors {
 		fk := n.StatusID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "status_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "status_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "status_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

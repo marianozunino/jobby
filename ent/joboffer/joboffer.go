@@ -32,20 +32,20 @@ const (
 	FieldWorkingHours = "working_hours"
 	// FieldSalary holds the string denoting the salary field in the database.
 	FieldSalary = "salary"
-	// FieldCreatedAt holds the string denoting the created_at field in the database.
-	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
-	FieldUpdatedAt = "updated_at"
-	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
-	FieldDeletedAt = "deleted_at"
-	// FieldStatusID holds the string denoting the status_id field in the database.
-	FieldStatusID = "status_id"
 	// FieldSlug holds the string denoting the slug field in the database.
 	FieldSlug = "slug"
 	// FieldIsFeatured holds the string denoting the is_featured field in the database.
 	FieldIsFeatured = "is_featured"
 	// FieldHasBeenEmailed holds the string denoting the has_been_emailed field in the database.
 	FieldHasBeenEmailed = "has_been_emailed"
+	// FieldStatusID holds the string denoting the status_id field in the database.
+	FieldStatusID = "status_id"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
+	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
+	FieldDeletedAt = "deleted_at"
 	// EdgeApplications holds the string denoting the applications edge name in mutations.
 	EdgeApplications = "applications"
 	// EdgeJobOfferCategories holds the string denoting the job_offer_categories edge name in mutations.
@@ -90,13 +90,13 @@ var Columns = []string{
 	FieldDescription,
 	FieldWorkingHours,
 	FieldSalary,
-	FieldCreatedAt,
-	FieldUpdatedAt,
-	FieldDeletedAt,
-	FieldStatusID,
 	FieldSlug,
 	FieldIsFeatured,
 	FieldHasBeenEmailed,
+	FieldStatusID,
+	FieldCreatedAt,
+	FieldUpdatedAt,
+	FieldDeletedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -167,26 +167,6 @@ func BySalary(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSalary, opts...).ToFunc()
 }
 
-// ByCreatedAt orders the results by the created_at field.
-func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
-}
-
-// ByUpdatedAt orders the results by the updated_at field.
-func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
-}
-
-// ByDeletedAt orders the results by the deleted_at field.
-func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
-}
-
-// ByStatusID orders the results by the status_id field.
-func ByStatusID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatusID, opts...).ToFunc()
-}
-
 // BySlug orders the results by the slug field.
 func BySlug(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSlug, opts...).ToFunc()
@@ -200,6 +180,26 @@ func ByIsFeatured(opts ...sql.OrderTermOption) OrderOption {
 // ByHasBeenEmailed orders the results by the has_been_emailed field.
 func ByHasBeenEmailed(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHasBeenEmailed, opts...).ToFunc()
+}
+
+// ByStatusID orders the results by the status_id field.
+func ByStatusID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatusID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByDeletedAt orders the results by the deleted_at field.
+func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
 }
 
 // ByApplicationsCount orders the results by applications count.

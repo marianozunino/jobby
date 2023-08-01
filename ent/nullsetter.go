@@ -526,6 +526,27 @@ func (u *JobOfferUpdate) SetOrClearAddress2(value *string) *JobOfferUpdate {
 	return u.SetAddress2(*value)
 }
 
+func (u *JobOfferUpdate) SetOrClearIsFeatured(value *bool) *JobOfferUpdate {
+	if value == nil {
+		return u.ClearIsFeatured()
+	}
+	return u.SetIsFeatured(*value)
+}
+
+func (u *JobOfferUpdate) SetOrClearHasBeenEmailed(value *bool) *JobOfferUpdate {
+	if value == nil {
+		return u.ClearHasBeenEmailed()
+	}
+	return u.SetHasBeenEmailed(*value)
+}
+
+func (u *JobOfferUpdate) SetOrClearStatusID(value *uuid.UUID) *JobOfferUpdate {
+	if value == nil {
+		return u.ClearStatusID()
+	}
+	return u.SetStatusID(*value)
+}
+
 func (u *JobOfferUpdate) SetOrClearCreatedAt(value *time.Time) *JobOfferUpdate {
 	if value == nil {
 		return u.ClearCreatedAt()
@@ -547,27 +568,6 @@ func (u *JobOfferUpdate) SetOrClearDeletedAt(value *time.Time) *JobOfferUpdate {
 	return u.SetDeletedAt(*value)
 }
 
-func (u *JobOfferUpdate) SetOrClearStatusID(value *uuid.UUID) *JobOfferUpdate {
-	if value == nil {
-		return u.ClearStatusID()
-	}
-	return u.SetStatusID(*value)
-}
-
-func (u *JobOfferUpdate) SetOrClearIsFeatured(value *bool) *JobOfferUpdate {
-	if value == nil {
-		return u.ClearIsFeatured()
-	}
-	return u.SetIsFeatured(*value)
-}
-
-func (u *JobOfferUpdate) SetOrClearHasBeenEmailed(value *bool) *JobOfferUpdate {
-	if value == nil {
-		return u.ClearHasBeenEmailed()
-	}
-	return u.SetHasBeenEmailed(*value)
-}
-
 func (u *JobOfferUpdateOne) SetOrClearAddress1(value *string) *JobOfferUpdateOne {
 	if value == nil {
 		return u.ClearAddress1()
@@ -580,6 +580,27 @@ func (u *JobOfferUpdateOne) SetOrClearAddress2(value *string) *JobOfferUpdateOne
 		return u.ClearAddress2()
 	}
 	return u.SetAddress2(*value)
+}
+
+func (u *JobOfferUpdateOne) SetOrClearIsFeatured(value *bool) *JobOfferUpdateOne {
+	if value == nil {
+		return u.ClearIsFeatured()
+	}
+	return u.SetIsFeatured(*value)
+}
+
+func (u *JobOfferUpdateOne) SetOrClearHasBeenEmailed(value *bool) *JobOfferUpdateOne {
+	if value == nil {
+		return u.ClearHasBeenEmailed()
+	}
+	return u.SetHasBeenEmailed(*value)
+}
+
+func (u *JobOfferUpdateOne) SetOrClearStatusID(value *uuid.UUID) *JobOfferUpdateOne {
+	if value == nil {
+		return u.ClearStatusID()
+	}
+	return u.SetStatusID(*value)
 }
 
 func (u *JobOfferUpdateOne) SetOrClearCreatedAt(value *time.Time) *JobOfferUpdateOne {
@@ -601,27 +622,6 @@ func (u *JobOfferUpdateOne) SetOrClearDeletedAt(value *time.Time) *JobOfferUpdat
 		return u.ClearDeletedAt()
 	}
 	return u.SetDeletedAt(*value)
-}
-
-func (u *JobOfferUpdateOne) SetOrClearStatusID(value *uuid.UUID) *JobOfferUpdateOne {
-	if value == nil {
-		return u.ClearStatusID()
-	}
-	return u.SetStatusID(*value)
-}
-
-func (u *JobOfferUpdateOne) SetOrClearIsFeatured(value *bool) *JobOfferUpdateOne {
-	if value == nil {
-		return u.ClearIsFeatured()
-	}
-	return u.SetIsFeatured(*value)
-}
-
-func (u *JobOfferUpdateOne) SetOrClearHasBeenEmailed(value *bool) *JobOfferUpdateOne {
-	if value == nil {
-		return u.ClearHasBeenEmailed()
-	}
-	return u.SetHasBeenEmailed(*value)
 }
 
 func (u *JobOfferCategoryUpdate) SetOrClearCreatedAt(value *time.Time) *JobOfferCategoryUpdate {

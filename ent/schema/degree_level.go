@@ -15,7 +15,13 @@ type DegreeLevel struct {
 }
 
 func (DegreeLevel) Fields() []ent.Field {
-	return []ent.Field{field.UUID("id", uuid.UUID{}), field.String("name"), field.Time("created_at").Optional(), field.Time("updated_at").Optional(), field.Time("deleted_at").Optional()}
+	return []ent.Field{
+		field.UUID("id", uuid.UUID{}),
+		field.String("name"),
+		field.Time("created_at").Optional(),
+		field.Time("updated_at").Optional(),
+		field.Time("deleted_at").Optional().Nillable(),
+	}
 }
 func (DegreeLevel) Edges() []ent.Edge {
 	return []ent.Edge{edge.To("educations", Education.Type)}

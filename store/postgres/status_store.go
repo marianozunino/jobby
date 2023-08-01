@@ -43,7 +43,7 @@ func (ss *StatusStore) UpdateStatus(ctx context.Context, status *ent.Status) (*e
 }
 
 func (ss *StatusStore) PaginatedStatuses(ctx context.Context, orderBy *dtos.StatusAggregationInput, take *int, skip *int) (ent.StatusSlice, error) {
-	query := ss.Client.Debug().Status.Query().
+	query := ss.Client.Status.Query().
 		Where(func(s *sql.Selector) {
 			s.Where(sql.IsNull(status.FieldDeletedAt))
 		})

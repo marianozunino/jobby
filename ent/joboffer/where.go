@@ -106,26 +106,6 @@ func Salary(v string) predicate.JobOffer {
 	return predicate.JobOffer(sql.FieldEQ(FieldSalary, v))
 }
 
-// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
-func CreatedAt(v time.Time) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldEQ(FieldCreatedAt, v))
-}
-
-// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
-func UpdatedAt(v time.Time) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldEQ(FieldUpdatedAt, v))
-}
-
-// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
-func DeletedAt(v time.Time) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldEQ(FieldDeletedAt, v))
-}
-
-// StatusID applies equality check predicate on the "status_id" field. It's identical to StatusIDEQ.
-func StatusID(v uuid.UUID) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldEQ(FieldStatusID, v))
-}
-
 // Slug applies equality check predicate on the "slug" field. It's identical to SlugEQ.
 func Slug(v string) predicate.JobOffer {
 	return predicate.JobOffer(sql.FieldEQ(FieldSlug, v))
@@ -139,6 +119,26 @@ func IsFeatured(v bool) predicate.JobOffer {
 // HasBeenEmailed applies equality check predicate on the "has_been_emailed" field. It's identical to HasBeenEmailedEQ.
 func HasBeenEmailed(v bool) predicate.JobOffer {
 	return predicate.JobOffer(sql.FieldEQ(FieldHasBeenEmailed, v))
+}
+
+// StatusID applies equality check predicate on the "status_id" field. It's identical to StatusIDEQ.
+func StatusID(v uuid.UUID) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldEQ(FieldStatusID, v))
+}
+
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
+func UpdatedAt(v time.Time) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
+func DeletedAt(v time.Time) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // TitleEQ applies the EQ predicate on the "title" field.
@@ -736,6 +736,141 @@ func SalaryContainsFold(v string) predicate.JobOffer {
 	return predicate.JobOffer(sql.FieldContainsFold(FieldSalary, v))
 }
 
+// SlugEQ applies the EQ predicate on the "slug" field.
+func SlugEQ(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldEQ(FieldSlug, v))
+}
+
+// SlugNEQ applies the NEQ predicate on the "slug" field.
+func SlugNEQ(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldNEQ(FieldSlug, v))
+}
+
+// SlugIn applies the In predicate on the "slug" field.
+func SlugIn(vs ...string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldIn(FieldSlug, vs...))
+}
+
+// SlugNotIn applies the NotIn predicate on the "slug" field.
+func SlugNotIn(vs ...string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldNotIn(FieldSlug, vs...))
+}
+
+// SlugGT applies the GT predicate on the "slug" field.
+func SlugGT(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldGT(FieldSlug, v))
+}
+
+// SlugGTE applies the GTE predicate on the "slug" field.
+func SlugGTE(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldGTE(FieldSlug, v))
+}
+
+// SlugLT applies the LT predicate on the "slug" field.
+func SlugLT(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldLT(FieldSlug, v))
+}
+
+// SlugLTE applies the LTE predicate on the "slug" field.
+func SlugLTE(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldLTE(FieldSlug, v))
+}
+
+// SlugContains applies the Contains predicate on the "slug" field.
+func SlugContains(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldContains(FieldSlug, v))
+}
+
+// SlugHasPrefix applies the HasPrefix predicate on the "slug" field.
+func SlugHasPrefix(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldHasPrefix(FieldSlug, v))
+}
+
+// SlugHasSuffix applies the HasSuffix predicate on the "slug" field.
+func SlugHasSuffix(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldHasSuffix(FieldSlug, v))
+}
+
+// SlugEqualFold applies the EqualFold predicate on the "slug" field.
+func SlugEqualFold(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldEqualFold(FieldSlug, v))
+}
+
+// SlugContainsFold applies the ContainsFold predicate on the "slug" field.
+func SlugContainsFold(v string) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldContainsFold(FieldSlug, v))
+}
+
+// IsFeaturedEQ applies the EQ predicate on the "is_featured" field.
+func IsFeaturedEQ(v bool) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldEQ(FieldIsFeatured, v))
+}
+
+// IsFeaturedNEQ applies the NEQ predicate on the "is_featured" field.
+func IsFeaturedNEQ(v bool) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldNEQ(FieldIsFeatured, v))
+}
+
+// IsFeaturedIsNil applies the IsNil predicate on the "is_featured" field.
+func IsFeaturedIsNil() predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldIsNull(FieldIsFeatured))
+}
+
+// IsFeaturedNotNil applies the NotNil predicate on the "is_featured" field.
+func IsFeaturedNotNil() predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldNotNull(FieldIsFeatured))
+}
+
+// HasBeenEmailedEQ applies the EQ predicate on the "has_been_emailed" field.
+func HasBeenEmailedEQ(v bool) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldEQ(FieldHasBeenEmailed, v))
+}
+
+// HasBeenEmailedNEQ applies the NEQ predicate on the "has_been_emailed" field.
+func HasBeenEmailedNEQ(v bool) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldNEQ(FieldHasBeenEmailed, v))
+}
+
+// HasBeenEmailedIsNil applies the IsNil predicate on the "has_been_emailed" field.
+func HasBeenEmailedIsNil() predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldIsNull(FieldHasBeenEmailed))
+}
+
+// HasBeenEmailedNotNil applies the NotNil predicate on the "has_been_emailed" field.
+func HasBeenEmailedNotNil() predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldNotNull(FieldHasBeenEmailed))
+}
+
+// StatusIDEQ applies the EQ predicate on the "status_id" field.
+func StatusIDEQ(v uuid.UUID) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldEQ(FieldStatusID, v))
+}
+
+// StatusIDNEQ applies the NEQ predicate on the "status_id" field.
+func StatusIDNEQ(v uuid.UUID) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldNEQ(FieldStatusID, v))
+}
+
+// StatusIDIn applies the In predicate on the "status_id" field.
+func StatusIDIn(vs ...uuid.UUID) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldIn(FieldStatusID, vs...))
+}
+
+// StatusIDNotIn applies the NotIn predicate on the "status_id" field.
+func StatusIDNotIn(vs ...uuid.UUID) predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldNotIn(FieldStatusID, vs...))
+}
+
+// StatusIDIsNil applies the IsNil predicate on the "status_id" field.
+func StatusIDIsNil() predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldIsNull(FieldStatusID))
+}
+
+// StatusIDNotNil applies the NotNil predicate on the "status_id" field.
+func StatusIDNotNil() predicate.JobOffer {
+	return predicate.JobOffer(sql.FieldNotNull(FieldStatusID))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.JobOffer {
 	return predicate.JobOffer(sql.FieldEQ(FieldCreatedAt, v))
@@ -884,141 +1019,6 @@ func DeletedAtIsNil() predicate.JobOffer {
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.JobOffer {
 	return predicate.JobOffer(sql.FieldNotNull(FieldDeletedAt))
-}
-
-// StatusIDEQ applies the EQ predicate on the "status_id" field.
-func StatusIDEQ(v uuid.UUID) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldEQ(FieldStatusID, v))
-}
-
-// StatusIDNEQ applies the NEQ predicate on the "status_id" field.
-func StatusIDNEQ(v uuid.UUID) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldNEQ(FieldStatusID, v))
-}
-
-// StatusIDIn applies the In predicate on the "status_id" field.
-func StatusIDIn(vs ...uuid.UUID) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldIn(FieldStatusID, vs...))
-}
-
-// StatusIDNotIn applies the NotIn predicate on the "status_id" field.
-func StatusIDNotIn(vs ...uuid.UUID) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldNotIn(FieldStatusID, vs...))
-}
-
-// StatusIDIsNil applies the IsNil predicate on the "status_id" field.
-func StatusIDIsNil() predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldIsNull(FieldStatusID))
-}
-
-// StatusIDNotNil applies the NotNil predicate on the "status_id" field.
-func StatusIDNotNil() predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldNotNull(FieldStatusID))
-}
-
-// SlugEQ applies the EQ predicate on the "slug" field.
-func SlugEQ(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldEQ(FieldSlug, v))
-}
-
-// SlugNEQ applies the NEQ predicate on the "slug" field.
-func SlugNEQ(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldNEQ(FieldSlug, v))
-}
-
-// SlugIn applies the In predicate on the "slug" field.
-func SlugIn(vs ...string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldIn(FieldSlug, vs...))
-}
-
-// SlugNotIn applies the NotIn predicate on the "slug" field.
-func SlugNotIn(vs ...string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldNotIn(FieldSlug, vs...))
-}
-
-// SlugGT applies the GT predicate on the "slug" field.
-func SlugGT(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldGT(FieldSlug, v))
-}
-
-// SlugGTE applies the GTE predicate on the "slug" field.
-func SlugGTE(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldGTE(FieldSlug, v))
-}
-
-// SlugLT applies the LT predicate on the "slug" field.
-func SlugLT(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldLT(FieldSlug, v))
-}
-
-// SlugLTE applies the LTE predicate on the "slug" field.
-func SlugLTE(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldLTE(FieldSlug, v))
-}
-
-// SlugContains applies the Contains predicate on the "slug" field.
-func SlugContains(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldContains(FieldSlug, v))
-}
-
-// SlugHasPrefix applies the HasPrefix predicate on the "slug" field.
-func SlugHasPrefix(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldHasPrefix(FieldSlug, v))
-}
-
-// SlugHasSuffix applies the HasSuffix predicate on the "slug" field.
-func SlugHasSuffix(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldHasSuffix(FieldSlug, v))
-}
-
-// SlugEqualFold applies the EqualFold predicate on the "slug" field.
-func SlugEqualFold(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldEqualFold(FieldSlug, v))
-}
-
-// SlugContainsFold applies the ContainsFold predicate on the "slug" field.
-func SlugContainsFold(v string) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldContainsFold(FieldSlug, v))
-}
-
-// IsFeaturedEQ applies the EQ predicate on the "is_featured" field.
-func IsFeaturedEQ(v bool) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldEQ(FieldIsFeatured, v))
-}
-
-// IsFeaturedNEQ applies the NEQ predicate on the "is_featured" field.
-func IsFeaturedNEQ(v bool) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldNEQ(FieldIsFeatured, v))
-}
-
-// IsFeaturedIsNil applies the IsNil predicate on the "is_featured" field.
-func IsFeaturedIsNil() predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldIsNull(FieldIsFeatured))
-}
-
-// IsFeaturedNotNil applies the NotNil predicate on the "is_featured" field.
-func IsFeaturedNotNil() predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldNotNull(FieldIsFeatured))
-}
-
-// HasBeenEmailedEQ applies the EQ predicate on the "has_been_emailed" field.
-func HasBeenEmailedEQ(v bool) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldEQ(FieldHasBeenEmailed, v))
-}
-
-// HasBeenEmailedNEQ applies the NEQ predicate on the "has_been_emailed" field.
-func HasBeenEmailedNEQ(v bool) predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldNEQ(FieldHasBeenEmailed, v))
-}
-
-// HasBeenEmailedIsNil applies the IsNil predicate on the "has_been_emailed" field.
-func HasBeenEmailedIsNil() predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldIsNull(FieldHasBeenEmailed))
-}
-
-// HasBeenEmailedNotNil applies the NotNil predicate on the "has_been_emailed" field.
-func HasBeenEmailedNotNil() predicate.JobOffer {
-	return predicate.JobOffer(sql.FieldNotNull(FieldHasBeenEmailed))
 }
 
 // HasApplications applies the HasEdge predicate on the "applications" edge.

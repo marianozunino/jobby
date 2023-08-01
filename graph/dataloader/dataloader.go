@@ -57,7 +57,7 @@ func newJobOffersByStatusID(ctx context.Context, service service.Service) *JobOf
 		Wait:     5 * time.Millisecond,
 		Fetch: func(statusIDs []uuid.UUID) ([][]*dtos.JobOffer, []error) {
 			// Fetch job offers from the service directly
-			dbRecords, err := service.JobOffersWithStatus(statusIDs)
+			dbRecords, err := service.JobOffersWithStatus(ctx, statusIDs)
 			if err != nil {
 				return nil, []error{err}
 			}
@@ -126,7 +126,6 @@ func newParentCategoryForChildID(ctx context.Context, service service.Service) *
 
 			// Prepare a map to hold the results
 			results := make(map[string]*dtos.Category)
-
 
 			// Group the records based on their ChildID
 			for _, record := range dbRecords {

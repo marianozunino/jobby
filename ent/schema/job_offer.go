@@ -15,7 +15,26 @@ type JobOffer struct {
 }
 
 func (JobOffer) Fields() []ent.Field {
-	return []ent.Field{field.UUID("id", uuid.UUID{}), field.String("title"), field.Int32("reference"), field.Time("start_date"), field.Time("end_date"), field.String("address1").Optional(), field.String("address2").Optional(), field.String("department"), field.String("description"), field.String("working_hours"), field.String("salary"), field.Time("created_at").Optional(), field.Time("updated_at").Optional(), field.Time("deleted_at").Optional(), field.UUID("status_id", uuid.UUID{}).Optional().Nillable(), field.String("slug").Unique(), field.Bool("is_featured").Optional(), field.Bool("has_been_emailed").Optional()}
+	return []ent.Field{
+		field.UUID("id", uuid.UUID{}),
+		field.String("title"),
+		field.Int32("reference"),
+		field.Time("start_date"),
+		field.Time("end_date"),
+		field.String("address1").Optional(),
+		field.String("address2").Optional(),
+		field.String("department"),
+		field.String("description"),
+		field.String("working_hours"),
+		field.String("salary"),
+		field.String("slug").Unique(),
+		field.Bool("is_featured").Optional(),
+		field.Bool("has_been_emailed").Optional(),
+		field.UUID("status_id", uuid.UUID{}).Optional(),
+		field.Time("created_at").Optional(),
+		field.Time("updated_at").Optional(),
+		field.Time("deleted_at").Optional().Nillable(),
+	}
 }
 func (JobOffer) Edges() []ent.Edge {
 	return []ent.Edge{

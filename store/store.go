@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
 	"github.com/marianozunino/cc-backend-go/ent"
-	"github.com/marianozunino/cc-backend-go/store/models"
 )
 
 type ErrNotFound struct {
@@ -28,7 +27,7 @@ type StatusStore interface {
 }
 
 type JobOfferStore interface {
-	JobOffersWithStatus(statusID []uuid.UUID) ([]*models.JobOffers, error)
+	JobOffersWithStatus(ctx context.Context, statusID []uuid.UUID) (ent.JobOffers, error)
 }
 
 type MessageStore interface {
@@ -53,12 +52,12 @@ type CategoryStore interface {
 }
 
 type DegreeLevelStore interface {
-	DegreeLevel(id uuid.UUID) (*models.DegreeLevels, error)
-	PaginatedDegreeLevels(orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) ([]*models.DegreeLevels, error)
-	CountDegreeLevels() (int, error)
-	CreateDegreeLevel(degreeLevel models.DegreeLevels) (*models.DegreeLevels, error)
-	UpdateDegreeLevel(degreeLevel models.DegreeLevels) (*models.DegreeLevels, error)
-	DeleteDegreeLevel(id uuid.UUID) (*models.DegreeLevels, error)
+	DegreeLevel(ctx context.Context, id uuid.UUID) (*ent.DegreeLevel, error)
+	PaginatedDegreeLevels(ctx context.Context, orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) (ent.DegreeLevels, error)
+	CountDegreeLevels(ctx context.Context) (int, error)
+	CreateDegreeLevel(ctx context.Context, degreeLevel *ent.DegreeLevel) (*ent.DegreeLevel, error)
+	UpdateDegreeLevel(ctx context.Context, degreeLevel *ent.DegreeLevel) (*ent.DegreeLevel, error)
+	DeleteDegreeLevel(ctx context.Context, id uuid.UUID) (*ent.DegreeLevel, error)
 }
 
 type Store interface {
@@ -67,4 +66,5 @@ type Store interface {
 	MessageStore
 	CategoryStore
 	DegreeLevelStore
+	Close() error
 }

@@ -263,12 +263,12 @@ var (
 		{Name: "description", Type: field.TypeString},
 		{Name: "working_hours", Type: field.TypeString},
 		{Name: "salary", Type: field.TypeString},
-		{Name: "created_at", Type: field.TypeTime, Nullable: true},
-		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "slug", Type: field.TypeString, Unique: true},
 		{Name: "is_featured", Type: field.TypeBool, Nullable: true},
 		{Name: "has_been_emailed", Type: field.TypeBool, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "status_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// JobOffersTable holds the schema information for the "job_offers" table.
