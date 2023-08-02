@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
 	"github.com/marianozunino/cc-backend-go/graph/generated"
 )
@@ -22,6 +23,31 @@ func (r *categoryResolver) Parent(ctx context.Context, obj *dtos.Category) (*dto
 		return nil, nil
 	}
 	return r.DataLoaders.Retrieve(ctx).ParentCategoryForChildId.Load(*obj.ParentID)
+}
+
+// CreateCategory is the resolver for the createCategory field.
+func (r *mutationResolver) CreateCategory(ctx context.Context, input dtos.CategoryCreateInput) (*dtos.Category, error) {
+	return r.Service.CreateCategory(ctx, input)
+}
+
+// DeleteCategory is the resolver for the deleteCategory field.
+func (r *mutationResolver) DeleteCategory(ctx context.Context, id uuid.UUID) (*dtos.Category, error) {
+	return r.Service.DeleteCategory(ctx, id)
+}
+
+// UpdateCategory is the resolver for the updateCategory field.
+func (r *mutationResolver) UpdateCategory(ctx context.Context, id uuid.UUID, input dtos.CategoryUpdateInput) (*dtos.Category, error) {
+	return r.Service.UpdateCategory(ctx, id, input)
+}
+
+// Category is the resolver for the category field.
+func (r *queryResolver) Category(ctx context.Context, id uuid.UUID) (*dtos.Category, error) {
+	return r.Service.GetCategory(ctx, id)
+}
+
+// Categories is the resolver for the categories field.
+func (r *queryResolver) Categories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error) {
+	return r.Service.PaginatedCategories(ctx, orderBy, take, skip, where)
 }
 
 // Category returns generated.CategoryResolver implementation.

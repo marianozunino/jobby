@@ -708,18 +708,18 @@ func (u *PostUpdate) SetOrClearPreviewImage(value *string) *PostUpdate {
 	return u.SetPreviewImage(*value)
 }
 
-func (u *PostUpdate) SetOrClearDeletedAt(value *time.Time) *PostUpdate {
-	if value == nil {
-		return u.ClearDeletedAt()
-	}
-	return u.SetDeletedAt(*value)
-}
-
 func (u *PostUpdate) SetOrClearAuthorID(value *uuid.UUID) *PostUpdate {
 	if value == nil {
 		return u.ClearAuthorID()
 	}
 	return u.SetAuthorID(*value)
+}
+
+func (u *PostUpdate) SetOrClearDeletedAt(value *time.Time) *PostUpdate {
+	if value == nil {
+		return u.ClearDeletedAt()
+	}
+	return u.SetDeletedAt(*value)
 }
 
 func (u *PostUpdateOne) SetOrClearPublishedAt(value *time.Time) *PostUpdateOne {
@@ -736,18 +736,18 @@ func (u *PostUpdateOne) SetOrClearPreviewImage(value *string) *PostUpdateOne {
 	return u.SetPreviewImage(*value)
 }
 
-func (u *PostUpdateOne) SetOrClearDeletedAt(value *time.Time) *PostUpdateOne {
-	if value == nil {
-		return u.ClearDeletedAt()
-	}
-	return u.SetDeletedAt(*value)
-}
-
 func (u *PostUpdateOne) SetOrClearAuthorID(value *uuid.UUID) *PostUpdateOne {
 	if value == nil {
 		return u.ClearAuthorID()
 	}
 	return u.SetAuthorID(*value)
+}
+
+func (u *PostUpdateOne) SetOrClearDeletedAt(value *time.Time) *PostUpdateOne {
+	if value == nil {
+		return u.ClearDeletedAt()
+	}
+	return u.SetDeletedAt(*value)
 }
 
 func (u *PostCategoryUpdate) SetOrClearDeletedAt(value *time.Time) *PostCategoryUpdate {

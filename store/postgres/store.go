@@ -21,6 +21,7 @@ type Store struct {
 	store.DegreeLevelStore
 	store.PostCategoryStore
 	store.PostStore
+	store.UserStore
 }
 
 // assert that Store implements store.Store
@@ -46,6 +47,7 @@ func NewStore(databaseURL string) store.Store {
 		&DegreeLevelStore{client},
 		&PostCategoryStore{client},
 		&PostStore{client},
+		&UserStore{client},
 	}
 }
 

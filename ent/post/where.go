@@ -86,6 +86,16 @@ func PublishedAt(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldPublishedAt, v))
 }
 
+// PreviewImage applies equality check predicate on the "preview_image" field. It's identical to PreviewImageEQ.
+func PreviewImage(v string) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldPreviewImage, v))
+}
+
+// AuthorID applies equality check predicate on the "author_id" field. It's identical to AuthorIDEQ.
+func AuthorID(v uuid.UUID) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldAuthorID, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldCreatedAt, v))
@@ -96,19 +106,9 @@ func UpdatedAt(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// PreviewImage applies equality check predicate on the "preview_image" field. It's identical to PreviewImageEQ.
-func PreviewImage(v string) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldPreviewImage, v))
-}
-
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldDeletedAt, v))
-}
-
-// AuthorID applies equality check predicate on the "author_id" field. It's identical to AuthorIDEQ.
-func AuthorID(v uuid.UUID) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldAuthorID, v))
 }
 
 // TitleEQ applies the EQ predicate on the "title" field.
@@ -376,6 +376,111 @@ func PublishedAtNotNil() predicate.Post {
 	return predicate.Post(sql.FieldNotNull(FieldPublishedAt))
 }
 
+// PreviewImageEQ applies the EQ predicate on the "preview_image" field.
+func PreviewImageEQ(v string) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldPreviewImage, v))
+}
+
+// PreviewImageNEQ applies the NEQ predicate on the "preview_image" field.
+func PreviewImageNEQ(v string) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldPreviewImage, v))
+}
+
+// PreviewImageIn applies the In predicate on the "preview_image" field.
+func PreviewImageIn(vs ...string) predicate.Post {
+	return predicate.Post(sql.FieldIn(FieldPreviewImage, vs...))
+}
+
+// PreviewImageNotIn applies the NotIn predicate on the "preview_image" field.
+func PreviewImageNotIn(vs ...string) predicate.Post {
+	return predicate.Post(sql.FieldNotIn(FieldPreviewImage, vs...))
+}
+
+// PreviewImageGT applies the GT predicate on the "preview_image" field.
+func PreviewImageGT(v string) predicate.Post {
+	return predicate.Post(sql.FieldGT(FieldPreviewImage, v))
+}
+
+// PreviewImageGTE applies the GTE predicate on the "preview_image" field.
+func PreviewImageGTE(v string) predicate.Post {
+	return predicate.Post(sql.FieldGTE(FieldPreviewImage, v))
+}
+
+// PreviewImageLT applies the LT predicate on the "preview_image" field.
+func PreviewImageLT(v string) predicate.Post {
+	return predicate.Post(sql.FieldLT(FieldPreviewImage, v))
+}
+
+// PreviewImageLTE applies the LTE predicate on the "preview_image" field.
+func PreviewImageLTE(v string) predicate.Post {
+	return predicate.Post(sql.FieldLTE(FieldPreviewImage, v))
+}
+
+// PreviewImageContains applies the Contains predicate on the "preview_image" field.
+func PreviewImageContains(v string) predicate.Post {
+	return predicate.Post(sql.FieldContains(FieldPreviewImage, v))
+}
+
+// PreviewImageHasPrefix applies the HasPrefix predicate on the "preview_image" field.
+func PreviewImageHasPrefix(v string) predicate.Post {
+	return predicate.Post(sql.FieldHasPrefix(FieldPreviewImage, v))
+}
+
+// PreviewImageHasSuffix applies the HasSuffix predicate on the "preview_image" field.
+func PreviewImageHasSuffix(v string) predicate.Post {
+	return predicate.Post(sql.FieldHasSuffix(FieldPreviewImage, v))
+}
+
+// PreviewImageIsNil applies the IsNil predicate on the "preview_image" field.
+func PreviewImageIsNil() predicate.Post {
+	return predicate.Post(sql.FieldIsNull(FieldPreviewImage))
+}
+
+// PreviewImageNotNil applies the NotNil predicate on the "preview_image" field.
+func PreviewImageNotNil() predicate.Post {
+	return predicate.Post(sql.FieldNotNull(FieldPreviewImage))
+}
+
+// PreviewImageEqualFold applies the EqualFold predicate on the "preview_image" field.
+func PreviewImageEqualFold(v string) predicate.Post {
+	return predicate.Post(sql.FieldEqualFold(FieldPreviewImage, v))
+}
+
+// PreviewImageContainsFold applies the ContainsFold predicate on the "preview_image" field.
+func PreviewImageContainsFold(v string) predicate.Post {
+	return predicate.Post(sql.FieldContainsFold(FieldPreviewImage, v))
+}
+
+// AuthorIDEQ applies the EQ predicate on the "author_id" field.
+func AuthorIDEQ(v uuid.UUID) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldAuthorID, v))
+}
+
+// AuthorIDNEQ applies the NEQ predicate on the "author_id" field.
+func AuthorIDNEQ(v uuid.UUID) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldAuthorID, v))
+}
+
+// AuthorIDIn applies the In predicate on the "author_id" field.
+func AuthorIDIn(vs ...uuid.UUID) predicate.Post {
+	return predicate.Post(sql.FieldIn(FieldAuthorID, vs...))
+}
+
+// AuthorIDNotIn applies the NotIn predicate on the "author_id" field.
+func AuthorIDNotIn(vs ...uuid.UUID) predicate.Post {
+	return predicate.Post(sql.FieldNotIn(FieldAuthorID, vs...))
+}
+
+// AuthorIDIsNil applies the IsNil predicate on the "author_id" field.
+func AuthorIDIsNil() predicate.Post {
+	return predicate.Post(sql.FieldIsNull(FieldAuthorID))
+}
+
+// AuthorIDNotNil applies the NotNil predicate on the "author_id" field.
+func AuthorIDNotNil() predicate.Post {
+	return predicate.Post(sql.FieldNotNull(FieldAuthorID))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldCreatedAt, v))
@@ -456,81 +561,6 @@ func UpdatedAtLTE(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// PreviewImageEQ applies the EQ predicate on the "preview_image" field.
-func PreviewImageEQ(v string) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldPreviewImage, v))
-}
-
-// PreviewImageNEQ applies the NEQ predicate on the "preview_image" field.
-func PreviewImageNEQ(v string) predicate.Post {
-	return predicate.Post(sql.FieldNEQ(FieldPreviewImage, v))
-}
-
-// PreviewImageIn applies the In predicate on the "preview_image" field.
-func PreviewImageIn(vs ...string) predicate.Post {
-	return predicate.Post(sql.FieldIn(FieldPreviewImage, vs...))
-}
-
-// PreviewImageNotIn applies the NotIn predicate on the "preview_image" field.
-func PreviewImageNotIn(vs ...string) predicate.Post {
-	return predicate.Post(sql.FieldNotIn(FieldPreviewImage, vs...))
-}
-
-// PreviewImageGT applies the GT predicate on the "preview_image" field.
-func PreviewImageGT(v string) predicate.Post {
-	return predicate.Post(sql.FieldGT(FieldPreviewImage, v))
-}
-
-// PreviewImageGTE applies the GTE predicate on the "preview_image" field.
-func PreviewImageGTE(v string) predicate.Post {
-	return predicate.Post(sql.FieldGTE(FieldPreviewImage, v))
-}
-
-// PreviewImageLT applies the LT predicate on the "preview_image" field.
-func PreviewImageLT(v string) predicate.Post {
-	return predicate.Post(sql.FieldLT(FieldPreviewImage, v))
-}
-
-// PreviewImageLTE applies the LTE predicate on the "preview_image" field.
-func PreviewImageLTE(v string) predicate.Post {
-	return predicate.Post(sql.FieldLTE(FieldPreviewImage, v))
-}
-
-// PreviewImageContains applies the Contains predicate on the "preview_image" field.
-func PreviewImageContains(v string) predicate.Post {
-	return predicate.Post(sql.FieldContains(FieldPreviewImage, v))
-}
-
-// PreviewImageHasPrefix applies the HasPrefix predicate on the "preview_image" field.
-func PreviewImageHasPrefix(v string) predicate.Post {
-	return predicate.Post(sql.FieldHasPrefix(FieldPreviewImage, v))
-}
-
-// PreviewImageHasSuffix applies the HasSuffix predicate on the "preview_image" field.
-func PreviewImageHasSuffix(v string) predicate.Post {
-	return predicate.Post(sql.FieldHasSuffix(FieldPreviewImage, v))
-}
-
-// PreviewImageIsNil applies the IsNil predicate on the "preview_image" field.
-func PreviewImageIsNil() predicate.Post {
-	return predicate.Post(sql.FieldIsNull(FieldPreviewImage))
-}
-
-// PreviewImageNotNil applies the NotNil predicate on the "preview_image" field.
-func PreviewImageNotNil() predicate.Post {
-	return predicate.Post(sql.FieldNotNull(FieldPreviewImage))
-}
-
-// PreviewImageEqualFold applies the EqualFold predicate on the "preview_image" field.
-func PreviewImageEqualFold(v string) predicate.Post {
-	return predicate.Post(sql.FieldEqualFold(FieldPreviewImage, v))
-}
-
-// PreviewImageContainsFold applies the ContainsFold predicate on the "preview_image" field.
-func PreviewImageContainsFold(v string) predicate.Post {
-	return predicate.Post(sql.FieldContainsFold(FieldPreviewImage, v))
-}
-
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldDeletedAt, v))
@@ -579,36 +609,6 @@ func DeletedAtIsNil() predicate.Post {
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.Post {
 	return predicate.Post(sql.FieldNotNull(FieldDeletedAt))
-}
-
-// AuthorIDEQ applies the EQ predicate on the "author_id" field.
-func AuthorIDEQ(v uuid.UUID) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldAuthorID, v))
-}
-
-// AuthorIDNEQ applies the NEQ predicate on the "author_id" field.
-func AuthorIDNEQ(v uuid.UUID) predicate.Post {
-	return predicate.Post(sql.FieldNEQ(FieldAuthorID, v))
-}
-
-// AuthorIDIn applies the In predicate on the "author_id" field.
-func AuthorIDIn(vs ...uuid.UUID) predicate.Post {
-	return predicate.Post(sql.FieldIn(FieldAuthorID, vs...))
-}
-
-// AuthorIDNotIn applies the NotIn predicate on the "author_id" field.
-func AuthorIDNotIn(vs ...uuid.UUID) predicate.Post {
-	return predicate.Post(sql.FieldNotIn(FieldAuthorID, vs...))
-}
-
-// AuthorIDIsNil applies the IsNil predicate on the "author_id" field.
-func AuthorIDIsNil() predicate.Post {
-	return predicate.Post(sql.FieldIsNull(FieldAuthorID))
-}
-
-// AuthorIDNotNil applies the NotNil predicate on the "author_id" field.
-func AuthorIDNotNil() predicate.Post {
-	return predicate.Post(sql.FieldNotNull(FieldAuthorID))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

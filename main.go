@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/marianozunino/cc-backend-go/config"
 	"github.com/marianozunino/cc-backend-go/graph"
+	"github.com/marianozunino/cc-backend-go/graph/middleware"
 	"github.com/marianozunino/cc-backend-go/service"
 	store "github.com/marianozunino/cc-backend-go/store/postgres"
 )
@@ -24,9 +25,11 @@ func main() {
 
 	r := chi.NewRouter()
 
+	r.Use(middleware.Auth(service))
+
 	r.Handle("/graphql", graph.NewHandler(service))
 	r.Get("/", graph.NewPlaygroundHandler("/graphql"))
 
-	fmt.Printf("connect to http://localhost%s/ for GraphQL playground", port)
+	fmt.Printf("connect to http://localhost%s/ for GraphQL playground\n", port)
 	panic(http.ListenAndServe(port, r))
 }

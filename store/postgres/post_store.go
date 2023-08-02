@@ -61,6 +61,7 @@ func (p *PostStore) CountPosts(ctx context.Context) (int, error) {
 func (p *PostStore) CreatePost(ctx context.Context, post *ent.Post) (*ent.Post, error) {
 	return p.Client.Post.Create().
 		SetTitle(post.Title).
+		SetSlug(post.Slug).
 		SetContent(post.Content).
 		SetIsHighlighted(post.IsHighlighted).
 		SetIsPublished(post.IsPublished).

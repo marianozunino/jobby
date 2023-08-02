@@ -1,4 +1,3 @@
-
 type Status {
   id: ID!
   name: String!
@@ -29,4 +28,19 @@ type PaginatedStatusResponse {
   total: Int!
   take: Int
   skip: Int
+}
+
+extend type Mutation {
+  createStatus(input: StatusCreateInput!): Status!
+  deleteStatus(id: UUIDv4!): Status!
+  updateStatus(id: UUIDv4!, input: StatusUpdateInput!): Status!
+}
+
+extend type Query {
+  status(id: UUIDv4!): Status!
+  statuses(
+    orderBy: StatusAggregationInput
+    take: Int = 10
+    skip: Int = 0
+  ): PaginatedStatusResponse!
 }

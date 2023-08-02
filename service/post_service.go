@@ -21,7 +21,7 @@ func createSlugForPost(name string) string {
 	return slug.Make(name)
 }
 
-func (p *postService) CreatePost(ctx context.Context, input dtos.PostCreateInput) (*dtos.Post, error) {
+func (p *postService) CreatePost(ctx context.Context, input dtos.PostCreateInput, authorID uuid.UUID) (*dtos.Post, error) {
 
 	slug, err := p.FindUniqueSlug(ctx, createSlugForPost(input.Title))
 	if err != nil {
@@ -34,7 +34,7 @@ func (p *postService) CreatePost(ctx context.Context, input dtos.PostCreateInput
 		IsHighlighted: input.IsHighlighted,
 		IsPublished:   input.IsPublished,
 		PreviewImage:  input.PreviewImage,
-		AuthorID:      nil,
+		AuthorID:      &authorID,
 		Slug:          slug,
 	}
 

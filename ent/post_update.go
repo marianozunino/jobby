@@ -81,18 +81,6 @@ func (pu *PostUpdate) ClearPublishedAt() *PostUpdate {
 	return pu
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (pu *PostUpdate) SetCreatedAt(t time.Time) *PostUpdate {
-	pu.mutation.SetCreatedAt(t)
-	return pu
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (pu *PostUpdate) SetUpdatedAt(t time.Time) *PostUpdate {
-	pu.mutation.SetUpdatedAt(t)
-	return pu
-}
-
 // SetPreviewImage sets the "preview_image" field.
 func (pu *PostUpdate) SetPreviewImage(s string) *PostUpdate {
 	pu.mutation.SetPreviewImage(s)
@@ -113,26 +101,6 @@ func (pu *PostUpdate) ClearPreviewImage() *PostUpdate {
 	return pu
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (pu *PostUpdate) SetDeletedAt(t time.Time) *PostUpdate {
-	pu.mutation.SetDeletedAt(t)
-	return pu
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (pu *PostUpdate) SetNillableDeletedAt(t *time.Time) *PostUpdate {
-	if t != nil {
-		pu.SetDeletedAt(*t)
-	}
-	return pu
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (pu *PostUpdate) ClearDeletedAt() *PostUpdate {
-	pu.mutation.ClearDeletedAt()
-	return pu
-}
-
 // SetAuthorID sets the "author_id" field.
 func (pu *PostUpdate) SetAuthorID(u uuid.UUID) *PostUpdate {
 	pu.mutation.SetAuthorID(u)
@@ -150,6 +118,32 @@ func (pu *PostUpdate) SetNillableAuthorID(u *uuid.UUID) *PostUpdate {
 // ClearAuthorID clears the value of the "author_id" field.
 func (pu *PostUpdate) ClearAuthorID() *PostUpdate {
 	pu.mutation.ClearAuthorID()
+	return pu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pu *PostUpdate) SetUpdatedAt(t time.Time) *PostUpdate {
+	pu.mutation.SetUpdatedAt(t)
+	return pu
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (pu *PostUpdate) SetDeletedAt(t time.Time) *PostUpdate {
+	pu.mutation.SetDeletedAt(t)
+	return pu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableDeletedAt(t *time.Time) *PostUpdate {
+	if t != nil {
+		pu.SetDeletedAt(*t)
+	}
+	return pu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (pu *PostUpdate) ClearDeletedAt() *PostUpdate {
+	pu.mutation.ClearDeletedAt()
 	return pu
 }
 
@@ -221,6 +215,7 @@ func (pu *PostUpdate) RemovePostCategory(p ...*PostCategory) *PostUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pu *PostUpdate) Save(ctx context.Context) (int, error) {
+	pu.defaults()
 	return withHooks(ctx, pu.sqlSave, pu.mutation, pu.hooks)
 }
 
@@ -243,6 +238,14 @@ func (pu *PostUpdate) Exec(ctx context.Context) error {
 func (pu *PostUpdate) ExecX(ctx context.Context) {
 	if err := pu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (pu *PostUpdate) defaults() {
+	if _, ok := pu.mutation.UpdatedAt(); !ok {
+		v := post.UpdateDefaultUpdatedAt()
+		pu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -276,17 +279,14 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if pu.mutation.PublishedAtCleared() {
 		_spec.ClearField(post.FieldPublishedAt, field.TypeTime)
 	}
-	if value, ok := pu.mutation.CreatedAt(); ok {
-		_spec.SetField(post.FieldCreatedAt, field.TypeTime, value)
-	}
-	if value, ok := pu.mutation.UpdatedAt(); ok {
-		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
-	}
 	if value, ok := pu.mutation.PreviewImage(); ok {
 		_spec.SetField(post.FieldPreviewImage, field.TypeString, value)
 	}
 	if pu.mutation.PreviewImageCleared() {
 		_spec.ClearField(post.FieldPreviewImage, field.TypeString)
+	}
+	if value, ok := pu.mutation.UpdatedAt(); ok {
+		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := pu.mutation.DeletedAt(); ok {
 		_spec.SetField(post.FieldDeletedAt, field.TypeTime, value)
@@ -438,18 +438,6 @@ func (puo *PostUpdateOne) ClearPublishedAt() *PostUpdateOne {
 	return puo
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (puo *PostUpdateOne) SetCreatedAt(t time.Time) *PostUpdateOne {
-	puo.mutation.SetCreatedAt(t)
-	return puo
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (puo *PostUpdateOne) SetUpdatedAt(t time.Time) *PostUpdateOne {
-	puo.mutation.SetUpdatedAt(t)
-	return puo
-}
-
 // SetPreviewImage sets the "preview_image" field.
 func (puo *PostUpdateOne) SetPreviewImage(s string) *PostUpdateOne {
 	puo.mutation.SetPreviewImage(s)
@@ -470,26 +458,6 @@ func (puo *PostUpdateOne) ClearPreviewImage() *PostUpdateOne {
 	return puo
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (puo *PostUpdateOne) SetDeletedAt(t time.Time) *PostUpdateOne {
-	puo.mutation.SetDeletedAt(t)
-	return puo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (puo *PostUpdateOne) SetNillableDeletedAt(t *time.Time) *PostUpdateOne {
-	if t != nil {
-		puo.SetDeletedAt(*t)
-	}
-	return puo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (puo *PostUpdateOne) ClearDeletedAt() *PostUpdateOne {
-	puo.mutation.ClearDeletedAt()
-	return puo
-}
-
 // SetAuthorID sets the "author_id" field.
 func (puo *PostUpdateOne) SetAuthorID(u uuid.UUID) *PostUpdateOne {
 	puo.mutation.SetAuthorID(u)
@@ -507,6 +475,32 @@ func (puo *PostUpdateOne) SetNillableAuthorID(u *uuid.UUID) *PostUpdateOne {
 // ClearAuthorID clears the value of the "author_id" field.
 func (puo *PostUpdateOne) ClearAuthorID() *PostUpdateOne {
 	puo.mutation.ClearAuthorID()
+	return puo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (puo *PostUpdateOne) SetUpdatedAt(t time.Time) *PostUpdateOne {
+	puo.mutation.SetUpdatedAt(t)
+	return puo
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (puo *PostUpdateOne) SetDeletedAt(t time.Time) *PostUpdateOne {
+	puo.mutation.SetDeletedAt(t)
+	return puo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableDeletedAt(t *time.Time) *PostUpdateOne {
+	if t != nil {
+		puo.SetDeletedAt(*t)
+	}
+	return puo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (puo *PostUpdateOne) ClearDeletedAt() *PostUpdateOne {
+	puo.mutation.ClearDeletedAt()
 	return puo
 }
 
@@ -591,6 +585,7 @@ func (puo *PostUpdateOne) Select(field string, fields ...string) *PostUpdateOne 
 
 // Save executes the query and returns the updated Post entity.
 func (puo *PostUpdateOne) Save(ctx context.Context) (*Post, error) {
+	puo.defaults()
 	return withHooks(ctx, puo.sqlSave, puo.mutation, puo.hooks)
 }
 
@@ -613,6 +608,14 @@ func (puo *PostUpdateOne) Exec(ctx context.Context) error {
 func (puo *PostUpdateOne) ExecX(ctx context.Context) {
 	if err := puo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (puo *PostUpdateOne) defaults() {
+	if _, ok := puo.mutation.UpdatedAt(); !ok {
+		v := post.UpdateDefaultUpdatedAt()
+		puo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -663,17 +666,14 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	if puo.mutation.PublishedAtCleared() {
 		_spec.ClearField(post.FieldPublishedAt, field.TypeTime)
 	}
-	if value, ok := puo.mutation.CreatedAt(); ok {
-		_spec.SetField(post.FieldCreatedAt, field.TypeTime, value)
-	}
-	if value, ok := puo.mutation.UpdatedAt(); ok {
-		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
-	}
 	if value, ok := puo.mutation.PreviewImage(); ok {
 		_spec.SetField(post.FieldPreviewImage, field.TypeString, value)
 	}
 	if puo.mutation.PreviewImageCleared() {
 		_spec.ClearField(post.FieldPreviewImage, field.TypeString)
+	}
+	if value, ok := puo.mutation.UpdatedAt(); ok {
+		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := puo.mutation.DeletedAt(); ok {
 		_spec.SetField(post.FieldDeletedAt, field.TypeTime, value)

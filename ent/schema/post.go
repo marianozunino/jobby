@@ -3,6 +3,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -21,12 +23,12 @@ func (Post) Fields() []ent.Field {
 		field.String("slug").Unique(),
 		field.Bool("is_highlighted"),
 		field.Bool("is_published"),
-		field.Time("published_at").Optional(),
-		field.Time("created_at"),
-		field.Time("updated_at"),
+		field.Time("published_at").Optional().Nillable(),
 		field.String("preview_image").Optional().Nillable(),
-		field.Time("deleted_at").Optional().Nillable(),
 		field.UUID("author_id", uuid.UUID{}).Optional().Nillable(),
+		field.Time("created_at").Immutable().Default(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
+		field.Time("deleted_at").Optional().Nillable(),
 	}
 }
 func (Post) Edges() []ent.Edge {

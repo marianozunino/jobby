@@ -23,7 +23,6 @@ input DegreeLevelWhereInput {
 
 input DegreeLevelCreateInput {
   name: String!
-
 }
 
 input DegreeLevelUpdateInput {
@@ -35,4 +34,20 @@ type PaginatedDegreeLevelResponse {
   total: Int!
   take: Int
   skip: Int
+}
+
+extend type Query {
+  degreeLevel(id: ID!): DegreeLevel!
+  degreeLevels(
+    orderBy: DegreeLevelAggregationInput
+    take: Int = 10
+    skip: Int = 0
+    where: DegreeLevelWhereInput
+  ): PaginatedDegreeLevelResponse!
+}
+
+extend type Mutation {
+  createDegreeLevel(input: DegreeLevelCreateInput!): DegreeLevel!
+  deleteDegreeLevel(id: ID!): DegreeLevel!
+  updateDegreeLevel(id: ID!, input: DegreeLevelUpdateInput!): DegreeLevel!
 }

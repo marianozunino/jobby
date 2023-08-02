@@ -30,17 +30,17 @@ type Post struct {
 	// IsPublished holds the value of the "is_published" field.
 	IsPublished bool `json:"is_published,omitempty"`
 	// PublishedAt holds the value of the "published_at" field.
-	PublishedAt time.Time `json:"published_at,omitempty"`
+	PublishedAt *time.Time `json:"published_at,omitempty"`
+	// PreviewImage holds the value of the "preview_image" field.
+	PreviewImage *string `json:"preview_image,omitempty"`
+	// AuthorID holds the value of the "author_id" field.
+	AuthorID *uuid.UUID `json:"author_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// PreviewImage holds the value of the "preview_image" field.
-	PreviewImage *string `json:"preview_image,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// AuthorID holds the value of the "author_id" field.
-	AuthorID *uuid.UUID `json:"author_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PostQuery when eager-loading is set.
 	Edges        PostEdges `json:"edges"`
@@ -150,7 +150,22 @@ func (po *Post) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field published_at", values[i])
 			} else if value.Valid {
-				po.PublishedAt = value.Time
+				po.PublishedAt = new(time.Time)
+				*po.PublishedAt = value.Time
+			}
+		case post.FieldPreviewImage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field preview_image", values[i])
+			} else if value.Valid {
+				po.PreviewImage = new(string)
+				*po.PreviewImage = value.String
+			}
+		case post.FieldAuthorID:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field author_id", values[i])
+			} else if value.Valid {
+				po.AuthorID = new(uuid.UUID)
+				*po.AuthorID = *value.S.(*uuid.UUID)
 			}
 		case post.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -164,26 +179,12 @@ func (po *Post) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				po.UpdatedAt = value.Time
 			}
-		case post.FieldPreviewImage:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field preview_image", values[i])
-			} else if value.Valid {
-				po.PreviewImage = new(string)
-				*po.PreviewImage = value.String
-			}
 		case post.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
 				po.DeletedAt = new(time.Time)
 				*po.DeletedAt = value.Time
-			}
-		case post.FieldAuthorID:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field author_id", values[i])
-			} else if value.Valid {
-				po.AuthorID = new(uuid.UUID)
-				*po.AuthorID = *value.S.(*uuid.UUID)
 			}
 		default:
 			po.selectValues.Set(columns[i], values[i])
@@ -246,8 +247,20 @@ func (po *Post) String() string {
 	builder.WriteString("is_published=")
 	builder.WriteString(fmt.Sprintf("%v", po.IsPublished))
 	builder.WriteString(", ")
-	builder.WriteString("published_at=")
-	builder.WriteString(po.PublishedAt.Format(time.ANSIC))
+	if v := po.PublishedAt; v != nil {
+		builder.WriteString("published_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := po.PreviewImage; v != nil {
+		builder.WriteString("preview_image=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := po.AuthorID; v != nil {
+		builder.WriteString("author_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(po.CreatedAt.Format(time.ANSIC))
@@ -255,19 +268,9 @@ func (po *Post) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(po.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := po.PreviewImage; v != nil {
-		builder.WriteString("preview_image=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
 	if v := po.DeletedAt; v != nil {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", ")
-	if v := po.AuthorID; v != nil {
-		builder.WriteString("author_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

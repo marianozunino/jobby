@@ -11313,9 +11313,9 @@ type PostMutation struct {
 	is_highlighted       *bool
 	is_published         *bool
 	published_at         *time.Time
+	preview_image        *string
 	created_at           *time.Time
 	updated_at           *time.Time
-	preview_image        *string
 	deleted_at           *time.Time
 	clearedFields        map[string]struct{}
 	user                 *uuid.UUID
@@ -11629,7 +11629,7 @@ func (m *PostMutation) PublishedAt() (r time.Time, exists bool) {
 // OldPublishedAt returns the old "published_at" field's value of the Post entity.
 // If the Post object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PostMutation) OldPublishedAt(ctx context.Context) (v time.Time, err error) {
+func (m *PostMutation) OldPublishedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPublishedAt is only allowed on UpdateOne operations")
 	}
@@ -11659,6 +11659,104 @@ func (m *PostMutation) PublishedAtCleared() bool {
 func (m *PostMutation) ResetPublishedAt() {
 	m.published_at = nil
 	delete(m.clearedFields, post.FieldPublishedAt)
+}
+
+// SetPreviewImage sets the "preview_image" field.
+func (m *PostMutation) SetPreviewImage(s string) {
+	m.preview_image = &s
+}
+
+// PreviewImage returns the value of the "preview_image" field in the mutation.
+func (m *PostMutation) PreviewImage() (r string, exists bool) {
+	v := m.preview_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPreviewImage returns the old "preview_image" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldPreviewImage(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPreviewImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPreviewImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPreviewImage: %w", err)
+	}
+	return oldValue.PreviewImage, nil
+}
+
+// ClearPreviewImage clears the value of the "preview_image" field.
+func (m *PostMutation) ClearPreviewImage() {
+	m.preview_image = nil
+	m.clearedFields[post.FieldPreviewImage] = struct{}{}
+}
+
+// PreviewImageCleared returns if the "preview_image" field was cleared in this mutation.
+func (m *PostMutation) PreviewImageCleared() bool {
+	_, ok := m.clearedFields[post.FieldPreviewImage]
+	return ok
+}
+
+// ResetPreviewImage resets all changes to the "preview_image" field.
+func (m *PostMutation) ResetPreviewImage() {
+	m.preview_image = nil
+	delete(m.clearedFields, post.FieldPreviewImage)
+}
+
+// SetAuthorID sets the "author_id" field.
+func (m *PostMutation) SetAuthorID(u uuid.UUID) {
+	m.user = &u
+}
+
+// AuthorID returns the value of the "author_id" field in the mutation.
+func (m *PostMutation) AuthorID() (r uuid.UUID, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuthorID returns the old "author_id" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldAuthorID(ctx context.Context) (v *uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAuthorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAuthorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuthorID: %w", err)
+	}
+	return oldValue.AuthorID, nil
+}
+
+// ClearAuthorID clears the value of the "author_id" field.
+func (m *PostMutation) ClearAuthorID() {
+	m.user = nil
+	m.clearedFields[post.FieldAuthorID] = struct{}{}
+}
+
+// AuthorIDCleared returns if the "author_id" field was cleared in this mutation.
+func (m *PostMutation) AuthorIDCleared() bool {
+	_, ok := m.clearedFields[post.FieldAuthorID]
+	return ok
+}
+
+// ResetAuthorID resets all changes to the "author_id" field.
+func (m *PostMutation) ResetAuthorID() {
+	m.user = nil
+	delete(m.clearedFields, post.FieldAuthorID)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -11733,55 +11831,6 @@ func (m *PostMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetPreviewImage sets the "preview_image" field.
-func (m *PostMutation) SetPreviewImage(s string) {
-	m.preview_image = &s
-}
-
-// PreviewImage returns the value of the "preview_image" field in the mutation.
-func (m *PostMutation) PreviewImage() (r string, exists bool) {
-	v := m.preview_image
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPreviewImage returns the old "preview_image" field's value of the Post entity.
-// If the Post object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PostMutation) OldPreviewImage(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPreviewImage is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPreviewImage requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPreviewImage: %w", err)
-	}
-	return oldValue.PreviewImage, nil
-}
-
-// ClearPreviewImage clears the value of the "preview_image" field.
-func (m *PostMutation) ClearPreviewImage() {
-	m.preview_image = nil
-	m.clearedFields[post.FieldPreviewImage] = struct{}{}
-}
-
-// PreviewImageCleared returns if the "preview_image" field was cleared in this mutation.
-func (m *PostMutation) PreviewImageCleared() bool {
-	_, ok := m.clearedFields[post.FieldPreviewImage]
-	return ok
-}
-
-// ResetPreviewImage resets all changes to the "preview_image" field.
-func (m *PostMutation) ResetPreviewImage() {
-	m.preview_image = nil
-	delete(m.clearedFields, post.FieldPreviewImage)
-}
-
 // SetDeletedAt sets the "deleted_at" field.
 func (m *PostMutation) SetDeletedAt(t time.Time) {
 	m.deleted_at = &t
@@ -11829,55 +11878,6 @@ func (m *PostMutation) DeletedAtCleared() bool {
 func (m *PostMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, post.FieldDeletedAt)
-}
-
-// SetAuthorID sets the "author_id" field.
-func (m *PostMutation) SetAuthorID(u uuid.UUID) {
-	m.user = &u
-}
-
-// AuthorID returns the value of the "author_id" field in the mutation.
-func (m *PostMutation) AuthorID() (r uuid.UUID, exists bool) {
-	v := m.user
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAuthorID returns the old "author_id" field's value of the Post entity.
-// If the Post object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PostMutation) OldAuthorID(ctx context.Context) (v *uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAuthorID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAuthorID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAuthorID: %w", err)
-	}
-	return oldValue.AuthorID, nil
-}
-
-// ClearAuthorID clears the value of the "author_id" field.
-func (m *PostMutation) ClearAuthorID() {
-	m.user = nil
-	m.clearedFields[post.FieldAuthorID] = struct{}{}
-}
-
-// AuthorIDCleared returns if the "author_id" field was cleared in this mutation.
-func (m *PostMutation) AuthorIDCleared() bool {
-	_, ok := m.clearedFields[post.FieldAuthorID]
-	return ok
-}
-
-// ResetAuthorID resets all changes to the "author_id" field.
-func (m *PostMutation) ResetAuthorID() {
-	m.user = nil
-	delete(m.clearedFields, post.FieldAuthorID)
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
@@ -12026,20 +12026,20 @@ func (m *PostMutation) Fields() []string {
 	if m.published_at != nil {
 		fields = append(fields, post.FieldPublishedAt)
 	}
+	if m.preview_image != nil {
+		fields = append(fields, post.FieldPreviewImage)
+	}
+	if m.user != nil {
+		fields = append(fields, post.FieldAuthorID)
+	}
 	if m.created_at != nil {
 		fields = append(fields, post.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, post.FieldUpdatedAt)
 	}
-	if m.preview_image != nil {
-		fields = append(fields, post.FieldPreviewImage)
-	}
 	if m.deleted_at != nil {
 		fields = append(fields, post.FieldDeletedAt)
-	}
-	if m.user != nil {
-		fields = append(fields, post.FieldAuthorID)
 	}
 	return fields
 }
@@ -12061,16 +12061,16 @@ func (m *PostMutation) Field(name string) (ent.Value, bool) {
 		return m.IsPublished()
 	case post.FieldPublishedAt:
 		return m.PublishedAt()
+	case post.FieldPreviewImage:
+		return m.PreviewImage()
+	case post.FieldAuthorID:
+		return m.AuthorID()
 	case post.FieldCreatedAt:
 		return m.CreatedAt()
 	case post.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case post.FieldPreviewImage:
-		return m.PreviewImage()
 	case post.FieldDeletedAt:
 		return m.DeletedAt()
-	case post.FieldAuthorID:
-		return m.AuthorID()
 	}
 	return nil, false
 }
@@ -12092,16 +12092,16 @@ func (m *PostMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldIsPublished(ctx)
 	case post.FieldPublishedAt:
 		return m.OldPublishedAt(ctx)
+	case post.FieldPreviewImage:
+		return m.OldPreviewImage(ctx)
+	case post.FieldAuthorID:
+		return m.OldAuthorID(ctx)
 	case post.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case post.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case post.FieldPreviewImage:
-		return m.OldPreviewImage(ctx)
 	case post.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case post.FieldAuthorID:
-		return m.OldAuthorID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Post field %s", name)
 }
@@ -12153,6 +12153,20 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPublishedAt(v)
 		return nil
+	case post.FieldPreviewImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPreviewImage(v)
+		return nil
+	case post.FieldAuthorID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuthorID(v)
+		return nil
 	case post.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -12167,26 +12181,12 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case post.FieldPreviewImage:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPreviewImage(v)
-		return nil
 	case post.FieldDeletedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
-		return nil
-	case post.FieldAuthorID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAuthorID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Post field %s", name)
@@ -12224,11 +12224,11 @@ func (m *PostMutation) ClearedFields() []string {
 	if m.FieldCleared(post.FieldPreviewImage) {
 		fields = append(fields, post.FieldPreviewImage)
 	}
-	if m.FieldCleared(post.FieldDeletedAt) {
-		fields = append(fields, post.FieldDeletedAt)
-	}
 	if m.FieldCleared(post.FieldAuthorID) {
 		fields = append(fields, post.FieldAuthorID)
+	}
+	if m.FieldCleared(post.FieldDeletedAt) {
+		fields = append(fields, post.FieldDeletedAt)
 	}
 	return fields
 }
@@ -12250,11 +12250,11 @@ func (m *PostMutation) ClearField(name string) error {
 	case post.FieldPreviewImage:
 		m.ClearPreviewImage()
 		return nil
-	case post.FieldDeletedAt:
-		m.ClearDeletedAt()
-		return nil
 	case post.FieldAuthorID:
 		m.ClearAuthorID()
+		return nil
+	case post.FieldDeletedAt:
+		m.ClearDeletedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Post nullable field %s", name)
@@ -12282,20 +12282,20 @@ func (m *PostMutation) ResetField(name string) error {
 	case post.FieldPublishedAt:
 		m.ResetPublishedAt()
 		return nil
+	case post.FieldPreviewImage:
+		m.ResetPreviewImage()
+		return nil
+	case post.FieldAuthorID:
+		m.ResetAuthorID()
+		return nil
 	case post.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
 	case post.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case post.FieldPreviewImage:
-		m.ResetPreviewImage()
-		return nil
 	case post.FieldDeletedAt:
 		m.ResetDeletedAt()
-		return nil
-	case post.FieldAuthorID:
-		m.ResetAuthorID()
 		return nil
 	}
 	return fmt.Errorf("unknown Post field %s", name)

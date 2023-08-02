@@ -41,7 +41,6 @@ input CategoryCreateInput {
   # if isRoot is false, parentID will be required
   isRoot: Boolean!
   parentId: ID
-
 }
 
 input CategoryUpdateInput {
@@ -58,4 +57,20 @@ type PaginatedCategoryResponse {
   total: Int!
   take: Int
   skip: Int
+}
+
+extend type Query {
+  category(id: ID!): Category!
+  categories(
+    orderBy: CategoryAggregationInput
+    take: Int = 10
+    skip: Int = 0
+    where: CategoryWhereInput
+  ): PaginatedCategoryResponse!
+}
+
+extend type Mutation {
+  createCategory(input: CategoryCreateInput!): Category!
+  deleteCategory(id: ID!): Category!
+  updateCategory(id: ID!, input: CategoryUpdateInput!): Category!
 }

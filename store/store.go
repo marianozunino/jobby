@@ -81,6 +81,11 @@ type PostStore interface {
 	PostCategoriesFor(ctx context.Context, postIDs []uuid.UUID) (map[uuid.UUID]ent.PostCategories, error)
 }
 
+type UserStore interface {
+	User(ctx context.Context, id uuid.UUID) (*ent.User, error)
+	UserByEmail(ctx context.Context, email string) (*ent.User, error)
+}
+
 type Store interface {
 	StatusStore
 	JobOfferStore
@@ -89,5 +94,6 @@ type Store interface {
 	DegreeLevelStore
 	PostCategoryStore
 	PostStore
+	UserStore
 	Close() error
 }

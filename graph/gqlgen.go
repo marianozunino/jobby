@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -13,7 +14,9 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
 	"github.com/marianozunino/cc-backend-go/graph/dataloader"
+	"github.com/marianozunino/cc-backend-go/graph/directive"
 	"github.com/marianozunino/cc-backend-go/graph/generated"
+	"github.com/marianozunino/cc-backend-go/graph/middleware"
 	"github.com/marianozunino/cc-backend-go/service"
 )
 
@@ -24,7 +27,9 @@ func NewHandler(service service.Service) http.Handler {
 			Service:     service,
 			DataLoaders: dataloader.NewRetriever(),
 		},
-		Directives: generated.DirectiveRoot{},
+		Directives: generated.DirectiveRoot{
+			Auth: directive.Auth,
+		},
 		Complexity: generated.ComplexityRoot{},
 	})
 
@@ -32,6 +37,7 @@ func NewHandler(service service.Service) http.Handler {
 
 	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
 		err := graphql.DefaultErrorPresenter(ctx, e)
+		fmt.Print("err: ", err)
 
 		// check if error is sql.ErrNoRows
 		if errors.Is(e, sql.ErrNoRows) {
@@ -40,9 +46,10 @@ func NewHandler(service service.Service) http.Handler {
 
 		return err
 	})
-	srv.Use(extension.FixedComplexityLimit(300))
-	dlMiddleware := dataloader.Middleware(service)
 
+	srv.Use(extension.FixedComplexityLimit(300))
+
+	dlMiddleware := middleware.Dataloadewr(service)
 	return dlMiddleware(srv)
 }
 

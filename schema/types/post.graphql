@@ -75,3 +75,20 @@ type PaginatedPostResponse {
   take: Int
   skip: Int
 }
+
+extend type Query {
+  post(id: ID!): Post!
+  posts(
+    orderBy: PostAggregationInput
+    take: Int = 10
+    skip: Int = 0
+    where: PostWhereInput
+  ): PaginatedPostResponse!
+}
+
+extend type Mutation {
+  createPost(input: PostCreateInput!): Post!
+  deletePost(id: ID!): Post!
+  updatePost(id: ID!, input: PostUpdateInput!): Post!
+  publishPost(id: ID!): Post!
+}

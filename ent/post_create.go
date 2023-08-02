@@ -67,18 +67,6 @@ func (pc *PostCreate) SetNillablePublishedAt(t *time.Time) *PostCreate {
 	return pc
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (pc *PostCreate) SetCreatedAt(t time.Time) *PostCreate {
-	pc.mutation.SetCreatedAt(t)
-	return pc
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (pc *PostCreate) SetUpdatedAt(t time.Time) *PostCreate {
-	pc.mutation.SetUpdatedAt(t)
-	return pc
-}
-
 // SetPreviewImage sets the "preview_image" field.
 func (pc *PostCreate) SetPreviewImage(s string) *PostCreate {
 	pc.mutation.SetPreviewImage(s)
@@ -93,20 +81,6 @@ func (pc *PostCreate) SetNillablePreviewImage(s *string) *PostCreate {
 	return pc
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (pc *PostCreate) SetDeletedAt(t time.Time) *PostCreate {
-	pc.mutation.SetDeletedAt(t)
-	return pc
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (pc *PostCreate) SetNillableDeletedAt(t *time.Time) *PostCreate {
-	if t != nil {
-		pc.SetDeletedAt(*t)
-	}
-	return pc
-}
-
 // SetAuthorID sets the "author_id" field.
 func (pc *PostCreate) SetAuthorID(u uuid.UUID) *PostCreate {
 	pc.mutation.SetAuthorID(u)
@@ -117,6 +91,48 @@ func (pc *PostCreate) SetAuthorID(u uuid.UUID) *PostCreate {
 func (pc *PostCreate) SetNillableAuthorID(u *uuid.UUID) *PostCreate {
 	if u != nil {
 		pc.SetAuthorID(*u)
+	}
+	return pc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (pc *PostCreate) SetCreatedAt(t time.Time) *PostCreate {
+	pc.mutation.SetCreatedAt(t)
+	return pc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pc *PostCreate) SetNillableCreatedAt(t *time.Time) *PostCreate {
+	if t != nil {
+		pc.SetCreatedAt(*t)
+	}
+	return pc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pc *PostCreate) SetUpdatedAt(t time.Time) *PostCreate {
+	pc.mutation.SetUpdatedAt(t)
+	return pc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pc *PostCreate) SetNillableUpdatedAt(t *time.Time) *PostCreate {
+	if t != nil {
+		pc.SetUpdatedAt(*t)
+	}
+	return pc
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (pc *PostCreate) SetDeletedAt(t time.Time) *PostCreate {
+	pc.mutation.SetDeletedAt(t)
+	return pc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (pc *PostCreate) SetNillableDeletedAt(t *time.Time) *PostCreate {
+	if t != nil {
+		pc.SetDeletedAt(*t)
 	}
 	return pc
 }
@@ -168,6 +184,7 @@ func (pc *PostCreate) Mutation() *PostMutation {
 
 // Save creates the Post in the database.
 func (pc *PostCreate) Save(ctx context.Context) (*Post, error) {
+	pc.defaults()
 	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
 
@@ -190,6 +207,18 @@ func (pc *PostCreate) Exec(ctx context.Context) error {
 func (pc *PostCreate) ExecX(ctx context.Context) {
 	if err := pc.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (pc *PostCreate) defaults() {
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		v := post.DefaultCreatedAt()
+		pc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		v := post.DefaultUpdatedAt()
+		pc.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -273,7 +302,11 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := pc.mutation.PublishedAt(); ok {
 		_spec.SetField(post.FieldPublishedAt, field.TypeTime, value)
-		_node.PublishedAt = value
+		_node.PublishedAt = &value
+	}
+	if value, ok := pc.mutation.PreviewImage(); ok {
+		_spec.SetField(post.FieldPreviewImage, field.TypeString, value)
+		_node.PreviewImage = &value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.SetField(post.FieldCreatedAt, field.TypeTime, value)
@@ -282,10 +315,6 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.UpdatedAt(); ok {
 		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
-	}
-	if value, ok := pc.mutation.PreviewImage(); ok {
-		_spec.SetField(post.FieldPreviewImage, field.TypeString, value)
-		_node.PreviewImage = &value
 	}
 	if value, ok := pc.mutation.DeletedAt(); ok {
 		_spec.SetField(post.FieldDeletedAt, field.TypeTime, value)
@@ -341,6 +370,7 @@ func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
 	for i := range pcb.builders {
 		func(i int, root context.Context) {
 			builder := pcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PostMutation)
 				if !ok {

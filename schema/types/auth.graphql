@@ -1,9 +1,12 @@
-
 type Auth {
-  accessToken: ID!
+  accessToken: String!
 }
 
 input AuthInput {
   email: String!
   password: String!
+}
+
+extend type Mutation {
+  login(input: AuthInput!): Auth! @goField(forceResolver: true)
 }

@@ -43,6 +43,7 @@ require (
 	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/cel-go v0.16.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect

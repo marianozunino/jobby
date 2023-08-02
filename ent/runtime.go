@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/marianozunino/cc-backend-go/ent/post"
 	"github.com/marianozunino/cc-backend-go/ent/postcategory"
 	"github.com/marianozunino/cc-backend-go/ent/schema"
 )
@@ -13,6 +14,18 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	postFields := schema.Post{}.Fields()
+	_ = postFields
+	// postDescCreatedAt is the schema descriptor for created_at field.
+	postDescCreatedAt := postFields[9].Descriptor()
+	// post.DefaultCreatedAt holds the default value on creation for the created_at field.
+	post.DefaultCreatedAt = postDescCreatedAt.Default.(func() time.Time)
+	// postDescUpdatedAt is the schema descriptor for updated_at field.
+	postDescUpdatedAt := postFields[10].Descriptor()
+	// post.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	post.DefaultUpdatedAt = postDescUpdatedAt.Default.(func() time.Time)
+	// post.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	post.UpdateDefaultUpdatedAt = postDescUpdatedAt.UpdateDefault.(func() time.Time)
 	postcategoryFields := schema.PostCategory{}.Fields()
 	_ = postcategoryFields
 	// postcategoryDescCreatedAt is the schema descriptor for created_at field.

@@ -348,9 +348,9 @@ var (
 		{Name: "is_highlighted", Type: field.TypeBool},
 		{Name: "is_published", Type: field.TypeBool},
 		{Name: "published_at", Type: field.TypeTime, Nullable: true},
+		{Name: "preview_image", Type: field.TypeString, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "preview_image", Type: field.TypeString, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "author_id", Type: field.TypeUUID, Nullable: true},
 	}

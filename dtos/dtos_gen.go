@@ -12,7 +12,7 @@ import (
 )
 
 type Auth struct {
-	AccessToken uuid.UUID `json:"accessToken"`
+	AccessToken string `json:"accessToken"`
 }
 
 type AuthInput struct {

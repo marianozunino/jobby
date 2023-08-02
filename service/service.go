@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/cc-backend-go/ent"
 	"github.com/marianozunino/cc-backend-go/store"
 )
 
@@ -59,13 +60,18 @@ type DegreeLevelService interface {
 }
 
 type PostService interface {
-	CreatePost(ctx context.Context, input dtos.PostCreateInput) (*dtos.Post, error)
+	CreatePost(ctx context.Context, input dtos.PostCreateInput, userID uuid.UUID) (*dtos.Post, error)
 	DeletePost(ctx context.Context, id uuid.UUID) (*dtos.Post, error)
 	UpdatePost(ctx context.Context, id uuid.UUID, input dtos.PostUpdateInput) (*dtos.Post, error)
 	GetPost(ctx context.Context, id uuid.UUID) (*dtos.Post, error)
 	GetPosts(ctx context.Context) ([]dtos.Post, error)
 	PaginatedPosts(ctx context.Context, orderBy *dtos.PostAggregationInput, take *int, skip *int, where *dtos.PostWhereInput) (*dtos.PaginatedPostResponse, error)
 	PublishPost(ctx context.Context, id uuid.UUID) (*dtos.Post, error)
+}
+
+type AuthService interface {
+	Login(ctx context.Context, input dtos.AuthInput) (*dtos.Auth, error)
+	DecodeToken(ctx context.Context, token string) (*ent.User, error)
 }
 
 type Service interface {
@@ -76,6 +82,7 @@ type Service interface {
 	DegreeLevelService
 	PostCategoryService
 	PostService
+	AuthService
 }
 
 type service struct {
@@ -86,6 +93,7 @@ type service struct {
 	DegreeLevelService
 	PostCategoryService
 	PostService
+	AuthService
 }
 
 func NewService(store store.Store) Service {
@@ -109,6 +117,9 @@ func NewService(store store.Store) Service {
 			Store: store,
 		},
 		PostService: &postService{
+			Store: store,
+		},
+		AuthService: &authService{
 			Store: store,
 		},
 	}

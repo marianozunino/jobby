@@ -22,4 +22,3 @@ input TimestampFilter {
   lt: Timestamp
   lte: Timestamp
 }
-

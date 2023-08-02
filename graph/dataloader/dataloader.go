@@ -12,7 +12,7 @@ import (
 type ctxKey string
 
 const (
-	key = ctxKey("dataloaders")
+	Key = ctxKey("dataloaders")
 )
 
 //go:generate go run github.com/vektah/dataloaden JobOffersLoader github.com/google/uuid.UUID []*github.com/marianozunino/cc-backend-go/dtos.JobOffer
@@ -26,7 +26,7 @@ type Loaders struct {
 	PostCategoriesForPostId    *PostCategoriesLoader
 }
 
-func newLoaders(ctx context.Context, service service.Service) *Loaders {
+func NewLoaders(ctx context.Context, service service.Service) *Loaders {
 	return &Loaders{
 		// individual loaders will be initialized here
 		JobOffersByStatusId:        newJobOffersByStatusID(ctx, service),
@@ -51,7 +51,7 @@ func (r *retriever) Retrieve(ctx context.Context) *Loaders {
 
 // NewRetriever instantiates a new implementation of Retriever.
 func NewRetriever() Retriever {
-	return &retriever{key: key}
+	return &retriever{key: Key}
 }
 
 func newJobOffersByStatusID(ctx context.Context, service service.Service) *JobOffersLoader {

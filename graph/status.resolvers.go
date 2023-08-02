@@ -11,6 +11,31 @@ import (
 	"github.com/marianozunino/cc-backend-go/graph/generated"
 )
 
+// CreateStatus is the resolver for the createStatus field.
+func (r *mutationResolver) CreateStatus(ctx context.Context, input dtos.StatusCreateInput) (*dtos.Status, error) {
+	return r.Service.CreateStatus(ctx, input)
+}
+
+// DeleteStatus is the resolver for the deleteStatus field.
+func (r *mutationResolver) DeleteStatus(ctx context.Context, id string) (*dtos.Status, error) {
+	return r.Service.DeleteStatus(ctx, id)
+}
+
+// UpdateStatus is the resolver for the updateStatus field.
+func (r *mutationResolver) UpdateStatus(ctx context.Context, id string, input dtos.StatusUpdateInput) (*dtos.Status, error) {
+	return r.Service.UpdateStatus(ctx, id, input)
+}
+
+// Status is the resolver for the status field.
+func (r *queryResolver) Status(ctx context.Context, id string) (*dtos.Status, error) {
+	return r.Service.GetStatus(ctx, id)
+}
+
+// Statuses is the resolver for the statuses field.
+func (r *queryResolver) Statuses(ctx context.Context, orderBy *dtos.StatusAggregationInput, take *int, skip *int) (*dtos.PaginatedStatusResponse, error) {
+	return r.Service.PaginatedStatuses(ctx, orderBy, take, skip)
+}
+
 // JobOffers is the resolver for the jobOffers field.
 func (r *statusResolver) JobOffers(ctx context.Context, obj *dtos.Status) ([]*dtos.JobOffer, error) {
 	return r.DataLoaders.Retrieve(ctx).JobOffersByStatusId.Load(obj.ID)
