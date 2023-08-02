@@ -28,27 +28,26 @@ type PostCategory struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PostCategoryQuery when eager-loading is set.
-	Edges                PostCategoryEdges `json:"edges"`
-	post_post_categories *uuid.UUID
-	selectValues         sql.SelectValues
+	Edges        PostCategoryEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // PostCategoryEdges holds the relations/edges for other nodes in the graph.
 type PostCategoryEdges struct {
-	// PostCategories holds the value of the post_categories edge.
-	PostCategories []*PostCategory `json:"post_categories,omitempty"`
+	// Posts holds the value of the posts edge.
+	Posts []*Post `json:"posts,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// PostCategoriesOrErr returns the PostCategories value or an error if the edge
+// PostsOrErr returns the Posts value or an error if the edge
 // was not loaded in eager-loading.
-func (e PostCategoryEdges) PostCategoriesOrErr() ([]*PostCategory, error) {
+func (e PostCategoryEdges) PostsOrErr() ([]*Post, error) {
 	if e.loadedTypes[0] {
-		return e.PostCategories, nil
+		return e.Posts, nil
 	}
-	return nil, &NotLoadedError{edge: "post_categories"}
+	return nil, &NotLoadedError{edge: "posts"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -62,8 +61,6 @@ func (*PostCategory) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case postcategory.FieldID:
 			values[i] = new(uuid.UUID)
-		case postcategory.ForeignKeys[0]: // post_post_categories
-			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -110,13 +107,6 @@ func (pc *PostCategory) assignValues(columns []string, values []any) error {
 				pc.DeletedAt = new(time.Time)
 				*pc.DeletedAt = value.Time
 			}
-		case postcategory.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field post_post_categories", values[i])
-			} else if value.Valid {
-				pc.post_post_categories = new(uuid.UUID)
-				*pc.post_post_categories = *value.S.(*uuid.UUID)
-			}
 		default:
 			pc.selectValues.Set(columns[i], values[i])
 		}
@@ -130,9 +120,9 @@ func (pc *PostCategory) Value(name string) (ent.Value, error) {
 	return pc.selectValues.Get(name)
 }
 
-// QueryPostCategories queries the "post_categories" edge of the PostCategory entity.
-func (pc *PostCategory) QueryPostCategories() *PostCategoryQuery {
-	return NewPostCategoryClient(pc.config).QueryPostCategories(pc)
+// QueryPosts queries the "posts" edge of the PostCategory entity.
+func (pc *PostCategory) QueryPosts() *PostQuery {
+	return NewPostCategoryClient(pc.config).QueryPosts(pc)
 }
 
 // Update returns a builder for updating this PostCategory.

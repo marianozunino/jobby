@@ -67,20 +67,6 @@ func (pc *PostCreate) SetNillablePublishedAt(t *time.Time) *PostCreate {
 	return pc
 }
 
-// SetAuthorID sets the "author_id" field.
-func (pc *PostCreate) SetAuthorID(u uuid.UUID) *PostCreate {
-	pc.mutation.SetAuthorID(u)
-	return pc
-}
-
-// SetNillableAuthorID sets the "author_id" field if the given value is not nil.
-func (pc *PostCreate) SetNillableAuthorID(u *uuid.UUID) *PostCreate {
-	if u != nil {
-		pc.SetAuthorID(*u)
-	}
-	return pc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (pc *PostCreate) SetCreatedAt(t time.Time) *PostCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -90,20 +76,6 @@ func (pc *PostCreate) SetCreatedAt(t time.Time) *PostCreate {
 // SetUpdatedAt sets the "updated_at" field.
 func (pc *PostCreate) SetUpdatedAt(t time.Time) *PostCreate {
 	pc.mutation.SetUpdatedAt(t)
-	return pc
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (pc *PostCreate) SetDeletedAt(t time.Time) *PostCreate {
-	pc.mutation.SetDeletedAt(t)
-	return pc
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (pc *PostCreate) SetNillableDeletedAt(t *time.Time) *PostCreate {
-	if t != nil {
-		pc.SetDeletedAt(*t)
-	}
 	return pc
 }
 
@@ -121,25 +93,38 @@ func (pc *PostCreate) SetNillablePreviewImage(s *string) *PostCreate {
 	return pc
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (pc *PostCreate) SetDeletedAt(t time.Time) *PostCreate {
+	pc.mutation.SetDeletedAt(t)
+	return pc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (pc *PostCreate) SetNillableDeletedAt(t *time.Time) *PostCreate {
+	if t != nil {
+		pc.SetDeletedAt(*t)
+	}
+	return pc
+}
+
+// SetAuthorID sets the "author_id" field.
+func (pc *PostCreate) SetAuthorID(u uuid.UUID) *PostCreate {
+	pc.mutation.SetAuthorID(u)
+	return pc
+}
+
+// SetNillableAuthorID sets the "author_id" field if the given value is not nil.
+func (pc *PostCreate) SetNillableAuthorID(u *uuid.UUID) *PostCreate {
+	if u != nil {
+		pc.SetAuthorID(*u)
+	}
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PostCreate) SetID(u uuid.UUID) *PostCreate {
 	pc.mutation.SetID(u)
 	return pc
-}
-
-// AddPostCategoryIDs adds the "post_categories" edge to the PostCategory entity by IDs.
-func (pc *PostCreate) AddPostCategoryIDs(ids ...uuid.UUID) *PostCreate {
-	pc.mutation.AddPostCategoryIDs(ids...)
-	return pc
-}
-
-// AddPostCategories adds the "post_categories" edges to the PostCategory entity.
-func (pc *PostCreate) AddPostCategories(p ...*PostCategory) *PostCreate {
-	ids := make([]uuid.UUID, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return pc.AddPostCategoryIDs(ids...)
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
@@ -159,6 +144,21 @@ func (pc *PostCreate) SetNillableUserID(id *uuid.UUID) *PostCreate {
 // SetUser sets the "user" edge to the User entity.
 func (pc *PostCreate) SetUser(u *User) *PostCreate {
 	return pc.SetUserID(u.ID)
+}
+
+// AddPostCategoryIDs adds the "post_category" edge to the PostCategory entity by IDs.
+func (pc *PostCreate) AddPostCategoryIDs(ids ...uuid.UUID) *PostCreate {
+	pc.mutation.AddPostCategoryIDs(ids...)
+	return pc
+}
+
+// AddPostCategory adds the "post_category" edges to the PostCategory entity.
+func (pc *PostCreate) AddPostCategory(p ...*PostCategory) *PostCreate {
+	ids := make([]uuid.UUID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddPostCategoryIDs(ids...)
 }
 
 // Mutation returns the PostMutation object of the builder.
@@ -283,29 +283,13 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := pc.mutation.DeletedAt(); ok {
-		_spec.SetField(post.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = value
-	}
 	if value, ok := pc.mutation.PreviewImage(); ok {
 		_spec.SetField(post.FieldPreviewImage, field.TypeString, value)
-		_node.PreviewImage = value
+		_node.PreviewImage = &value
 	}
-	if nodes := pc.mutation.PostCategoriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   post.PostCategoriesTable,
-			Columns: []string{post.PostCategoriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(postcategory.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
+	if value, ok := pc.mutation.DeletedAt(); ok {
+		_spec.SetField(post.FieldDeletedAt, field.TypeTime, value)
+		_node.DeletedAt = &value
 	}
 	if nodes := pc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -322,6 +306,22 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.AuthorID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.PostCategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   post.PostCategoryTable,
+			Columns: post.PostCategoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(postcategory.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

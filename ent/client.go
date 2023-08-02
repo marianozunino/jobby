@@ -1160,22 +1160,6 @@ func (c *CategoryClient) QueryChildCategories(ca *Category) *CategoryQuery {
 	return query
 }
 
-// QueryParentCategory queries the parent_category edge of a Category.
-func (c *CategoryClient) QueryParentCategory(ca *Category) *CategoryQuery {
-	query := (&CategoryClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := ca.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(category.Table, category.FieldID, id),
-			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, category.ParentCategoryTable, category.ParentCategoryColumn),
-		)
-		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryJobOfferCategories queries the job_offer_categories edge of a Category.
 func (c *CategoryClient) QueryJobOfferCategories(ca *Category) *JobOfferCategoryQuery {
 	query := (&JobOfferCategoryClient{config: c.config}).Query()
@@ -1185,6 +1169,22 @@ func (c *CategoryClient) QueryJobOfferCategories(ca *Category) *JobOfferCategory
 			sqlgraph.From(category.Table, category.FieldID, id),
 			sqlgraph.To(joboffercategory.Table, joboffercategory.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, category.JobOfferCategoriesTable, category.JobOfferCategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParentCategory queries the parent_category edge of a Category.
+func (c *CategoryClient) QueryParentCategory(ca *Category) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, category.ParentCategoryTable, category.ParentCategoryColumn),
 		)
 		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
 		return fromV, nil
@@ -2296,22 +2296,6 @@ func (c *PostClient) GetX(ctx context.Context, id uuid.UUID) *Post {
 	return obj
 }
 
-// QueryPostCategories queries the post_categories edge of a Post.
-func (c *PostClient) QueryPostCategories(po *Post) *PostCategoryQuery {
-	query := (&PostCategoryClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := po.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(post.Table, post.FieldID, id),
-			sqlgraph.To(postcategory.Table, postcategory.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, post.PostCategoriesTable, post.PostCategoriesColumn),
-		)
-		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryUser queries the user edge of a Post.
 func (c *PostClient) QueryUser(po *Post) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
@@ -2321,6 +2305,22 @@ func (c *PostClient) QueryUser(po *Post) *UserQuery {
 			sqlgraph.From(post.Table, post.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, post.UserTable, post.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPostCategory queries the post_category edge of a Post.
+func (c *PostClient) QueryPostCategory(po *Post) *PostCategoryQuery {
+	query := (&PostCategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(post.Table, post.FieldID, id),
+			sqlgraph.To(postcategory.Table, postcategory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, post.PostCategoryTable, post.PostCategoryPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
 		return fromV, nil
@@ -2446,15 +2446,15 @@ func (c *PostCategoryClient) GetX(ctx context.Context, id uuid.UUID) *PostCatego
 	return obj
 }
 
-// QueryPostCategories queries the post_categories edge of a PostCategory.
-func (c *PostCategoryClient) QueryPostCategories(pc *PostCategory) *PostCategoryQuery {
-	query := (&PostCategoryClient{config: c.config}).Query()
+// QueryPosts queries the posts edge of a PostCategory.
+func (c *PostCategoryClient) QueryPosts(pc *PostCategory) *PostQuery {
+	query := (&PostClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(postcategory.Table, postcategory.FieldID, id),
-			sqlgraph.To(postcategory.Table, postcategory.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, postcategory.PostCategoriesTable, postcategory.PostCategoriesPrimaryKey...),
+			sqlgraph.To(post.Table, post.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, postcategory.PostsTable, postcategory.PostsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pc.driver.Dialect(), step)
 		return fromV, nil

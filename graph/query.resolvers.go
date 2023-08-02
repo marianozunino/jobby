@@ -42,6 +42,16 @@ func (r *queryResolver) Categories(ctx context.Context, orderBy *dtos.CategoryAg
 	return r.Service.PaginatedCategories(ctx, orderBy, take, skip, where)
 }
 
+// Post is the resolver for the post field.
+func (r *queryResolver) Post(ctx context.Context, id uuid.UUID) (*dtos.Post, error) {
+	return r.Service.GetPost(ctx, id)
+}
+
+// Posts is the resolver for the posts field.
+func (r *queryResolver) Posts(ctx context.Context, orderBy *dtos.PostAggregationInput, take *int, skip *int, where *dtos.PostWhereInput) (*dtos.PaginatedPostResponse, error) {
+	return r.Service.PaginatedPosts(ctx, orderBy, take, skip, where)
+}
+
 // PostCategory is the resolver for the postCategory field.
 func (r *queryResolver) PostCategory(ctx context.Context, id uuid.UUID) (*dtos.PostCategory, error) {
 	return r.Service.GetPostCategory(ctx, id)

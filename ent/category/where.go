@@ -457,29 +457,6 @@ func HasChildCategoriesWith(preds ...predicate.Category) predicate.Category {
 	})
 }
 
-// HasParentCategory applies the HasEdge predicate on the "parent_category" edge.
-func HasParentCategory() predicate.Category {
-	return predicate.Category(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentCategoryTable, ParentCategoryColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasParentCategoryWith applies the HasEdge predicate on the "parent_category" edge with a given conditions (other predicates).
-func HasParentCategoryWith(preds ...predicate.Category) predicate.Category {
-	return predicate.Category(func(s *sql.Selector) {
-		step := newParentCategoryStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasJobOfferCategories applies the HasEdge predicate on the "job_offer_categories" edge.
 func HasJobOfferCategories() predicate.Category {
 	return predicate.Category(func(s *sql.Selector) {
@@ -495,6 +472,29 @@ func HasJobOfferCategories() predicate.Category {
 func HasJobOfferCategoriesWith(preds ...predicate.JobOfferCategory) predicate.Category {
 	return predicate.Category(func(s *sql.Selector) {
 		step := newJobOfferCategoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasParentCategory applies the HasEdge predicate on the "parent_category" edge.
+func HasParentCategory() predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentCategoryTable, ParentCategoryColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasParentCategoryWith applies the HasEdge predicate on the "parent_category" edge with a given conditions (other predicates).
+func HasParentCategoryWith(preds ...predicate.Category) predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := newParentCategoryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

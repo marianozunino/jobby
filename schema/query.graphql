@@ -23,6 +23,14 @@ type Query {
   ): PaginatedCategoryResponse!
 
 
+  post(id: ID!): Post!
+  posts(
+    orderBy: PostAggregationInput
+    take: Int = 10
+    skip: Int = 0
+    where: PostWhereInput
+  ): PaginatedPostResponse!
+
   postCategory(id: ID!): PostCategory!
   postCategories(
     orderBy: PostCategoryAggregationInput

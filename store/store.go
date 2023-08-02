@@ -69,6 +69,18 @@ type DegreeLevelStore interface {
 	DeleteDegreeLevel(ctx context.Context, id uuid.UUID) (*ent.DegreeLevel, error)
 }
 
+type PostStore interface {
+	Post(ctx context.Context, id uuid.UUID) (*ent.Post, error)
+	PaginatedPosts(ctx context.Context, orderBy *dtos.PostAggregationInput, take *int, skip *int, where *dtos.PostWhereInput) (ent.Posts, error)
+	CountPosts(ctx context.Context) (int, error)
+	CreatePost(ctx context.Context, post *ent.Post) (*ent.Post, error)
+	UpdatePost(ctx context.Context, post *ent.Post) (*ent.Post, error)
+	DeletePost(ctx context.Context, id uuid.UUID) (*ent.Post, error)
+	IsPostSlugTaken(ctx context.Context, slug string) (bool, error)
+	PublishPost(ctx context.Context, id uuid.UUID) (*ent.Post, error)
+	PostCategoriesFor(ctx context.Context, postIDs []uuid.UUID) (map[uuid.UUID]ent.PostCategories, error)
+}
+
 type Store interface {
 	StatusStore
 	JobOfferStore
@@ -76,5 +88,6 @@ type Store interface {
 	CategoryStore
 	DegreeLevelStore
 	PostCategoryStore
+	PostStore
 	Close() error
 }

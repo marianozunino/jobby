@@ -18,10 +18,12 @@ const (
 //go:generate go run github.com/vektah/dataloaden JobOffersLoader github.com/google/uuid.UUID []*github.com/marianozunino/cc-backend-go/dtos.JobOffer
 //go:generate go run github.com/vektah/dataloaden ChildCategoriesLoader github.com/google/uuid.UUID []*github.com/marianozunino/cc-backend-go/dtos.Category
 //go:generate go run github.com/vektah/dataloaden ParentCategoryLoader github.com/google/uuid.UUID *github.com/marianozunino/cc-backend-go/dtos.Category
+//go:generate go run github.com/vektah/dataloaden PostCategoriesLoader github.com/google/uuid.UUID []*github.com/marianozunino/cc-backend-go/dtos.PostCategory
 type Loaders struct {
 	JobOffersByStatusId        *JobOffersLoader
 	ChildCategoriesForParentId *ChildCategoriesLoader
 	ParentCategoryForChildId   *ParentCategoryLoader
+	PostCategoriesForPostId    *PostCategoriesLoader
 }
 
 func newLoaders(ctx context.Context, service service.Service) *Loaders {
@@ -30,6 +32,7 @@ func newLoaders(ctx context.Context, service service.Service) *Loaders {
 		JobOffersByStatusId:        newJobOffersByStatusID(ctx, service),
 		ChildCategoriesForParentId: newChildCategoriesForParentID(ctx, service),
 		ParentCategoryForChildId:   newParentCategoryForChildID(ctx, service),
+		PostCategoriesForPostId:    newPostCategoriesForPostID(ctx, service),
 	}
 }
 
@@ -136,6 +139,29 @@ func newParentCategoryForChildID(ctx context.Context, service service.Service) *
 			var finalResults []*dtos.Category
 			for _, id := range parentIDs {
 				finalResults = append(finalResults, results[id.String()])
+			}
+
+			// Return the results
+			return finalResults, nil
+		},
+	})
+}
+
+func newPostCategoriesForPostID(ctx context.Context, service service.Service) *PostCategoriesLoader {
+	return NewPostCategoriesLoader(PostCategoriesLoaderConfig{
+		MaxBatch: 100,
+		Wait:     5 * time.Millisecond,
+		Fetch: func(postIDs []uuid.UUID) ([][]*dtos.PostCategory, []error) {
+			// Fetch post categories from the service directly
+			mappedDtos, err := service.PostCategoriesFor(ctx, postIDs)
+			if err != nil {
+				return nil, []error{err}
+			}
+
+			// Prepare the final results slice using the original order of postIDs
+			var finalResults [][]*dtos.PostCategory
+			for _, id := range postIDs {
+				finalResults = append(finalResults, mappedDtos[id])
 			}
 
 			// Return the results

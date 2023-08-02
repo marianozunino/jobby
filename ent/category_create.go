@@ -133,6 +133,21 @@ func (cc *CategoryCreate) AddChildCategories(c ...*Category) *CategoryCreate {
 	return cc.AddChildCategoryIDs(ids...)
 }
 
+// AddJobOfferCategoryIDs adds the "job_offer_categories" edge to the JobOfferCategory entity by IDs.
+func (cc *CategoryCreate) AddJobOfferCategoryIDs(ids ...uuid.UUID) *CategoryCreate {
+	cc.mutation.AddJobOfferCategoryIDs(ids...)
+	return cc
+}
+
+// AddJobOfferCategories adds the "job_offer_categories" edges to the JobOfferCategory entity.
+func (cc *CategoryCreate) AddJobOfferCategories(j ...*JobOfferCategory) *CategoryCreate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return cc.AddJobOfferCategoryIDs(ids...)
+}
+
 // SetParentCategoryID sets the "parent_category" edge to the Category entity by ID.
 func (cc *CategoryCreate) SetParentCategoryID(id uuid.UUID) *CategoryCreate {
 	cc.mutation.SetParentCategoryID(id)
@@ -150,21 +165,6 @@ func (cc *CategoryCreate) SetNillableParentCategoryID(id *uuid.UUID) *CategoryCr
 // SetParentCategory sets the "parent_category" edge to the Category entity.
 func (cc *CategoryCreate) SetParentCategory(c *Category) *CategoryCreate {
 	return cc.SetParentCategoryID(c.ID)
-}
-
-// AddJobOfferCategoryIDs adds the "job_offer_categories" edge to the JobOfferCategory entity by IDs.
-func (cc *CategoryCreate) AddJobOfferCategoryIDs(ids ...uuid.UUID) *CategoryCreate {
-	cc.mutation.AddJobOfferCategoryIDs(ids...)
-	return cc
-}
-
-// AddJobOfferCategories adds the "job_offer_categories" edges to the JobOfferCategory entity.
-func (cc *CategoryCreate) AddJobOfferCategories(j ...*JobOfferCategory) *CategoryCreate {
-	ids := make([]uuid.UUID, len(j))
-	for i := range j {
-		ids[i] = j[i].ID
-	}
-	return cc.AddJobOfferCategoryIDs(ids...)
 }
 
 // Mutation returns the CategoryMutation object of the builder.
@@ -301,6 +301,22 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := cc.mutation.JobOfferCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.JobOfferCategoriesTable,
+			Columns: []string{category.JobOfferCategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(joboffercategory.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := cc.mutation.ParentCategoryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -316,22 +332,6 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.ParentID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.JobOfferCategoriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   category.JobOfferCategoriesTable,
-			Columns: []string{category.JobOfferCategoriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(joboffercategory.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

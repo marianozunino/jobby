@@ -84,6 +84,23 @@ func (p *postCategoryService) GetPostCategories(ctx context.Context) ([]dtos.Pos
 	panic("not implemented") // TODO: Implement
 }
 
+// PostCategoriesFor implements PostService.
+func (p *postCategoryService) PostCategoriesFor(ctx context.Context, parentIDs []uuid.UUID) (map[uuid.UUID][]*dtos.PostCategory, error) {
+
+	categoriesMap, err := p.Store.PostCategoriesFor(ctx, parentIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	categoriesMapDto := make(map[uuid.UUID][]*dtos.PostCategory)
+
+	for key, value := range categoriesMap {
+		categoriesMapDto[key] = p.BuildFromEntities(value)
+	}
+
+	return categoriesMapDto, nil
+}
+
 func (p *postCategoryService) PaginatedPostCategories(ctx context.Context, orderBy *dtos.PostCategoryAggregationInput, take *int, skip *int, where *dtos.PostCategoryWhereInput) (*dtos.PaginatedPostCategoryResponse, error) {
 	data, err := p.Store.PaginatedPostCategories(ctx, orderBy, take, skip, where)
 	if err != nil {

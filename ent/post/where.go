@@ -86,11 +86,6 @@ func PublishedAt(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldPublishedAt, v))
 }
 
-// AuthorID applies equality check predicate on the "author_id" field. It's identical to AuthorIDEQ.
-func AuthorID(v uuid.UUID) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldAuthorID, v))
-}
-
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldCreatedAt, v))
@@ -101,14 +96,19 @@ func UpdatedAt(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// PreviewImage applies equality check predicate on the "preview_image" field. It's identical to PreviewImageEQ.
+func PreviewImage(v string) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldPreviewImage, v))
+}
+
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldDeletedAt, v))
 }
 
-// PreviewImage applies equality check predicate on the "preview_image" field. It's identical to PreviewImageEQ.
-func PreviewImage(v string) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldPreviewImage, v))
+// AuthorID applies equality check predicate on the "author_id" field. It's identical to AuthorIDEQ.
+func AuthorID(v uuid.UUID) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldAuthorID, v))
 }
 
 // TitleEQ applies the EQ predicate on the "title" field.
@@ -376,36 +376,6 @@ func PublishedAtNotNil() predicate.Post {
 	return predicate.Post(sql.FieldNotNull(FieldPublishedAt))
 }
 
-// AuthorIDEQ applies the EQ predicate on the "author_id" field.
-func AuthorIDEQ(v uuid.UUID) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldAuthorID, v))
-}
-
-// AuthorIDNEQ applies the NEQ predicate on the "author_id" field.
-func AuthorIDNEQ(v uuid.UUID) predicate.Post {
-	return predicate.Post(sql.FieldNEQ(FieldAuthorID, v))
-}
-
-// AuthorIDIn applies the In predicate on the "author_id" field.
-func AuthorIDIn(vs ...uuid.UUID) predicate.Post {
-	return predicate.Post(sql.FieldIn(FieldAuthorID, vs...))
-}
-
-// AuthorIDNotIn applies the NotIn predicate on the "author_id" field.
-func AuthorIDNotIn(vs ...uuid.UUID) predicate.Post {
-	return predicate.Post(sql.FieldNotIn(FieldAuthorID, vs...))
-}
-
-// AuthorIDIsNil applies the IsNil predicate on the "author_id" field.
-func AuthorIDIsNil() predicate.Post {
-	return predicate.Post(sql.FieldIsNull(FieldAuthorID))
-}
-
-// AuthorIDNotNil applies the NotNil predicate on the "author_id" field.
-func AuthorIDNotNil() predicate.Post {
-	return predicate.Post(sql.FieldNotNull(FieldAuthorID))
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldCreatedAt, v))
@@ -486,56 +456,6 @@ func UpdatedAtLTE(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
-func DeletedAtEQ(v time.Time) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldDeletedAt, v))
-}
-
-// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
-func DeletedAtNEQ(v time.Time) predicate.Post {
-	return predicate.Post(sql.FieldNEQ(FieldDeletedAt, v))
-}
-
-// DeletedAtIn applies the In predicate on the "deleted_at" field.
-func DeletedAtIn(vs ...time.Time) predicate.Post {
-	return predicate.Post(sql.FieldIn(FieldDeletedAt, vs...))
-}
-
-// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
-func DeletedAtNotIn(vs ...time.Time) predicate.Post {
-	return predicate.Post(sql.FieldNotIn(FieldDeletedAt, vs...))
-}
-
-// DeletedAtGT applies the GT predicate on the "deleted_at" field.
-func DeletedAtGT(v time.Time) predicate.Post {
-	return predicate.Post(sql.FieldGT(FieldDeletedAt, v))
-}
-
-// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
-func DeletedAtGTE(v time.Time) predicate.Post {
-	return predicate.Post(sql.FieldGTE(FieldDeletedAt, v))
-}
-
-// DeletedAtLT applies the LT predicate on the "deleted_at" field.
-func DeletedAtLT(v time.Time) predicate.Post {
-	return predicate.Post(sql.FieldLT(FieldDeletedAt, v))
-}
-
-// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
-func DeletedAtLTE(v time.Time) predicate.Post {
-	return predicate.Post(sql.FieldLTE(FieldDeletedAt, v))
-}
-
-// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
-func DeletedAtIsNil() predicate.Post {
-	return predicate.Post(sql.FieldIsNull(FieldDeletedAt))
-}
-
-// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
-func DeletedAtNotNil() predicate.Post {
-	return predicate.Post(sql.FieldNotNull(FieldDeletedAt))
-}
-
 // PreviewImageEQ applies the EQ predicate on the "preview_image" field.
 func PreviewImageEQ(v string) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldPreviewImage, v))
@@ -611,27 +531,84 @@ func PreviewImageContainsFold(v string) predicate.Post {
 	return predicate.Post(sql.FieldContainsFold(FieldPreviewImage, v))
 }
 
-// HasPostCategories applies the HasEdge predicate on the "post_categories" edge.
-func HasPostCategories() predicate.Post {
-	return predicate.Post(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, PostCategoriesTable, PostCategoriesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
+// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
+func DeletedAtEQ(v time.Time) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldDeletedAt, v))
 }
 
-// HasPostCategoriesWith applies the HasEdge predicate on the "post_categories" edge with a given conditions (other predicates).
-func HasPostCategoriesWith(preds ...predicate.PostCategory) predicate.Post {
-	return predicate.Post(func(s *sql.Selector) {
-		step := newPostCategoriesStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
+// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
+func DeletedAtNEQ(v time.Time) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtIn applies the In predicate on the "deleted_at" field.
+func DeletedAtIn(vs ...time.Time) predicate.Post {
+	return predicate.Post(sql.FieldIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
+func DeletedAtNotIn(vs ...time.Time) predicate.Post {
+	return predicate.Post(sql.FieldNotIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtGT applies the GT predicate on the "deleted_at" field.
+func DeletedAtGT(v time.Time) predicate.Post {
+	return predicate.Post(sql.FieldGT(FieldDeletedAt, v))
+}
+
+// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
+func DeletedAtGTE(v time.Time) predicate.Post {
+	return predicate.Post(sql.FieldGTE(FieldDeletedAt, v))
+}
+
+// DeletedAtLT applies the LT predicate on the "deleted_at" field.
+func DeletedAtLT(v time.Time) predicate.Post {
+	return predicate.Post(sql.FieldLT(FieldDeletedAt, v))
+}
+
+// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
+func DeletedAtLTE(v time.Time) predicate.Post {
+	return predicate.Post(sql.FieldLTE(FieldDeletedAt, v))
+}
+
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.Post {
+	return predicate.Post(sql.FieldIsNull(FieldDeletedAt))
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.Post {
+	return predicate.Post(sql.FieldNotNull(FieldDeletedAt))
+}
+
+// AuthorIDEQ applies the EQ predicate on the "author_id" field.
+func AuthorIDEQ(v uuid.UUID) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldAuthorID, v))
+}
+
+// AuthorIDNEQ applies the NEQ predicate on the "author_id" field.
+func AuthorIDNEQ(v uuid.UUID) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldAuthorID, v))
+}
+
+// AuthorIDIn applies the In predicate on the "author_id" field.
+func AuthorIDIn(vs ...uuid.UUID) predicate.Post {
+	return predicate.Post(sql.FieldIn(FieldAuthorID, vs...))
+}
+
+// AuthorIDNotIn applies the NotIn predicate on the "author_id" field.
+func AuthorIDNotIn(vs ...uuid.UUID) predicate.Post {
+	return predicate.Post(sql.FieldNotIn(FieldAuthorID, vs...))
+}
+
+// AuthorIDIsNil applies the IsNil predicate on the "author_id" field.
+func AuthorIDIsNil() predicate.Post {
+	return predicate.Post(sql.FieldIsNull(FieldAuthorID))
+}
+
+// AuthorIDNotNil applies the NotNil predicate on the "author_id" field.
+func AuthorIDNotNil() predicate.Post {
+	return predicate.Post(sql.FieldNotNull(FieldAuthorID))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.
@@ -649,6 +626,29 @@ func HasUser() predicate.Post {
 func HasUserWith(preds ...predicate.User) predicate.Post {
 	return predicate.Post(func(s *sql.Selector) {
 		step := newUserStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPostCategory applies the HasEdge predicate on the "post_category" edge.
+func HasPostCategory() predicate.Post {
+	return predicate.Post(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PostCategoryTable, PostCategoryPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPostCategoryWith applies the HasEdge predicate on the "post_category" edge with a given conditions (other predicates).
+func HasPostCategoryWith(preds ...predicate.PostCategory) predicate.Post {
+	return predicate.Post(func(s *sql.Selector) {
+		step := newPostCategoryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

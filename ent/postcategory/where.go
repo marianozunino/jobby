@@ -271,21 +271,21 @@ func DeletedAtNotNil() predicate.PostCategory {
 	return predicate.PostCategory(sql.FieldNotNull(FieldDeletedAt))
 }
 
-// HasPostCategories applies the HasEdge predicate on the "post_categories" edge.
-func HasPostCategories() predicate.PostCategory {
+// HasPosts applies the HasEdge predicate on the "posts" edge.
+func HasPosts() predicate.PostCategory {
 	return predicate.PostCategory(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, PostCategoriesTable, PostCategoriesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, PostsTable, PostsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPostCategoriesWith applies the HasEdge predicate on the "post_categories" edge with a given conditions (other predicates).
-func HasPostCategoriesWith(preds ...predicate.PostCategory) predicate.PostCategory {
+// HasPostsWith applies the HasEdge predicate on the "posts" edge with a given conditions (other predicates).
+func HasPostsWith(preds ...predicate.Post) predicate.PostCategory {
 	return predicate.PostCategory(func(s *sql.Selector) {
-		step := newPostCategoriesStep()
+		step := newPostsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

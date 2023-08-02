@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/marianozunino/cc-backend-go/dtos"
 	"github.com/marianozunino/cc-backend-go/ent"
+	"github.com/marianozunino/cc-backend-go/ent/post"
 	"github.com/marianozunino/cc-backend-go/ent/postcategory"
 	"github.com/marianozunino/cc-backend-go/store"
 )
@@ -118,4 +119,22 @@ func (c *PostCategoryStore) PaginatedPostCategories(ctx context.Context, orderBy
 // UpdatePostCategory implements store.PostCategoryStore
 func (c *PostCategoryStore) UpdatePostCategory(ctx context.Context, category *ent.PostCategory) (*ent.PostCategory, error) {
 	return c.Client.PostCategory.UpdateOneID(category.ID).SetName(category.Name).Save(ctx)
+}
+
+// PostCategoriesFor implements store.PostStore.
+
+func (p *PostStore) PostCategoriesFor(ctx context.Context, postIDs []uuid.UUID) (map[uuid.UUID]ent.PostCategories, error) {
+	posts, err := p.Client.Debug().Post.Query().Where(post.IDIn(postIDs...)).WithPostCategory().All(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[uuid.UUID]ent.PostCategories)
+
+	for _, post := range posts {
+		result[post.ID] = post.Edges.PostCategory
+	}
+
+	return result, nil
 }

@@ -159,6 +159,21 @@ func (cu *CategoryUpdate) AddChildCategories(c ...*Category) *CategoryUpdate {
 	return cu.AddChildCategoryIDs(ids...)
 }
 
+// AddJobOfferCategoryIDs adds the "job_offer_categories" edge to the JobOfferCategory entity by IDs.
+func (cu *CategoryUpdate) AddJobOfferCategoryIDs(ids ...uuid.UUID) *CategoryUpdate {
+	cu.mutation.AddJobOfferCategoryIDs(ids...)
+	return cu
+}
+
+// AddJobOfferCategories adds the "job_offer_categories" edges to the JobOfferCategory entity.
+func (cu *CategoryUpdate) AddJobOfferCategories(j ...*JobOfferCategory) *CategoryUpdate {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return cu.AddJobOfferCategoryIDs(ids...)
+}
+
 // SetParentCategoryID sets the "parent_category" edge to the Category entity by ID.
 func (cu *CategoryUpdate) SetParentCategoryID(id uuid.UUID) *CategoryUpdate {
 	cu.mutation.SetParentCategoryID(id)
@@ -176,21 +191,6 @@ func (cu *CategoryUpdate) SetNillableParentCategoryID(id *uuid.UUID) *CategoryUp
 // SetParentCategory sets the "parent_category" edge to the Category entity.
 func (cu *CategoryUpdate) SetParentCategory(c *Category) *CategoryUpdate {
 	return cu.SetParentCategoryID(c.ID)
-}
-
-// AddJobOfferCategoryIDs adds the "job_offer_categories" edge to the JobOfferCategory entity by IDs.
-func (cu *CategoryUpdate) AddJobOfferCategoryIDs(ids ...uuid.UUID) *CategoryUpdate {
-	cu.mutation.AddJobOfferCategoryIDs(ids...)
-	return cu
-}
-
-// AddJobOfferCategories adds the "job_offer_categories" edges to the JobOfferCategory entity.
-func (cu *CategoryUpdate) AddJobOfferCategories(j ...*JobOfferCategory) *CategoryUpdate {
-	ids := make([]uuid.UUID, len(j))
-	for i := range j {
-		ids[i] = j[i].ID
-	}
-	return cu.AddJobOfferCategoryIDs(ids...)
 }
 
 // Mutation returns the CategoryMutation object of the builder.
@@ -240,12 +240,6 @@ func (cu *CategoryUpdate) RemoveChildCategories(c ...*Category) *CategoryUpdate 
 	return cu.RemoveChildCategoryIDs(ids...)
 }
 
-// ClearParentCategory clears the "parent_category" edge to the Category entity.
-func (cu *CategoryUpdate) ClearParentCategory() *CategoryUpdate {
-	cu.mutation.ClearParentCategory()
-	return cu
-}
-
 // ClearJobOfferCategories clears all "job_offer_categories" edges to the JobOfferCategory entity.
 func (cu *CategoryUpdate) ClearJobOfferCategories() *CategoryUpdate {
 	cu.mutation.ClearJobOfferCategories()
@@ -265,6 +259,12 @@ func (cu *CategoryUpdate) RemoveJobOfferCategories(j ...*JobOfferCategory) *Cate
 		ids[i] = j[i].ID
 	}
 	return cu.RemoveJobOfferCategoryIDs(ids...)
+}
+
+// ClearParentCategory clears the "parent_category" edge to the Category entity.
+func (cu *CategoryUpdate) ClearParentCategory() *CategoryUpdate {
+	cu.mutation.ClearParentCategory()
+	return cu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -420,35 +420,6 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cu.mutation.ParentCategoryCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   category.ParentCategoryTable,
-			Columns: []string{category.ParentCategoryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.ParentCategoryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   category.ParentCategoryTable,
-			Columns: []string{category.ParentCategoryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if cu.mutation.JobOfferCategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -487,6 +458,35 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(joboffercategory.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.ParentCategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   category.ParentCategoryTable,
+			Columns: []string{category.ParentCategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.ParentCategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   category.ParentCategoryTable,
+			Columns: []string{category.ParentCategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -642,6 +642,21 @@ func (cuo *CategoryUpdateOne) AddChildCategories(c ...*Category) *CategoryUpdate
 	return cuo.AddChildCategoryIDs(ids...)
 }
 
+// AddJobOfferCategoryIDs adds the "job_offer_categories" edge to the JobOfferCategory entity by IDs.
+func (cuo *CategoryUpdateOne) AddJobOfferCategoryIDs(ids ...uuid.UUID) *CategoryUpdateOne {
+	cuo.mutation.AddJobOfferCategoryIDs(ids...)
+	return cuo
+}
+
+// AddJobOfferCategories adds the "job_offer_categories" edges to the JobOfferCategory entity.
+func (cuo *CategoryUpdateOne) AddJobOfferCategories(j ...*JobOfferCategory) *CategoryUpdateOne {
+	ids := make([]uuid.UUID, len(j))
+	for i := range j {
+		ids[i] = j[i].ID
+	}
+	return cuo.AddJobOfferCategoryIDs(ids...)
+}
+
 // SetParentCategoryID sets the "parent_category" edge to the Category entity by ID.
 func (cuo *CategoryUpdateOne) SetParentCategoryID(id uuid.UUID) *CategoryUpdateOne {
 	cuo.mutation.SetParentCategoryID(id)
@@ -659,21 +674,6 @@ func (cuo *CategoryUpdateOne) SetNillableParentCategoryID(id *uuid.UUID) *Catego
 // SetParentCategory sets the "parent_category" edge to the Category entity.
 func (cuo *CategoryUpdateOne) SetParentCategory(c *Category) *CategoryUpdateOne {
 	return cuo.SetParentCategoryID(c.ID)
-}
-
-// AddJobOfferCategoryIDs adds the "job_offer_categories" edge to the JobOfferCategory entity by IDs.
-func (cuo *CategoryUpdateOne) AddJobOfferCategoryIDs(ids ...uuid.UUID) *CategoryUpdateOne {
-	cuo.mutation.AddJobOfferCategoryIDs(ids...)
-	return cuo
-}
-
-// AddJobOfferCategories adds the "job_offer_categories" edges to the JobOfferCategory entity.
-func (cuo *CategoryUpdateOne) AddJobOfferCategories(j ...*JobOfferCategory) *CategoryUpdateOne {
-	ids := make([]uuid.UUID, len(j))
-	for i := range j {
-		ids[i] = j[i].ID
-	}
-	return cuo.AddJobOfferCategoryIDs(ids...)
 }
 
 // Mutation returns the CategoryMutation object of the builder.
@@ -723,12 +723,6 @@ func (cuo *CategoryUpdateOne) RemoveChildCategories(c ...*Category) *CategoryUpd
 	return cuo.RemoveChildCategoryIDs(ids...)
 }
 
-// ClearParentCategory clears the "parent_category" edge to the Category entity.
-func (cuo *CategoryUpdateOne) ClearParentCategory() *CategoryUpdateOne {
-	cuo.mutation.ClearParentCategory()
-	return cuo
-}
-
 // ClearJobOfferCategories clears all "job_offer_categories" edges to the JobOfferCategory entity.
 func (cuo *CategoryUpdateOne) ClearJobOfferCategories() *CategoryUpdateOne {
 	cuo.mutation.ClearJobOfferCategories()
@@ -748,6 +742,12 @@ func (cuo *CategoryUpdateOne) RemoveJobOfferCategories(j ...*JobOfferCategory) *
 		ids[i] = j[i].ID
 	}
 	return cuo.RemoveJobOfferCategoryIDs(ids...)
+}
+
+// ClearParentCategory clears the "parent_category" edge to the Category entity.
+func (cuo *CategoryUpdateOne) ClearParentCategory() *CategoryUpdateOne {
+	cuo.mutation.ClearParentCategory()
+	return cuo
 }
 
 // Where appends a list predicates to the CategoryUpdate builder.
@@ -933,35 +933,6 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cuo.mutation.ParentCategoryCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   category.ParentCategoryTable,
-			Columns: []string{category.ParentCategoryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.ParentCategoryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   category.ParentCategoryTable,
-			Columns: []string{category.ParentCategoryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if cuo.mutation.JobOfferCategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1000,6 +971,35 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(joboffercategory.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.ParentCategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   category.ParentCategoryTable,
+			Columns: []string{category.ParentCategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.ParentCategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   category.ParentCategoryTable,
+			Columns: []string{category.ParentCategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

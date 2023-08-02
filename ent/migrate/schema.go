@@ -350,8 +350,8 @@ var (
 		{Name: "published_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "preview_image", Type: field.TypeString, Nullable: true},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "author_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// PostsTable holds the schema information for the "posts" table.
@@ -375,21 +375,12 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "post_post_categories", Type: field.TypeUUID, Nullable: true},
 	}
 	// PostCategoriesTable holds the schema information for the "post_categories" table.
 	PostCategoriesTable = &schema.Table{
 		Name:       "post_categories",
 		Columns:    PostCategoriesColumns,
 		PrimaryKey: []*schema.Column{PostCategoriesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "post_categories_posts_post_categories",
-				Columns:    []*schema.Column{PostCategoriesColumns[5]},
-				RefColumns: []*schema.Column{PostsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
 	}
 	// SkillsColumns holds the columns for the "skills" table.
 	SkillsColumns = []*schema.Column{
@@ -469,27 +460,27 @@ var (
 			},
 		},
 	}
-	// PostCategoryPostCategoriesColumns holds the columns for the "post_category_post_categories" table.
-	PostCategoryPostCategoriesColumns = []*schema.Column{
-		{Name: "post_category_id", Type: field.TypeUUID},
-		{Name: "post_category_id", Type: field.TypeUUID},
+	// PostCategoryColumns holds the columns for the "post_category" table.
+	PostCategoryColumns = []*schema.Column{
+		{Name: "category_id", Type: field.TypeUUID},
+		{Name: "post_id", Type: field.TypeUUID},
 	}
-	// PostCategoryPostCategoriesTable holds the schema information for the "post_category_post_categories" table.
-	PostCategoryPostCategoriesTable = &schema.Table{
-		Name:       "post_category_post_categories",
-		Columns:    PostCategoryPostCategoriesColumns,
-		PrimaryKey: []*schema.Column{PostCategoryPostCategoriesColumns[0], PostCategoryPostCategoriesColumns[1], PostCategoryPostCategoriesColumns[0], PostCategoryPostCategoriesColumns[1]},
+	// PostCategoryTable holds the schema information for the "post_category" table.
+	PostCategoryTable = &schema.Table{
+		Name:       "post_category",
+		Columns:    PostCategoryColumns,
+		PrimaryKey: []*schema.Column{PostCategoryColumns[0], PostCategoryColumns[1]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "post_category_post_categories_post_category_id",
-				Columns:    []*schema.Column{PostCategoryPostCategoriesColumns[0], PostCategoryPostCategoriesColumns[1]},
+				Symbol:     "post_category_category_id",
+				Columns:    []*schema.Column{PostCategoryColumns[0]},
 				RefColumns: []*schema.Column{PostCategoriesColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "post_category_post_categories_post_category_id",
-				Columns:    []*schema.Column{PostCategoryPostCategoriesColumns[0], PostCategoryPostCategoriesColumns[1]},
-				RefColumns: []*schema.Column{PostCategoriesColumns[0]},
+				Symbol:     "post_category_post_id",
+				Columns:    []*schema.Column{PostCategoryColumns[1]},
+				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -514,7 +505,7 @@ var (
 		StatusTable,
 		UsersTable,
 		WorkExperienceTable,
-		PostCategoryPostCategoriesTable,
+		PostCategoryTable,
 	}
 )
 
@@ -539,7 +530,9 @@ func init() {
 	JobOfferCategoriesTable.ForeignKeys[1].RefTable = JobOffersTable
 	LanguagesTable.ForeignKeys[0].RefTable = ApplicantProfilesTable
 	PostsTable.ForeignKeys[0].RefTable = UsersTable
-	PostCategoriesTable.ForeignKeys[0].RefTable = PostsTable
+	PostCategoriesTable.Annotation = &entsql.Annotation{
+		Table: "post_categories",
+	}
 	StatusTable.Annotation = &entsql.Annotation{
 		Table: "status",
 	}
@@ -547,6 +540,6 @@ func init() {
 	WorkExperienceTable.Annotation = &entsql.Annotation{
 		Table: "work_experience",
 	}
-	PostCategoryPostCategoriesTable.ForeignKeys[0].RefTable = PostCategoriesTable
-	PostCategoryPostCategoriesTable.ForeignKeys[1].RefTable = PostCategoriesTable
+	PostCategoryTable.ForeignKeys[0].RefTable = PostCategoriesTable
+	PostCategoryTable.ForeignKeys[1].RefTable = PostsTable
 }

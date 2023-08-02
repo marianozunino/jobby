@@ -184,11 +184,45 @@ type PaginatedPostCategoryResponse struct {
 	Skip  *int            `json:"skip,omitempty"`
 }
 
+type PaginatedPostResponse struct {
+	Edges []*Post `json:"edges"`
+	Total int     `json:"total"`
+	Take  *int    `json:"take,omitempty"`
+	Skip  *int    `json:"skip,omitempty"`
+}
+
 type PaginatedStatusResponse struct {
 	Edges []*Status `json:"edges"`
 	Total int       `json:"total"`
 	Take  *int      `json:"take,omitempty"`
 	Skip  *int      `json:"skip,omitempty"`
+}
+
+type Post struct {
+	ID            uuid.UUID       `json:"id"`
+	Title         string          `json:"title"`
+	Content       string          `json:"content"`
+	Slug          string          `json:"slug"`
+	IsHighlighted bool            `json:"isHighlighted"`
+	IsPublished   bool            `json:"isPublished"`
+	PublishedAt   *time.Time      `json:"publishedAt,omitempty"`
+	PreviewImage  *string         `json:"previewImage,omitempty"`
+	CreatedAt     time.Time       `json:"createdAt"`
+	UpdatedAt     time.Time       `json:"updatedAt"`
+	DeletedAt     *time.Time      `json:"deletedAt,omitempty"`
+	Categories    []*PostCategory `json:"categories"`
+}
+
+type PostAggregationInput struct {
+	ID            *SortOrder `json:"id,omitempty"`
+	Title         *SortOrder `json:"title,omitempty"`
+	Slug          *SortOrder `json:"slug,omitempty"`
+	IsHighlighted *SortOrder `json:"isHighlighted,omitempty"`
+	IsPublished   *SortOrder `json:"isPublished,omitempty"`
+	PublishedAt   *SortOrder `json:"publishedAt,omitempty"`
+	CreatedAt     *SortOrder `json:"createdAt,omitempty"`
+	UpdatedAt     *SortOrder `json:"updatedAt,omitempty"`
+	DeletedAt     *SortOrder `json:"deletedAt,omitempty"`
 }
 
 type PostCategory struct {
@@ -222,6 +256,39 @@ type PostCategoryWhereInput struct {
 	ID   *uuid.UUID `json:"id,omitempty"`
 	Name *string    `json:"name,omitempty"`
 	Slug *string    `json:"slug,omitempty"`
+}
+
+type PostCreateInput struct {
+	Name          string      `json:"name"`
+	Slug          *string     `json:"slug,omitempty"`
+	Title         string      `json:"title"`
+	Content       string      `json:"content"`
+	PreviewImage  *string     `json:"previewImage,omitempty"`
+	IsHighlighted bool        `json:"isHighlighted"`
+	IsPublished   bool        `json:"isPublished"`
+	Categories    []uuid.UUID `json:"categories"`
+}
+
+type PostUpdateInput struct {
+	Name          string      `json:"name"`
+	Slug          string      `json:"slug"`
+	Title         string      `json:"title"`
+	Content       string      `json:"content"`
+	PreviewImage  *string     `json:"previewImage,omitempty"`
+	IsHighlighted bool        `json:"isHighlighted"`
+	Categories    []uuid.UUID `json:"categories,omitempty"`
+}
+
+type PostWhereInput struct {
+	ID            *uuid.UUID `json:"id,omitempty"`
+	Title         *string    `json:"title,omitempty"`
+	Slug          *string    `json:"slug,omitempty"`
+	IsHighlighted *bool      `json:"isHighlighted,omitempty"`
+	IsPublished   *bool      `json:"isPublished,omitempty"`
+	PublishedAt   *time.Time `json:"publishedAt,omitempty"`
+	CreatedAt     *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt     *time.Time `json:"updatedAt,omitempty"`
+	DeletedAt     *time.Time `json:"deletedAt,omitempty"`
 }
 
 type Status struct {

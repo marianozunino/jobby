@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/marianozunino/cc-backend-go/ent/post"
 	"github.com/marianozunino/cc-backend-go/ent/postcategory"
 	"github.com/marianozunino/cc-backend-go/ent/predicate"
 )
@@ -61,19 +62,19 @@ func (pcu *PostCategoryUpdate) ClearDeletedAt() *PostCategoryUpdate {
 	return pcu
 }
 
-// AddPostCategoryIDs adds the "post_categories" edge to the PostCategory entity by IDs.
-func (pcu *PostCategoryUpdate) AddPostCategoryIDs(ids ...uuid.UUID) *PostCategoryUpdate {
-	pcu.mutation.AddPostCategoryIDs(ids...)
+// AddPostIDs adds the "posts" edge to the Post entity by IDs.
+func (pcu *PostCategoryUpdate) AddPostIDs(ids ...uuid.UUID) *PostCategoryUpdate {
+	pcu.mutation.AddPostIDs(ids...)
 	return pcu
 }
 
-// AddPostCategories adds the "post_categories" edges to the PostCategory entity.
-func (pcu *PostCategoryUpdate) AddPostCategories(p ...*PostCategory) *PostCategoryUpdate {
+// AddPosts adds the "posts" edges to the Post entity.
+func (pcu *PostCategoryUpdate) AddPosts(p ...*Post) *PostCategoryUpdate {
 	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pcu.AddPostCategoryIDs(ids...)
+	return pcu.AddPostIDs(ids...)
 }
 
 // Mutation returns the PostCategoryMutation object of the builder.
@@ -81,25 +82,25 @@ func (pcu *PostCategoryUpdate) Mutation() *PostCategoryMutation {
 	return pcu.mutation
 }
 
-// ClearPostCategories clears all "post_categories" edges to the PostCategory entity.
-func (pcu *PostCategoryUpdate) ClearPostCategories() *PostCategoryUpdate {
-	pcu.mutation.ClearPostCategories()
+// ClearPosts clears all "posts" edges to the Post entity.
+func (pcu *PostCategoryUpdate) ClearPosts() *PostCategoryUpdate {
+	pcu.mutation.ClearPosts()
 	return pcu
 }
 
-// RemovePostCategoryIDs removes the "post_categories" edge to PostCategory entities by IDs.
-func (pcu *PostCategoryUpdate) RemovePostCategoryIDs(ids ...uuid.UUID) *PostCategoryUpdate {
-	pcu.mutation.RemovePostCategoryIDs(ids...)
+// RemovePostIDs removes the "posts" edge to Post entities by IDs.
+func (pcu *PostCategoryUpdate) RemovePostIDs(ids ...uuid.UUID) *PostCategoryUpdate {
+	pcu.mutation.RemovePostIDs(ids...)
 	return pcu
 }
 
-// RemovePostCategories removes "post_categories" edges to PostCategory entities.
-func (pcu *PostCategoryUpdate) RemovePostCategories(p ...*PostCategory) *PostCategoryUpdate {
+// RemovePosts removes "posts" edges to Post entities.
+func (pcu *PostCategoryUpdate) RemovePosts(p ...*Post) *PostCategoryUpdate {
 	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pcu.RemovePostCategoryIDs(ids...)
+	return pcu.RemovePostIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -159,28 +160,28 @@ func (pcu *PostCategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if pcu.mutation.DeletedAtCleared() {
 		_spec.ClearField(postcategory.FieldDeletedAt, field.TypeTime)
 	}
-	if pcu.mutation.PostCategoriesCleared() {
+	if pcu.mutation.PostsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   postcategory.PostCategoriesTable,
-			Columns: postcategory.PostCategoriesPrimaryKey,
-			Bidi:    true,
+			Table:   postcategory.PostsTable,
+			Columns: postcategory.PostsPrimaryKey,
+			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(postcategory.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pcu.mutation.RemovedPostCategoriesIDs(); len(nodes) > 0 && !pcu.mutation.PostCategoriesCleared() {
+	if nodes := pcu.mutation.RemovedPostsIDs(); len(nodes) > 0 && !pcu.mutation.PostsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   postcategory.PostCategoriesTable,
-			Columns: postcategory.PostCategoriesPrimaryKey,
-			Bidi:    true,
+			Table:   postcategory.PostsTable,
+			Columns: postcategory.PostsPrimaryKey,
+			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(postcategory.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -188,15 +189,15 @@ func (pcu *PostCategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pcu.mutation.PostCategoriesIDs(); len(nodes) > 0 {
+	if nodes := pcu.mutation.PostsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   postcategory.PostCategoriesTable,
-			Columns: postcategory.PostCategoriesPrimaryKey,
-			Bidi:    true,
+			Table:   postcategory.PostsTable,
+			Columns: postcategory.PostsPrimaryKey,
+			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(postcategory.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -256,19 +257,19 @@ func (pcuo *PostCategoryUpdateOne) ClearDeletedAt() *PostCategoryUpdateOne {
 	return pcuo
 }
 
-// AddPostCategoryIDs adds the "post_categories" edge to the PostCategory entity by IDs.
-func (pcuo *PostCategoryUpdateOne) AddPostCategoryIDs(ids ...uuid.UUID) *PostCategoryUpdateOne {
-	pcuo.mutation.AddPostCategoryIDs(ids...)
+// AddPostIDs adds the "posts" edge to the Post entity by IDs.
+func (pcuo *PostCategoryUpdateOne) AddPostIDs(ids ...uuid.UUID) *PostCategoryUpdateOne {
+	pcuo.mutation.AddPostIDs(ids...)
 	return pcuo
 }
 
-// AddPostCategories adds the "post_categories" edges to the PostCategory entity.
-func (pcuo *PostCategoryUpdateOne) AddPostCategories(p ...*PostCategory) *PostCategoryUpdateOne {
+// AddPosts adds the "posts" edges to the Post entity.
+func (pcuo *PostCategoryUpdateOne) AddPosts(p ...*Post) *PostCategoryUpdateOne {
 	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pcuo.AddPostCategoryIDs(ids...)
+	return pcuo.AddPostIDs(ids...)
 }
 
 // Mutation returns the PostCategoryMutation object of the builder.
@@ -276,25 +277,25 @@ func (pcuo *PostCategoryUpdateOne) Mutation() *PostCategoryMutation {
 	return pcuo.mutation
 }
 
-// ClearPostCategories clears all "post_categories" edges to the PostCategory entity.
-func (pcuo *PostCategoryUpdateOne) ClearPostCategories() *PostCategoryUpdateOne {
-	pcuo.mutation.ClearPostCategories()
+// ClearPosts clears all "posts" edges to the Post entity.
+func (pcuo *PostCategoryUpdateOne) ClearPosts() *PostCategoryUpdateOne {
+	pcuo.mutation.ClearPosts()
 	return pcuo
 }
 
-// RemovePostCategoryIDs removes the "post_categories" edge to PostCategory entities by IDs.
-func (pcuo *PostCategoryUpdateOne) RemovePostCategoryIDs(ids ...uuid.UUID) *PostCategoryUpdateOne {
-	pcuo.mutation.RemovePostCategoryIDs(ids...)
+// RemovePostIDs removes the "posts" edge to Post entities by IDs.
+func (pcuo *PostCategoryUpdateOne) RemovePostIDs(ids ...uuid.UUID) *PostCategoryUpdateOne {
+	pcuo.mutation.RemovePostIDs(ids...)
 	return pcuo
 }
 
-// RemovePostCategories removes "post_categories" edges to PostCategory entities.
-func (pcuo *PostCategoryUpdateOne) RemovePostCategories(p ...*PostCategory) *PostCategoryUpdateOne {
+// RemovePosts removes "posts" edges to Post entities.
+func (pcuo *PostCategoryUpdateOne) RemovePosts(p ...*Post) *PostCategoryUpdateOne {
 	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pcuo.RemovePostCategoryIDs(ids...)
+	return pcuo.RemovePostIDs(ids...)
 }
 
 // Where appends a list predicates to the PostCategoryUpdate builder.
@@ -384,28 +385,28 @@ func (pcuo *PostCategoryUpdateOne) sqlSave(ctx context.Context) (_node *PostCate
 	if pcuo.mutation.DeletedAtCleared() {
 		_spec.ClearField(postcategory.FieldDeletedAt, field.TypeTime)
 	}
-	if pcuo.mutation.PostCategoriesCleared() {
+	if pcuo.mutation.PostsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   postcategory.PostCategoriesTable,
-			Columns: postcategory.PostCategoriesPrimaryKey,
-			Bidi:    true,
+			Table:   postcategory.PostsTable,
+			Columns: postcategory.PostsPrimaryKey,
+			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(postcategory.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pcuo.mutation.RemovedPostCategoriesIDs(); len(nodes) > 0 && !pcuo.mutation.PostCategoriesCleared() {
+	if nodes := pcuo.mutation.RemovedPostsIDs(); len(nodes) > 0 && !pcuo.mutation.PostsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   postcategory.PostCategoriesTable,
-			Columns: postcategory.PostCategoriesPrimaryKey,
-			Bidi:    true,
+			Table:   postcategory.PostsTable,
+			Columns: postcategory.PostsPrimaryKey,
+			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(postcategory.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -413,15 +414,15 @@ func (pcuo *PostCategoryUpdateOne) sqlSave(ctx context.Context) (_node *PostCate
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pcuo.mutation.PostCategoriesIDs(); len(nodes) > 0 {
+	if nodes := pcuo.mutation.PostsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   postcategory.PostCategoriesTable,
-			Columns: postcategory.PostCategoriesPrimaryKey,
-			Bidi:    true,
+			Table:   postcategory.PostsTable,
+			Columns: postcategory.PostsPrimaryKey,
+			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(postcategory.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

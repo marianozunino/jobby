@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/marianozunino/cc-backend-go/ent/post"
 	"github.com/marianozunino/cc-backend-go/ent/postcategory"
 )
 
@@ -75,19 +76,19 @@ func (pcc *PostCategoryCreate) SetID(u uuid.UUID) *PostCategoryCreate {
 	return pcc
 }
 
-// AddPostCategoryIDs adds the "post_categories" edge to the PostCategory entity by IDs.
-func (pcc *PostCategoryCreate) AddPostCategoryIDs(ids ...uuid.UUID) *PostCategoryCreate {
-	pcc.mutation.AddPostCategoryIDs(ids...)
+// AddPostIDs adds the "posts" edge to the Post entity by IDs.
+func (pcc *PostCategoryCreate) AddPostIDs(ids ...uuid.UUID) *PostCategoryCreate {
+	pcc.mutation.AddPostIDs(ids...)
 	return pcc
 }
 
-// AddPostCategories adds the "post_categories" edges to the PostCategory entity.
-func (pcc *PostCategoryCreate) AddPostCategories(p ...*PostCategory) *PostCategoryCreate {
+// AddPosts adds the "posts" edges to the Post entity.
+func (pcc *PostCategoryCreate) AddPosts(p ...*Post) *PostCategoryCreate {
 	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pcc.AddPostCategoryIDs(ids...)
+	return pcc.AddPostIDs(ids...)
 }
 
 // Mutation returns the PostCategoryMutation object of the builder.
@@ -197,15 +198,15 @@ func (pcc *PostCategoryCreate) createSpec() (*PostCategory, *sqlgraph.CreateSpec
 		_spec.SetField(postcategory.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
-	if nodes := pcc.mutation.PostCategoriesIDs(); len(nodes) > 0 {
+	if nodes := pcc.mutation.PostsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   postcategory.PostCategoriesTable,
-			Columns: postcategory.PostCategoriesPrimaryKey,
-			Bidi:    true,
+			Table:   postcategory.PostsTable,
+			Columns: postcategory.PostsPrimaryKey,
+			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(postcategory.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

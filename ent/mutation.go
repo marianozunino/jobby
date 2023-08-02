@@ -3969,11 +3969,11 @@ type CategoryMutation struct {
 	child_categories            map[uuid.UUID]struct{}
 	removedchild_categories     map[uuid.UUID]struct{}
 	clearedchild_categories     bool
-	parent_category             *uuid.UUID
-	clearedparent_category      bool
 	job_offer_categories        map[uuid.UUID]struct{}
 	removedjob_offer_categories map[uuid.UUID]struct{}
 	clearedjob_offer_categories bool
+	parent_category             *uuid.UUID
+	clearedparent_category      bool
 	done                        bool
 	oldValue                    func(context.Context) (*Category, error)
 	predicates                  []predicate.Category
@@ -4495,45 +4495,6 @@ func (m *CategoryMutation) ResetChildCategories() {
 	m.removedchild_categories = nil
 }
 
-// SetParentCategoryID sets the "parent_category" edge to the Category entity by id.
-func (m *CategoryMutation) SetParentCategoryID(id uuid.UUID) {
-	m.parent_category = &id
-}
-
-// ClearParentCategory clears the "parent_category" edge to the Category entity.
-func (m *CategoryMutation) ClearParentCategory() {
-	m.clearedparent_category = true
-}
-
-// ParentCategoryCleared reports if the "parent_category" edge to the Category entity was cleared.
-func (m *CategoryMutation) ParentCategoryCleared() bool {
-	return m.ParentIDCleared() || m.clearedparent_category
-}
-
-// ParentCategoryID returns the "parent_category" edge ID in the mutation.
-func (m *CategoryMutation) ParentCategoryID() (id uuid.UUID, exists bool) {
-	if m.parent_category != nil {
-		return *m.parent_category, true
-	}
-	return
-}
-
-// ParentCategoryIDs returns the "parent_category" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ParentCategoryID instead. It exists only for internal usage by the builders.
-func (m *CategoryMutation) ParentCategoryIDs() (ids []uuid.UUID) {
-	if id := m.parent_category; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetParentCategory resets all changes to the "parent_category" edge.
-func (m *CategoryMutation) ResetParentCategory() {
-	m.parent_category = nil
-	m.clearedparent_category = false
-}
-
 // AddJobOfferCategoryIDs adds the "job_offer_categories" edge to the JobOfferCategory entity by ids.
 func (m *CategoryMutation) AddJobOfferCategoryIDs(ids ...uuid.UUID) {
 	if m.job_offer_categories == nil {
@@ -4586,6 +4547,45 @@ func (m *CategoryMutation) ResetJobOfferCategories() {
 	m.job_offer_categories = nil
 	m.clearedjob_offer_categories = false
 	m.removedjob_offer_categories = nil
+}
+
+// SetParentCategoryID sets the "parent_category" edge to the Category entity by id.
+func (m *CategoryMutation) SetParentCategoryID(id uuid.UUID) {
+	m.parent_category = &id
+}
+
+// ClearParentCategory clears the "parent_category" edge to the Category entity.
+func (m *CategoryMutation) ClearParentCategory() {
+	m.clearedparent_category = true
+}
+
+// ParentCategoryCleared reports if the "parent_category" edge to the Category entity was cleared.
+func (m *CategoryMutation) ParentCategoryCleared() bool {
+	return m.ParentIDCleared() || m.clearedparent_category
+}
+
+// ParentCategoryID returns the "parent_category" edge ID in the mutation.
+func (m *CategoryMutation) ParentCategoryID() (id uuid.UUID, exists bool) {
+	if m.parent_category != nil {
+		return *m.parent_category, true
+	}
+	return
+}
+
+// ParentCategoryIDs returns the "parent_category" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentCategoryID instead. It exists only for internal usage by the builders.
+func (m *CategoryMutation) ParentCategoryIDs() (ids []uuid.UUID) {
+	if id := m.parent_category; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParentCategory resets all changes to the "parent_category" edge.
+func (m *CategoryMutation) ResetParentCategory() {
+	m.parent_category = nil
+	m.clearedparent_category = false
 }
 
 // Where appends a list predicates to the CategoryMutation builder.
@@ -4857,11 +4857,11 @@ func (m *CategoryMutation) AddedEdges() []string {
 	if m.child_categories != nil {
 		edges = append(edges, category.EdgeChildCategories)
 	}
-	if m.parent_category != nil {
-		edges = append(edges, category.EdgeParentCategory)
-	}
 	if m.job_offer_categories != nil {
 		edges = append(edges, category.EdgeJobOfferCategories)
+	}
+	if m.parent_category != nil {
+		edges = append(edges, category.EdgeParentCategory)
 	}
 	return edges
 }
@@ -4882,16 +4882,16 @@ func (m *CategoryMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case category.EdgeParentCategory:
-		if id := m.parent_category; id != nil {
-			return []ent.Value{*id}
-		}
 	case category.EdgeJobOfferCategories:
 		ids := make([]ent.Value, 0, len(m.job_offer_categories))
 		for id := range m.job_offer_categories {
 			ids = append(ids, id)
 		}
 		return ids
+	case category.EdgeParentCategory:
+		if id := m.parent_category; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
@@ -4946,11 +4946,11 @@ func (m *CategoryMutation) ClearedEdges() []string {
 	if m.clearedchild_categories {
 		edges = append(edges, category.EdgeChildCategories)
 	}
-	if m.clearedparent_category {
-		edges = append(edges, category.EdgeParentCategory)
-	}
 	if m.clearedjob_offer_categories {
 		edges = append(edges, category.EdgeJobOfferCategories)
+	}
+	if m.clearedparent_category {
+		edges = append(edges, category.EdgeParentCategory)
 	}
 	return edges
 }
@@ -4963,10 +4963,10 @@ func (m *CategoryMutation) EdgeCleared(name string) bool {
 		return m.clearedapplicant_interests
 	case category.EdgeChildCategories:
 		return m.clearedchild_categories
-	case category.EdgeParentCategory:
-		return m.clearedparent_category
 	case category.EdgeJobOfferCategories:
 		return m.clearedjob_offer_categories
+	case category.EdgeParentCategory:
+		return m.clearedparent_category
 	}
 	return false
 }
@@ -4992,11 +4992,11 @@ func (m *CategoryMutation) ResetEdge(name string) error {
 	case category.EdgeChildCategories:
 		m.ResetChildCategories()
 		return nil
-	case category.EdgeParentCategory:
-		m.ResetParentCategory()
-		return nil
 	case category.EdgeJobOfferCategories:
 		m.ResetJobOfferCategories()
+		return nil
+	case category.EdgeParentCategory:
+		m.ResetParentCategory()
 		return nil
 	}
 	return fmt.Errorf("unknown Category edge %s", name)
@@ -11304,28 +11304,28 @@ func (m *LanguageMutation) ResetEdge(name string) error {
 // PostMutation represents an operation that mutates the Post nodes in the graph.
 type PostMutation struct {
 	config
-	op                     Op
-	typ                    string
-	id                     *uuid.UUID
-	title                  *string
-	content                *string
-	slug                   *string
-	is_highlighted         *bool
-	is_published           *bool
-	published_at           *time.Time
-	created_at             *time.Time
-	updated_at             *time.Time
-	deleted_at             *time.Time
-	preview_image          *string
-	clearedFields          map[string]struct{}
-	post_categories        map[uuid.UUID]struct{}
-	removedpost_categories map[uuid.UUID]struct{}
-	clearedpost_categories bool
-	user                   *uuid.UUID
-	cleareduser            bool
-	done                   bool
-	oldValue               func(context.Context) (*Post, error)
-	predicates             []predicate.Post
+	op                   Op
+	typ                  string
+	id                   *uuid.UUID
+	title                *string
+	content              *string
+	slug                 *string
+	is_highlighted       *bool
+	is_published         *bool
+	published_at         *time.Time
+	created_at           *time.Time
+	updated_at           *time.Time
+	preview_image        *string
+	deleted_at           *time.Time
+	clearedFields        map[string]struct{}
+	user                 *uuid.UUID
+	cleareduser          bool
+	post_category        map[uuid.UUID]struct{}
+	removedpost_category map[uuid.UUID]struct{}
+	clearedpost_category bool
+	done                 bool
+	oldValue             func(context.Context) (*Post, error)
+	predicates           []predicate.Post
 }
 
 var _ ent.Mutation = (*PostMutation)(nil)
@@ -11661,55 +11661,6 @@ func (m *PostMutation) ResetPublishedAt() {
 	delete(m.clearedFields, post.FieldPublishedAt)
 }
 
-// SetAuthorID sets the "author_id" field.
-func (m *PostMutation) SetAuthorID(u uuid.UUID) {
-	m.user = &u
-}
-
-// AuthorID returns the value of the "author_id" field in the mutation.
-func (m *PostMutation) AuthorID() (r uuid.UUID, exists bool) {
-	v := m.user
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAuthorID returns the old "author_id" field's value of the Post entity.
-// If the Post object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PostMutation) OldAuthorID(ctx context.Context) (v *uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAuthorID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAuthorID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAuthorID: %w", err)
-	}
-	return oldValue.AuthorID, nil
-}
-
-// ClearAuthorID clears the value of the "author_id" field.
-func (m *PostMutation) ClearAuthorID() {
-	m.user = nil
-	m.clearedFields[post.FieldAuthorID] = struct{}{}
-}
-
-// AuthorIDCleared returns if the "author_id" field was cleared in this mutation.
-func (m *PostMutation) AuthorIDCleared() bool {
-	_, ok := m.clearedFields[post.FieldAuthorID]
-	return ok
-}
-
-// ResetAuthorID resets all changes to the "author_id" field.
-func (m *PostMutation) ResetAuthorID() {
-	m.user = nil
-	delete(m.clearedFields, post.FieldAuthorID)
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (m *PostMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -11782,55 +11733,6 @@ func (m *PostMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (m *PostMutation) SetDeletedAt(t time.Time) {
-	m.deleted_at = &t
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *PostMutation) DeletedAt() (r time.Time, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the Post entity.
-// If the Post object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PostMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *PostMutation) ClearDeletedAt() {
-	m.deleted_at = nil
-	m.clearedFields[post.FieldDeletedAt] = struct{}{}
-}
-
-// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *PostMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[post.FieldDeletedAt]
-	return ok
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *PostMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	delete(m.clearedFields, post.FieldDeletedAt)
-}
-
 // SetPreviewImage sets the "preview_image" field.
 func (m *PostMutation) SetPreviewImage(s string) {
 	m.preview_image = &s
@@ -11848,7 +11750,7 @@ func (m *PostMutation) PreviewImage() (r string, exists bool) {
 // OldPreviewImage returns the old "preview_image" field's value of the Post entity.
 // If the Post object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PostMutation) OldPreviewImage(ctx context.Context) (v string, err error) {
+func (m *PostMutation) OldPreviewImage(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPreviewImage is only allowed on UpdateOne operations")
 	}
@@ -11880,58 +11782,102 @@ func (m *PostMutation) ResetPreviewImage() {
 	delete(m.clearedFields, post.FieldPreviewImage)
 }
 
-// AddPostCategoryIDs adds the "post_categories" edge to the PostCategory entity by ids.
-func (m *PostMutation) AddPostCategoryIDs(ids ...uuid.UUID) {
-	if m.post_categories == nil {
-		m.post_categories = make(map[uuid.UUID]struct{})
-	}
-	for i := range ids {
-		m.post_categories[ids[i]] = struct{}{}
-	}
+// SetDeletedAt sets the "deleted_at" field.
+func (m *PostMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
 }
 
-// ClearPostCategories clears the "post_categories" edge to the PostCategory entity.
-func (m *PostMutation) ClearPostCategories() {
-	m.clearedpost_categories = true
-}
-
-// PostCategoriesCleared reports if the "post_categories" edge to the PostCategory entity was cleared.
-func (m *PostMutation) PostCategoriesCleared() bool {
-	return m.clearedpost_categories
-}
-
-// RemovePostCategoryIDs removes the "post_categories" edge to the PostCategory entity by IDs.
-func (m *PostMutation) RemovePostCategoryIDs(ids ...uuid.UUID) {
-	if m.removedpost_categories == nil {
-		m.removedpost_categories = make(map[uuid.UUID]struct{})
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *PostMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
 	}
-	for i := range ids {
-		delete(m.post_categories, ids[i])
-		m.removedpost_categories[ids[i]] = struct{}{}
-	}
+	return *v, true
 }
 
-// RemovedPostCategories returns the removed IDs of the "post_categories" edge to the PostCategory entity.
-func (m *PostMutation) RemovedPostCategoriesIDs() (ids []uuid.UUID) {
-	for id := range m.removedpost_categories {
-		ids = append(ids, id)
+// OldDeletedAt returns the old "deleted_at" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
 	}
-	return
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
 }
 
-// PostCategoriesIDs returns the "post_categories" edge IDs in the mutation.
-func (m *PostMutation) PostCategoriesIDs() (ids []uuid.UUID) {
-	for id := range m.post_categories {
-		ids = append(ids, id)
-	}
-	return
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *PostMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[post.FieldDeletedAt] = struct{}{}
 }
 
-// ResetPostCategories resets all changes to the "post_categories" edge.
-func (m *PostMutation) ResetPostCategories() {
-	m.post_categories = nil
-	m.clearedpost_categories = false
-	m.removedpost_categories = nil
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *PostMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[post.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *PostMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, post.FieldDeletedAt)
+}
+
+// SetAuthorID sets the "author_id" field.
+func (m *PostMutation) SetAuthorID(u uuid.UUID) {
+	m.user = &u
+}
+
+// AuthorID returns the value of the "author_id" field in the mutation.
+func (m *PostMutation) AuthorID() (r uuid.UUID, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuthorID returns the old "author_id" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldAuthorID(ctx context.Context) (v *uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAuthorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAuthorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuthorID: %w", err)
+	}
+	return oldValue.AuthorID, nil
+}
+
+// ClearAuthorID clears the value of the "author_id" field.
+func (m *PostMutation) ClearAuthorID() {
+	m.user = nil
+	m.clearedFields[post.FieldAuthorID] = struct{}{}
+}
+
+// AuthorIDCleared returns if the "author_id" field was cleared in this mutation.
+func (m *PostMutation) AuthorIDCleared() bool {
+	_, ok := m.clearedFields[post.FieldAuthorID]
+	return ok
+}
+
+// ResetAuthorID resets all changes to the "author_id" field.
+func (m *PostMutation) ResetAuthorID() {
+	m.user = nil
+	delete(m.clearedFields, post.FieldAuthorID)
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
@@ -11971,6 +11917,60 @@ func (m *PostMutation) UserIDs() (ids []uuid.UUID) {
 func (m *PostMutation) ResetUser() {
 	m.user = nil
 	m.cleareduser = false
+}
+
+// AddPostCategoryIDs adds the "post_category" edge to the PostCategory entity by ids.
+func (m *PostMutation) AddPostCategoryIDs(ids ...uuid.UUID) {
+	if m.post_category == nil {
+		m.post_category = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.post_category[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPostCategory clears the "post_category" edge to the PostCategory entity.
+func (m *PostMutation) ClearPostCategory() {
+	m.clearedpost_category = true
+}
+
+// PostCategoryCleared reports if the "post_category" edge to the PostCategory entity was cleared.
+func (m *PostMutation) PostCategoryCleared() bool {
+	return m.clearedpost_category
+}
+
+// RemovePostCategoryIDs removes the "post_category" edge to the PostCategory entity by IDs.
+func (m *PostMutation) RemovePostCategoryIDs(ids ...uuid.UUID) {
+	if m.removedpost_category == nil {
+		m.removedpost_category = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.post_category, ids[i])
+		m.removedpost_category[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPostCategory returns the removed IDs of the "post_category" edge to the PostCategory entity.
+func (m *PostMutation) RemovedPostCategoryIDs() (ids []uuid.UUID) {
+	for id := range m.removedpost_category {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PostCategoryIDs returns the "post_category" edge IDs in the mutation.
+func (m *PostMutation) PostCategoryIDs() (ids []uuid.UUID) {
+	for id := range m.post_category {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPostCategory resets all changes to the "post_category" edge.
+func (m *PostMutation) ResetPostCategory() {
+	m.post_category = nil
+	m.clearedpost_category = false
+	m.removedpost_category = nil
 }
 
 // Where appends a list predicates to the PostMutation builder.
@@ -12026,20 +12026,20 @@ func (m *PostMutation) Fields() []string {
 	if m.published_at != nil {
 		fields = append(fields, post.FieldPublishedAt)
 	}
-	if m.user != nil {
-		fields = append(fields, post.FieldAuthorID)
-	}
 	if m.created_at != nil {
 		fields = append(fields, post.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, post.FieldUpdatedAt)
 	}
+	if m.preview_image != nil {
+		fields = append(fields, post.FieldPreviewImage)
+	}
 	if m.deleted_at != nil {
 		fields = append(fields, post.FieldDeletedAt)
 	}
-	if m.preview_image != nil {
-		fields = append(fields, post.FieldPreviewImage)
+	if m.user != nil {
+		fields = append(fields, post.FieldAuthorID)
 	}
 	return fields
 }
@@ -12061,16 +12061,16 @@ func (m *PostMutation) Field(name string) (ent.Value, bool) {
 		return m.IsPublished()
 	case post.FieldPublishedAt:
 		return m.PublishedAt()
-	case post.FieldAuthorID:
-		return m.AuthorID()
 	case post.FieldCreatedAt:
 		return m.CreatedAt()
 	case post.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case post.FieldDeletedAt:
-		return m.DeletedAt()
 	case post.FieldPreviewImage:
 		return m.PreviewImage()
+	case post.FieldDeletedAt:
+		return m.DeletedAt()
+	case post.FieldAuthorID:
+		return m.AuthorID()
 	}
 	return nil, false
 }
@@ -12092,16 +12092,16 @@ func (m *PostMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldIsPublished(ctx)
 	case post.FieldPublishedAt:
 		return m.OldPublishedAt(ctx)
-	case post.FieldAuthorID:
-		return m.OldAuthorID(ctx)
 	case post.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case post.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case post.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
 	case post.FieldPreviewImage:
 		return m.OldPreviewImage(ctx)
+	case post.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case post.FieldAuthorID:
+		return m.OldAuthorID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Post field %s", name)
 }
@@ -12153,13 +12153,6 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPublishedAt(v)
 		return nil
-	case post.FieldAuthorID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAuthorID(v)
-		return nil
 	case post.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -12174,6 +12167,13 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case post.FieldPreviewImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPreviewImage(v)
+		return nil
 	case post.FieldDeletedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -12181,12 +12181,12 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case post.FieldPreviewImage:
-		v, ok := value.(string)
+	case post.FieldAuthorID:
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetPreviewImage(v)
+		m.SetAuthorID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Post field %s", name)
@@ -12221,14 +12221,14 @@ func (m *PostMutation) ClearedFields() []string {
 	if m.FieldCleared(post.FieldPublishedAt) {
 		fields = append(fields, post.FieldPublishedAt)
 	}
-	if m.FieldCleared(post.FieldAuthorID) {
-		fields = append(fields, post.FieldAuthorID)
+	if m.FieldCleared(post.FieldPreviewImage) {
+		fields = append(fields, post.FieldPreviewImage)
 	}
 	if m.FieldCleared(post.FieldDeletedAt) {
 		fields = append(fields, post.FieldDeletedAt)
 	}
-	if m.FieldCleared(post.FieldPreviewImage) {
-		fields = append(fields, post.FieldPreviewImage)
+	if m.FieldCleared(post.FieldAuthorID) {
+		fields = append(fields, post.FieldAuthorID)
 	}
 	return fields
 }
@@ -12247,14 +12247,14 @@ func (m *PostMutation) ClearField(name string) error {
 	case post.FieldPublishedAt:
 		m.ClearPublishedAt()
 		return nil
-	case post.FieldAuthorID:
-		m.ClearAuthorID()
+	case post.FieldPreviewImage:
+		m.ClearPreviewImage()
 		return nil
 	case post.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
-	case post.FieldPreviewImage:
-		m.ClearPreviewImage()
+	case post.FieldAuthorID:
+		m.ClearAuthorID()
 		return nil
 	}
 	return fmt.Errorf("unknown Post nullable field %s", name)
@@ -12282,20 +12282,20 @@ func (m *PostMutation) ResetField(name string) error {
 	case post.FieldPublishedAt:
 		m.ResetPublishedAt()
 		return nil
-	case post.FieldAuthorID:
-		m.ResetAuthorID()
-		return nil
 	case post.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
 	case post.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
+	case post.FieldPreviewImage:
+		m.ResetPreviewImage()
+		return nil
 	case post.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case post.FieldPreviewImage:
-		m.ResetPreviewImage()
+	case post.FieldAuthorID:
+		m.ResetAuthorID()
 		return nil
 	}
 	return fmt.Errorf("unknown Post field %s", name)
@@ -12304,11 +12304,11 @@ func (m *PostMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PostMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.post_categories != nil {
-		edges = append(edges, post.EdgePostCategories)
-	}
 	if m.user != nil {
 		edges = append(edges, post.EdgeUser)
+	}
+	if m.post_category != nil {
+		edges = append(edges, post.EdgePostCategory)
 	}
 	return edges
 }
@@ -12317,16 +12317,16 @@ func (m *PostMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *PostMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case post.EdgePostCategories:
-		ids := make([]ent.Value, 0, len(m.post_categories))
-		for id := range m.post_categories {
-			ids = append(ids, id)
-		}
-		return ids
 	case post.EdgeUser:
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
+	case post.EdgePostCategory:
+		ids := make([]ent.Value, 0, len(m.post_category))
+		for id := range m.post_category {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -12334,8 +12334,8 @@ func (m *PostMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PostMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedpost_categories != nil {
-		edges = append(edges, post.EdgePostCategories)
+	if m.removedpost_category != nil {
+		edges = append(edges, post.EdgePostCategory)
 	}
 	return edges
 }
@@ -12344,9 +12344,9 @@ func (m *PostMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *PostMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case post.EdgePostCategories:
-		ids := make([]ent.Value, 0, len(m.removedpost_categories))
-		for id := range m.removedpost_categories {
+	case post.EdgePostCategory:
+		ids := make([]ent.Value, 0, len(m.removedpost_category))
+		for id := range m.removedpost_category {
 			ids = append(ids, id)
 		}
 		return ids
@@ -12357,11 +12357,11 @@ func (m *PostMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PostMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedpost_categories {
-		edges = append(edges, post.EdgePostCategories)
-	}
 	if m.cleareduser {
 		edges = append(edges, post.EdgeUser)
+	}
+	if m.clearedpost_category {
+		edges = append(edges, post.EdgePostCategory)
 	}
 	return edges
 }
@@ -12370,10 +12370,10 @@ func (m *PostMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *PostMutation) EdgeCleared(name string) bool {
 	switch name {
-	case post.EdgePostCategories:
-		return m.clearedpost_categories
 	case post.EdgeUser:
 		return m.cleareduser
+	case post.EdgePostCategory:
+		return m.clearedpost_category
 	}
 	return false
 }
@@ -12393,11 +12393,11 @@ func (m *PostMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PostMutation) ResetEdge(name string) error {
 	switch name {
-	case post.EdgePostCategories:
-		m.ResetPostCategories()
-		return nil
 	case post.EdgeUser:
 		m.ResetUser()
+		return nil
+	case post.EdgePostCategory:
+		m.ResetPostCategory()
 		return nil
 	}
 	return fmt.Errorf("unknown Post edge %s", name)
@@ -12406,20 +12406,20 @@ func (m *PostMutation) ResetEdge(name string) error {
 // PostCategoryMutation represents an operation that mutates the PostCategory nodes in the graph.
 type PostCategoryMutation struct {
 	config
-	op                     Op
-	typ                    string
-	id                     *uuid.UUID
-	name                   *string
-	created_at             *time.Time
-	updated_at             *time.Time
-	deleted_at             *time.Time
-	clearedFields          map[string]struct{}
-	post_categories        map[uuid.UUID]struct{}
-	removedpost_categories map[uuid.UUID]struct{}
-	clearedpost_categories bool
-	done                   bool
-	oldValue               func(context.Context) (*PostCategory, error)
-	predicates             []predicate.PostCategory
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	name          *string
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	clearedFields map[string]struct{}
+	posts         map[uuid.UUID]struct{}
+	removedposts  map[uuid.UUID]struct{}
+	clearedposts  bool
+	done          bool
+	oldValue      func(context.Context) (*PostCategory, error)
+	predicates    []predicate.PostCategory
 }
 
 var _ ent.Mutation = (*PostCategoryMutation)(nil)
@@ -12683,58 +12683,58 @@ func (m *PostCategoryMutation) ResetDeletedAt() {
 	delete(m.clearedFields, postcategory.FieldDeletedAt)
 }
 
-// AddPostCategoryIDs adds the "post_categories" edge to the PostCategory entity by ids.
-func (m *PostCategoryMutation) AddPostCategoryIDs(ids ...uuid.UUID) {
-	if m.post_categories == nil {
-		m.post_categories = make(map[uuid.UUID]struct{})
+// AddPostIDs adds the "posts" edge to the Post entity by ids.
+func (m *PostCategoryMutation) AddPostIDs(ids ...uuid.UUID) {
+	if m.posts == nil {
+		m.posts = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
-		m.post_categories[ids[i]] = struct{}{}
+		m.posts[ids[i]] = struct{}{}
 	}
 }
 
-// ClearPostCategories clears the "post_categories" edge to the PostCategory entity.
-func (m *PostCategoryMutation) ClearPostCategories() {
-	m.clearedpost_categories = true
+// ClearPosts clears the "posts" edge to the Post entity.
+func (m *PostCategoryMutation) ClearPosts() {
+	m.clearedposts = true
 }
 
-// PostCategoriesCleared reports if the "post_categories" edge to the PostCategory entity was cleared.
-func (m *PostCategoryMutation) PostCategoriesCleared() bool {
-	return m.clearedpost_categories
+// PostsCleared reports if the "posts" edge to the Post entity was cleared.
+func (m *PostCategoryMutation) PostsCleared() bool {
+	return m.clearedposts
 }
 
-// RemovePostCategoryIDs removes the "post_categories" edge to the PostCategory entity by IDs.
-func (m *PostCategoryMutation) RemovePostCategoryIDs(ids ...uuid.UUID) {
-	if m.removedpost_categories == nil {
-		m.removedpost_categories = make(map[uuid.UUID]struct{})
+// RemovePostIDs removes the "posts" edge to the Post entity by IDs.
+func (m *PostCategoryMutation) RemovePostIDs(ids ...uuid.UUID) {
+	if m.removedposts == nil {
+		m.removedposts = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
-		delete(m.post_categories, ids[i])
-		m.removedpost_categories[ids[i]] = struct{}{}
+		delete(m.posts, ids[i])
+		m.removedposts[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedPostCategories returns the removed IDs of the "post_categories" edge to the PostCategory entity.
-func (m *PostCategoryMutation) RemovedPostCategoriesIDs() (ids []uuid.UUID) {
-	for id := range m.removedpost_categories {
+// RemovedPosts returns the removed IDs of the "posts" edge to the Post entity.
+func (m *PostCategoryMutation) RemovedPostsIDs() (ids []uuid.UUID) {
+	for id := range m.removedposts {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// PostCategoriesIDs returns the "post_categories" edge IDs in the mutation.
-func (m *PostCategoryMutation) PostCategoriesIDs() (ids []uuid.UUID) {
-	for id := range m.post_categories {
+// PostsIDs returns the "posts" edge IDs in the mutation.
+func (m *PostCategoryMutation) PostsIDs() (ids []uuid.UUID) {
+	for id := range m.posts {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetPostCategories resets all changes to the "post_categories" edge.
-func (m *PostCategoryMutation) ResetPostCategories() {
-	m.post_categories = nil
-	m.clearedpost_categories = false
-	m.removedpost_categories = nil
+// ResetPosts resets all changes to the "posts" edge.
+func (m *PostCategoryMutation) ResetPosts() {
+	m.posts = nil
+	m.clearedposts = false
+	m.removedposts = nil
 }
 
 // Where appends a list predicates to the PostCategoryMutation builder.
@@ -12931,8 +12931,8 @@ func (m *PostCategoryMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PostCategoryMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.post_categories != nil {
-		edges = append(edges, postcategory.EdgePostCategories)
+	if m.posts != nil {
+		edges = append(edges, postcategory.EdgePosts)
 	}
 	return edges
 }
@@ -12941,9 +12941,9 @@ func (m *PostCategoryMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *PostCategoryMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case postcategory.EdgePostCategories:
-		ids := make([]ent.Value, 0, len(m.post_categories))
-		for id := range m.post_categories {
+	case postcategory.EdgePosts:
+		ids := make([]ent.Value, 0, len(m.posts))
+		for id := range m.posts {
 			ids = append(ids, id)
 		}
 		return ids
@@ -12954,8 +12954,8 @@ func (m *PostCategoryMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PostCategoryMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedpost_categories != nil {
-		edges = append(edges, postcategory.EdgePostCategories)
+	if m.removedposts != nil {
+		edges = append(edges, postcategory.EdgePosts)
 	}
 	return edges
 }
@@ -12964,9 +12964,9 @@ func (m *PostCategoryMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *PostCategoryMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case postcategory.EdgePostCategories:
-		ids := make([]ent.Value, 0, len(m.removedpost_categories))
-		for id := range m.removedpost_categories {
+	case postcategory.EdgePosts:
+		ids := make([]ent.Value, 0, len(m.removedposts))
+		for id := range m.removedposts {
 			ids = append(ids, id)
 		}
 		return ids
@@ -12977,8 +12977,8 @@ func (m *PostCategoryMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PostCategoryMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedpost_categories {
-		edges = append(edges, postcategory.EdgePostCategories)
+	if m.clearedposts {
+		edges = append(edges, postcategory.EdgePosts)
 	}
 	return edges
 }
@@ -12987,8 +12987,8 @@ func (m *PostCategoryMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *PostCategoryMutation) EdgeCleared(name string) bool {
 	switch name {
-	case postcategory.EdgePostCategories:
-		return m.clearedpost_categories
+	case postcategory.EdgePosts:
+		return m.clearedposts
 	}
 	return false
 }
@@ -13005,8 +13005,8 @@ func (m *PostCategoryMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PostCategoryMutation) ResetEdge(name string) error {
 	switch name {
-	case postcategory.EdgePostCategories:
-		m.ResetPostCategories()
+	case postcategory.EdgePosts:
+		m.ResetPosts()
 		return nil
 	}
 	return fmt.Errorf("unknown PostCategory edge %s", name)

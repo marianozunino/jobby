@@ -44,10 +44,10 @@ type CategoryEdges struct {
 	ApplicantInterests []*ApplicantInterest `json:"applicant_interests,omitempty"`
 	// ChildCategories holds the value of the child_categories edge.
 	ChildCategories []*Category `json:"child_categories,omitempty"`
-	// ParentCategory holds the value of the parent_category edge.
-	ParentCategory *Category `json:"parent_category,omitempty"`
 	// JobOfferCategories holds the value of the job_offer_categories edge.
 	JobOfferCategories []*JobOfferCategory `json:"job_offer_categories,omitempty"`
+	// ParentCategory holds the value of the parent_category edge.
+	ParentCategory *Category `json:"parent_category,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -71,10 +71,19 @@ func (e CategoryEdges) ChildCategoriesOrErr() ([]*Category, error) {
 	return nil, &NotLoadedError{edge: "child_categories"}
 }
 
+// JobOfferCategoriesOrErr returns the JobOfferCategories value or an error if the edge
+// was not loaded in eager-loading.
+func (e CategoryEdges) JobOfferCategoriesOrErr() ([]*JobOfferCategory, error) {
+	if e.loadedTypes[2] {
+		return e.JobOfferCategories, nil
+	}
+	return nil, &NotLoadedError{edge: "job_offer_categories"}
+}
+
 // ParentCategoryOrErr returns the ParentCategory value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CategoryEdges) ParentCategoryOrErr() (*Category, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.ParentCategory == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: category.Label}
@@ -82,15 +91,6 @@ func (e CategoryEdges) ParentCategoryOrErr() (*Category, error) {
 		return e.ParentCategory, nil
 	}
 	return nil, &NotLoadedError{edge: "parent_category"}
-}
-
-// JobOfferCategoriesOrErr returns the JobOfferCategories value or an error if the edge
-// was not loaded in eager-loading.
-func (e CategoryEdges) JobOfferCategoriesOrErr() ([]*JobOfferCategory, error) {
-	if e.loadedTypes[3] {
-		return e.JobOfferCategories, nil
-	}
-	return nil, &NotLoadedError{edge: "job_offer_categories"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -196,14 +196,14 @@ func (c *Category) QueryChildCategories() *CategoryQuery {
 	return NewCategoryClient(c.config).QueryChildCategories(c)
 }
 
-// QueryParentCategory queries the "parent_category" edge of the Category entity.
-func (c *Category) QueryParentCategory() *CategoryQuery {
-	return NewCategoryClient(c.config).QueryParentCategory(c)
-}
-
 // QueryJobOfferCategories queries the "job_offer_categories" edge of the Category entity.
 func (c *Category) QueryJobOfferCategories() *JobOfferCategoryQuery {
 	return NewCategoryClient(c.config).QueryJobOfferCategories(c)
+}
+
+// QueryParentCategory queries the "parent_category" edge of the Category entity.
+func (c *Category) QueryParentCategory() *CategoryQuery {
+	return NewCategoryClient(c.config).QueryParentCategory(c)
 }
 
 // Update returns a builder for updating this Category.

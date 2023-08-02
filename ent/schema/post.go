@@ -15,10 +15,25 @@ type Post struct {
 }
 
 func (Post) Fields() []ent.Field {
-	return []ent.Field{field.UUID("id", uuid.UUID{}), field.String("title"), field.String("content"), field.String("slug").Unique(), field.Bool("is_highlighted"), field.Bool("is_published"), field.Time("published_at").Optional(), field.UUID("author_id", uuid.UUID{}).Optional().Nillable(), field.Time("created_at"), field.Time("updated_at"), field.Time("deleted_at").Optional(), field.String("preview_image").Optional()}
+	return []ent.Field{field.UUID("id", uuid.UUID{}),
+		field.String("title"),
+		field.String("content"),
+		field.String("slug").Unique(),
+		field.Bool("is_highlighted"),
+		field.Bool("is_published"),
+		field.Time("published_at").Optional(),
+		field.Time("created_at"),
+		field.Time("updated_at"),
+		field.String("preview_image").Optional().Nillable(),
+		field.Time("deleted_at").Optional().Nillable(),
+		field.UUID("author_id", uuid.UUID{}).Optional().Nillable(),
+	}
 }
 func (Post) Edges() []ent.Edge {
-	return []ent.Edge{edge.To("post_categories", PostCategory.Type), edge.From("user", User.Type).Ref("posts").Unique().Field("author_id")}
+	return []ent.Edge{
+		edge.From("user", User.Type).Ref("posts").Unique().Field("author_id"),
+		edge.From("post_category", PostCategory.Type).Ref("posts"),
+	}
 }
 func (Post) Annotations() []schema.Annotation {
 	return nil

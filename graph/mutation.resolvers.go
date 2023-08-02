@@ -62,6 +62,26 @@ func (r *mutationResolver) UpdateCategory(ctx context.Context, id uuid.UUID, inp
 	return r.Service.UpdateCategory(ctx, id, input)
 }
 
+// CreatePost is the resolver for the createPost field.
+func (r *mutationResolver) CreatePost(ctx context.Context, input dtos.PostCreateInput) (*dtos.Post, error) {
+	return r.Service.CreatePost(ctx, input)
+}
+
+// DeletePost is the resolver for the deletePost field.
+func (r *mutationResolver) DeletePost(ctx context.Context, id uuid.UUID) (*dtos.Post, error) {
+	return r.Service.DeletePost(ctx, id)
+}
+
+// UpdatePost is the resolver for the updatePost field.
+func (r *mutationResolver) UpdatePost(ctx context.Context, id uuid.UUID, input dtos.PostUpdateInput) (*dtos.Post, error) {
+	return r.Service.UpdatePost(ctx, id, input)
+}
+
+// PublishPost is the resolver for the publishPost field.
+func (r *mutationResolver) PublishPost(ctx context.Context, id uuid.UUID) (*dtos.Post, error) {
+	return r.Service.PublishPost(ctx, id)
+}
+
 // CreatePostCategory is the resolver for the createPostCategory field.
 func (r *mutationResolver) CreatePostCategory(ctx context.Context, input dtos.PostCategoryCreateInput) (*dtos.PostCategory, error) {
 	return r.Service.CreatePostCategory(ctx, input)

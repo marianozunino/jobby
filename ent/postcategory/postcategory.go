@@ -22,12 +22,15 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// EdgePostCategories holds the string denoting the post_categories edge name in mutations.
-	EdgePostCategories = "post_categories"
+	// EdgePosts holds the string denoting the posts edge name in mutations.
+	EdgePosts = "posts"
 	// Table holds the table name of the postcategory in the database.
 	Table = "post_categories"
-	// PostCategoriesTable is the table that holds the post_categories relation/edge. The primary key declared below.
-	PostCategoriesTable = "post_category_post_categories"
+	// PostsTable is the table that holds the posts relation/edge. The primary key declared below.
+	PostsTable = "post_category"
+	// PostsInverseTable is the table name for the Post entity.
+	// It exists in this package in order to avoid circular dependency with the "post" package.
+	PostsInverseTable = "posts"
 )
 
 // Columns holds all SQL columns for postcategory fields.
@@ -39,27 +42,16 @@ var Columns = []string{
 	FieldDeletedAt,
 }
 
-// ForeignKeys holds the SQL foreign-keys that are owned by the "post_categories"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"post_post_categories",
-}
-
 var (
-	// PostCategoriesPrimaryKey and PostCategoriesColumn2 are the table columns denoting the
-	// primary key for the post_categories relation (M2M).
-	PostCategoriesPrimaryKey = []string{"post_category_id", "post_category_id"}
+	// PostsPrimaryKey and PostsColumn2 are the table columns denoting the
+	// primary key for the posts relation (M2M).
+	PostsPrimaryKey = []string{"category_id", "post_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -103,23 +95,23 @@ func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
 }
 
-// ByPostCategoriesCount orders the results by post_categories count.
-func ByPostCategoriesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByPostsCount orders the results by posts count.
+func ByPostsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newPostCategoriesStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newPostsStep(), opts...)
 	}
 }
 
-// ByPostCategories orders the results by post_categories terms.
-func ByPostCategories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByPosts orders the results by posts terms.
+func ByPosts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newPostCategoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newPostsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newPostCategoriesStep() *sqlgraph.Step {
+func newPostsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(Table, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, PostCategoriesTable, PostCategoriesPrimaryKey...),
+		sqlgraph.To(PostsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, PostsTable, PostsPrimaryKey...),
 	)
 }

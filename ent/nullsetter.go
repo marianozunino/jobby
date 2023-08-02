@@ -701,11 +701,11 @@ func (u *PostUpdate) SetOrClearPublishedAt(value *time.Time) *PostUpdate {
 	return u.SetPublishedAt(*value)
 }
 
-func (u *PostUpdate) SetOrClearAuthorID(value *uuid.UUID) *PostUpdate {
+func (u *PostUpdate) SetOrClearPreviewImage(value *string) *PostUpdate {
 	if value == nil {
-		return u.ClearAuthorID()
+		return u.ClearPreviewImage()
 	}
-	return u.SetAuthorID(*value)
+	return u.SetPreviewImage(*value)
 }
 
 func (u *PostUpdate) SetOrClearDeletedAt(value *time.Time) *PostUpdate {
@@ -715,11 +715,11 @@ func (u *PostUpdate) SetOrClearDeletedAt(value *time.Time) *PostUpdate {
 	return u.SetDeletedAt(*value)
 }
 
-func (u *PostUpdate) SetOrClearPreviewImage(value *string) *PostUpdate {
+func (u *PostUpdate) SetOrClearAuthorID(value *uuid.UUID) *PostUpdate {
 	if value == nil {
-		return u.ClearPreviewImage()
+		return u.ClearAuthorID()
 	}
-	return u.SetPreviewImage(*value)
+	return u.SetAuthorID(*value)
 }
 
 func (u *PostUpdateOne) SetOrClearPublishedAt(value *time.Time) *PostUpdateOne {
@@ -729,11 +729,11 @@ func (u *PostUpdateOne) SetOrClearPublishedAt(value *time.Time) *PostUpdateOne {
 	return u.SetPublishedAt(*value)
 }
 
-func (u *PostUpdateOne) SetOrClearAuthorID(value *uuid.UUID) *PostUpdateOne {
+func (u *PostUpdateOne) SetOrClearPreviewImage(value *string) *PostUpdateOne {
 	if value == nil {
-		return u.ClearAuthorID()
+		return u.ClearPreviewImage()
 	}
-	return u.SetAuthorID(*value)
+	return u.SetPreviewImage(*value)
 }
 
 func (u *PostUpdateOne) SetOrClearDeletedAt(value *time.Time) *PostUpdateOne {
@@ -743,11 +743,11 @@ func (u *PostUpdateOne) SetOrClearDeletedAt(value *time.Time) *PostUpdateOne {
 	return u.SetDeletedAt(*value)
 }
 
-func (u *PostUpdateOne) SetOrClearPreviewImage(value *string) *PostUpdateOne {
+func (u *PostUpdateOne) SetOrClearAuthorID(value *uuid.UUID) *PostUpdateOne {
 	if value == nil {
-		return u.ClearPreviewImage()
+		return u.ClearAuthorID()
 	}
-	return u.SetPreviewImage(*value)
+	return u.SetAuthorID(*value)
 }
 
 func (u *PostCategoryUpdate) SetOrClearDeletedAt(value *time.Time) *PostCategoryUpdate {

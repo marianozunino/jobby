@@ -30,8 +30,8 @@ func (Category) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("applicant_interests", ApplicantInterest.Type),
 		edge.To("child_categories", Category.Type),
-		edge.From("parent_category", Category.Type).Ref("child_categories").Unique().Field("parent_id"),
 		edge.To("job_offer_categories", JobOfferCategory.Type),
+		edge.From("parent_category", Category.Type).Ref("child_categories").Unique().Field("parent_id"),
 	}
 }
 func (Category) Annotations() []schema.Annotation {

@@ -27,8 +27,8 @@ type CategoryQuery struct {
 	predicates             []predicate.Category
 	withApplicantInterests *ApplicantInterestQuery
 	withChildCategories    *CategoryQuery
-	withParentCategory     *CategoryQuery
 	withJobOfferCategories *JobOfferCategoryQuery
+	withParentCategory     *CategoryQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -109,28 +109,6 @@ func (cq *CategoryQuery) QueryChildCategories() *CategoryQuery {
 	return query
 }
 
-// QueryParentCategory chains the current query on the "parent_category" edge.
-func (cq *CategoryQuery) QueryParentCategory() *CategoryQuery {
-	query := (&CategoryClient{config: cq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(category.Table, category.FieldID, selector),
-			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, category.ParentCategoryTable, category.ParentCategoryColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryJobOfferCategories chains the current query on the "job_offer_categories" edge.
 func (cq *CategoryQuery) QueryJobOfferCategories() *JobOfferCategoryQuery {
 	query := (&JobOfferCategoryClient{config: cq.config}).Query()
@@ -146,6 +124,28 @@ func (cq *CategoryQuery) QueryJobOfferCategories() *JobOfferCategoryQuery {
 			sqlgraph.From(category.Table, category.FieldID, selector),
 			sqlgraph.To(joboffercategory.Table, joboffercategory.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, category.JobOfferCategoriesTable, category.JobOfferCategoriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryParentCategory chains the current query on the "parent_category" edge.
+func (cq *CategoryQuery) QueryParentCategory() *CategoryQuery {
+	query := (&CategoryClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, selector),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, category.ParentCategoryTable, category.ParentCategoryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -347,8 +347,8 @@ func (cq *CategoryQuery) Clone() *CategoryQuery {
 		predicates:             append([]predicate.Category{}, cq.predicates...),
 		withApplicantInterests: cq.withApplicantInterests.Clone(),
 		withChildCategories:    cq.withChildCategories.Clone(),
-		withParentCategory:     cq.withParentCategory.Clone(),
 		withJobOfferCategories: cq.withJobOfferCategories.Clone(),
+		withParentCategory:     cq.withParentCategory.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -377,17 +377,6 @@ func (cq *CategoryQuery) WithChildCategories(opts ...func(*CategoryQuery)) *Cate
 	return cq
 }
 
-// WithParentCategory tells the query-builder to eager-load the nodes that are connected to
-// the "parent_category" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CategoryQuery) WithParentCategory(opts ...func(*CategoryQuery)) *CategoryQuery {
-	query := (&CategoryClient{config: cq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	cq.withParentCategory = query
-	return cq
-}
-
 // WithJobOfferCategories tells the query-builder to eager-load the nodes that are connected to
 // the "job_offer_categories" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *CategoryQuery) WithJobOfferCategories(opts ...func(*JobOfferCategoryQuery)) *CategoryQuery {
@@ -396,6 +385,17 @@ func (cq *CategoryQuery) WithJobOfferCategories(opts ...func(*JobOfferCategoryQu
 		opt(query)
 	}
 	cq.withJobOfferCategories = query
+	return cq
+}
+
+// WithParentCategory tells the query-builder to eager-load the nodes that are connected to
+// the "parent_category" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CategoryQuery) WithParentCategory(opts ...func(*CategoryQuery)) *CategoryQuery {
+	query := (&CategoryClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withParentCategory = query
 	return cq
 }
 
@@ -480,8 +480,8 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 		loadedTypes = [4]bool{
 			cq.withApplicantInterests != nil,
 			cq.withChildCategories != nil,
-			cq.withParentCategory != nil,
 			cq.withJobOfferCategories != nil,
+			cq.withParentCategory != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -518,18 +518,18 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 			return nil, err
 		}
 	}
-	if query := cq.withParentCategory; query != nil {
-		if err := cq.loadParentCategory(ctx, query, nodes, nil,
-			func(n *Category, e *Category) { n.Edges.ParentCategory = e }); err != nil {
-			return nil, err
-		}
-	}
 	if query := cq.withJobOfferCategories; query != nil {
 		if err := cq.loadJobOfferCategories(ctx, query, nodes,
 			func(n *Category) { n.Edges.JobOfferCategories = []*JobOfferCategory{} },
 			func(n *Category, e *JobOfferCategory) {
 				n.Edges.JobOfferCategories = append(n.Edges.JobOfferCategories, e)
 			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withParentCategory; query != nil {
+		if err := cq.loadParentCategory(ctx, query, nodes, nil,
+			func(n *Category, e *Category) { n.Edges.ParentCategory = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -599,6 +599,36 @@ func (cq *CategoryQuery) loadChildCategories(ctx context.Context, query *Categor
 	}
 	return nil
 }
+func (cq *CategoryQuery) loadJobOfferCategories(ctx context.Context, query *JobOfferCategoryQuery, nodes []*Category, init func(*Category), assign func(*Category, *JobOfferCategory)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*Category)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(joboffercategory.FieldCategoryID)
+	}
+	query.Where(predicate.JobOfferCategory(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(category.JobOfferCategoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.CategoryID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "category_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (cq *CategoryQuery) loadParentCategory(ctx context.Context, query *CategoryQuery, nodes []*Category, init func(*Category), assign func(*Category, *Category)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*Category)
@@ -628,36 +658,6 @@ func (cq *CategoryQuery) loadParentCategory(ctx context.Context, query *Category
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
-	}
-	return nil
-}
-func (cq *CategoryQuery) loadJobOfferCategories(ctx context.Context, query *JobOfferCategoryQuery, nodes []*Category, init func(*Category), assign func(*Category, *JobOfferCategory)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Category)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(joboffercategory.FieldCategoryID)
-	}
-	query.Where(predicate.JobOfferCategory(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(category.JobOfferCategoriesColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.CategoryID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "category_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
 	}
 	return nil
 }

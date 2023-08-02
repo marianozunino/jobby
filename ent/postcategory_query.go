@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/marianozunino/cc-backend-go/ent/post"
 	"github.com/marianozunino/cc-backend-go/ent/postcategory"
 	"github.com/marianozunino/cc-backend-go/ent/predicate"
 )
@@ -19,12 +20,11 @@ import (
 // PostCategoryQuery is the builder for querying PostCategory entities.
 type PostCategoryQuery struct {
 	config
-	ctx                *QueryContext
-	order              []postcategory.OrderOption
-	inters             []Interceptor
-	predicates         []predicate.PostCategory
-	withPostCategories *PostCategoryQuery
-	withFKs            bool
+	ctx        *QueryContext
+	order      []postcategory.OrderOption
+	inters     []Interceptor
+	predicates []predicate.PostCategory
+	withPosts  *PostQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -61,9 +61,9 @@ func (pcq *PostCategoryQuery) Order(o ...postcategory.OrderOption) *PostCategory
 	return pcq
 }
 
-// QueryPostCategories chains the current query on the "post_categories" edge.
-func (pcq *PostCategoryQuery) QueryPostCategories() *PostCategoryQuery {
-	query := (&PostCategoryClient{config: pcq.config}).Query()
+// QueryPosts chains the current query on the "posts" edge.
+func (pcq *PostCategoryQuery) QueryPosts() *PostQuery {
+	query := (&PostClient{config: pcq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pcq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -74,8 +74,8 @@ func (pcq *PostCategoryQuery) QueryPostCategories() *PostCategoryQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(postcategory.Table, postcategory.FieldID, selector),
-			sqlgraph.To(postcategory.Table, postcategory.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, postcategory.PostCategoriesTable, postcategory.PostCategoriesPrimaryKey...),
+			sqlgraph.To(post.Table, post.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, postcategory.PostsTable, postcategory.PostsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(pcq.driver.Dialect(), step)
 		return fromU, nil
@@ -270,26 +270,26 @@ func (pcq *PostCategoryQuery) Clone() *PostCategoryQuery {
 		return nil
 	}
 	return &PostCategoryQuery{
-		config:             pcq.config,
-		ctx:                pcq.ctx.Clone(),
-		order:              append([]postcategory.OrderOption{}, pcq.order...),
-		inters:             append([]Interceptor{}, pcq.inters...),
-		predicates:         append([]predicate.PostCategory{}, pcq.predicates...),
-		withPostCategories: pcq.withPostCategories.Clone(),
+		config:     pcq.config,
+		ctx:        pcq.ctx.Clone(),
+		order:      append([]postcategory.OrderOption{}, pcq.order...),
+		inters:     append([]Interceptor{}, pcq.inters...),
+		predicates: append([]predicate.PostCategory{}, pcq.predicates...),
+		withPosts:  pcq.withPosts.Clone(),
 		// clone intermediate query.
 		sql:  pcq.sql.Clone(),
 		path: pcq.path,
 	}
 }
 
-// WithPostCategories tells the query-builder to eager-load the nodes that are connected to
-// the "post_categories" edge. The optional arguments are used to configure the query builder of the edge.
-func (pcq *PostCategoryQuery) WithPostCategories(opts ...func(*PostCategoryQuery)) *PostCategoryQuery {
-	query := (&PostCategoryClient{config: pcq.config}).Query()
+// WithPosts tells the query-builder to eager-load the nodes that are connected to
+// the "posts" edge. The optional arguments are used to configure the query builder of the edge.
+func (pcq *PostCategoryQuery) WithPosts(opts ...func(*PostQuery)) *PostCategoryQuery {
+	query := (&PostClient{config: pcq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	pcq.withPostCategories = query
+	pcq.withPosts = query
 	return pcq
 }
 
@@ -370,15 +370,11 @@ func (pcq *PostCategoryQuery) prepareQuery(ctx context.Context) error {
 func (pcq *PostCategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*PostCategory, error) {
 	var (
 		nodes       = []*PostCategory{}
-		withFKs     = pcq.withFKs
 		_spec       = pcq.querySpec()
 		loadedTypes = [1]bool{
-			pcq.withPostCategories != nil,
+			pcq.withPosts != nil,
 		}
 	)
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, postcategory.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*PostCategory).scanValues(nil, columns)
 	}
@@ -397,17 +393,17 @@ func (pcq *PostCategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := pcq.withPostCategories; query != nil {
-		if err := pcq.loadPostCategories(ctx, query, nodes,
-			func(n *PostCategory) { n.Edges.PostCategories = []*PostCategory{} },
-			func(n *PostCategory, e *PostCategory) { n.Edges.PostCategories = append(n.Edges.PostCategories, e) }); err != nil {
+	if query := pcq.withPosts; query != nil {
+		if err := pcq.loadPosts(ctx, query, nodes,
+			func(n *PostCategory) { n.Edges.Posts = []*Post{} },
+			func(n *PostCategory, e *Post) { n.Edges.Posts = append(n.Edges.Posts, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (pcq *PostCategoryQuery) loadPostCategories(ctx context.Context, query *PostCategoryQuery, nodes []*PostCategory, init func(*PostCategory), assign func(*PostCategory, *PostCategory)) error {
+func (pcq *PostCategoryQuery) loadPosts(ctx context.Context, query *PostQuery, nodes []*PostCategory, init func(*PostCategory), assign func(*PostCategory, *Post)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[uuid.UUID]*PostCategory)
 	nids := make(map[uuid.UUID]map[*PostCategory]struct{})
@@ -419,11 +415,11 @@ func (pcq *PostCategoryQuery) loadPostCategories(ctx context.Context, query *Pos
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(postcategory.PostCategoriesTable)
-		s.Join(joinT).On(s.C(postcategory.FieldID), joinT.C(postcategory.PostCategoriesPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(postcategory.PostCategoriesPrimaryKey[0]), edgeIDs...))
+		joinT := sql.Table(postcategory.PostsTable)
+		s.Join(joinT).On(s.C(post.FieldID), joinT.C(postcategory.PostsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(postcategory.PostsPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(postcategory.PostCategoriesPrimaryKey[0]))
+		s.Select(joinT.C(postcategory.PostsPrimaryKey[0]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -453,14 +449,14 @@ func (pcq *PostCategoryQuery) loadPostCategories(ctx context.Context, query *Pos
 			}
 		})
 	})
-	neighbors, err := withInterceptors[[]*PostCategory](ctx, query, qr, query.inters)
+	neighbors, err := withInterceptors[[]*Post](ctx, query, qr, query.inters)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "post_categories" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "posts" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

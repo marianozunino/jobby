@@ -31,16 +31,16 @@ type Post struct {
 	IsPublished bool `json:"is_published,omitempty"`
 	// PublishedAt holds the value of the "published_at" field.
 	PublishedAt time.Time `json:"published_at,omitempty"`
-	// AuthorID holds the value of the "author_id" field.
-	AuthorID *uuid.UUID `json:"author_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
 	// PreviewImage holds the value of the "preview_image" field.
-	PreviewImage string `json:"preview_image,omitempty"`
+	PreviewImage *string `json:"preview_image,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	// AuthorID holds the value of the "author_id" field.
+	AuthorID *uuid.UUID `json:"author_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PostQuery when eager-loading is set.
 	Edges        PostEdges `json:"edges"`
@@ -49,28 +49,19 @@ type Post struct {
 
 // PostEdges holds the relations/edges for other nodes in the graph.
 type PostEdges struct {
-	// PostCategories holds the value of the post_categories edge.
-	PostCategories []*PostCategory `json:"post_categories,omitempty"`
 	// User holds the value of the user edge.
 	User *User `json:"user,omitempty"`
+	// PostCategory holds the value of the post_category edge.
+	PostCategory []*PostCategory `json:"post_category,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
-// PostCategoriesOrErr returns the PostCategories value or an error if the edge
-// was not loaded in eager-loading.
-func (e PostEdges) PostCategoriesOrErr() ([]*PostCategory, error) {
-	if e.loadedTypes[0] {
-		return e.PostCategories, nil
-	}
-	return nil, &NotLoadedError{edge: "post_categories"}
-}
-
 // UserOrErr returns the User value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PostEdges) UserOrErr() (*User, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		if e.User == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: user.Label}
@@ -78,6 +69,15 @@ func (e PostEdges) UserOrErr() (*User, error) {
 		return e.User, nil
 	}
 	return nil, &NotLoadedError{edge: "user"}
+}
+
+// PostCategoryOrErr returns the PostCategory value or an error if the edge
+// was not loaded in eager-loading.
+func (e PostEdges) PostCategoryOrErr() ([]*PostCategory, error) {
+	if e.loadedTypes[1] {
+		return e.PostCategory, nil
+	}
+	return nil, &NotLoadedError{edge: "post_category"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -152,13 +152,6 @@ func (po *Post) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				po.PublishedAt = value.Time
 			}
-		case post.FieldAuthorID:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field author_id", values[i])
-			} else if value.Valid {
-				po.AuthorID = new(uuid.UUID)
-				*po.AuthorID = *value.S.(*uuid.UUID)
-			}
 		case post.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -171,17 +164,26 @@ func (po *Post) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				po.UpdatedAt = value.Time
 			}
-		case post.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				po.DeletedAt = value.Time
-			}
 		case post.FieldPreviewImage:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field preview_image", values[i])
 			} else if value.Valid {
-				po.PreviewImage = value.String
+				po.PreviewImage = new(string)
+				*po.PreviewImage = value.String
+			}
+		case post.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				po.DeletedAt = new(time.Time)
+				*po.DeletedAt = value.Time
+			}
+		case post.FieldAuthorID:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field author_id", values[i])
+			} else if value.Valid {
+				po.AuthorID = new(uuid.UUID)
+				*po.AuthorID = *value.S.(*uuid.UUID)
 			}
 		default:
 			po.selectValues.Set(columns[i], values[i])
@@ -196,14 +198,14 @@ func (po *Post) Value(name string) (ent.Value, error) {
 	return po.selectValues.Get(name)
 }
 
-// QueryPostCategories queries the "post_categories" edge of the Post entity.
-func (po *Post) QueryPostCategories() *PostCategoryQuery {
-	return NewPostClient(po.config).QueryPostCategories(po)
-}
-
 // QueryUser queries the "user" edge of the Post entity.
 func (po *Post) QueryUser() *UserQuery {
 	return NewPostClient(po.config).QueryUser(po)
+}
+
+// QueryPostCategory queries the "post_category" edge of the Post entity.
+func (po *Post) QueryPostCategory() *PostCategoryQuery {
+	return NewPostClient(po.config).QueryPostCategory(po)
 }
 
 // Update returns a builder for updating this Post.
@@ -247,22 +249,26 @@ func (po *Post) String() string {
 	builder.WriteString("published_at=")
 	builder.WriteString(po.PublishedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := po.AuthorID; v != nil {
-		builder.WriteString("author_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(po.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(po.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("deleted_at=")
-	builder.WriteString(po.DeletedAt.Format(time.ANSIC))
+	if v := po.PreviewImage; v != nil {
+		builder.WriteString("preview_image=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("preview_image=")
-	builder.WriteString(po.PreviewImage)
+	if v := po.DeletedAt; v != nil {
+		builder.WriteString("deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := po.AuthorID; v != nil {
+		builder.WriteString("author_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

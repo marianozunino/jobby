@@ -47,6 +47,7 @@ type PostCategoryService interface {
 	GetPostCategory(ctx context.Context, id uuid.UUID) (*dtos.PostCategory, error)
 	GetPostCategories(ctx context.Context) ([]dtos.PostCategory, error)
 	PaginatedPostCategories(ctx context.Context, orderBy *dtos.PostCategoryAggregationInput, take *int, skip *int, where *dtos.PostCategoryWhereInput) (*dtos.PaginatedPostCategoryResponse, error)
+	PostCategoriesFor(ctx context.Context, parentIDs []uuid.UUID) (map[uuid.UUID][]*dtos.PostCategory, error)
 }
 
 type DegreeLevelService interface {
@@ -57,6 +58,16 @@ type DegreeLevelService interface {
 	DeleteDegreeLevel(ctx context.Context, id uuid.UUID) (*dtos.DegreeLevel, error)
 }
 
+type PostService interface {
+	CreatePost(ctx context.Context, input dtos.PostCreateInput) (*dtos.Post, error)
+	DeletePost(ctx context.Context, id uuid.UUID) (*dtos.Post, error)
+	UpdatePost(ctx context.Context, id uuid.UUID, input dtos.PostUpdateInput) (*dtos.Post, error)
+	GetPost(ctx context.Context, id uuid.UUID) (*dtos.Post, error)
+	GetPosts(ctx context.Context) ([]dtos.Post, error)
+	PaginatedPosts(ctx context.Context, orderBy *dtos.PostAggregationInput, take *int, skip *int, where *dtos.PostWhereInput) (*dtos.PaginatedPostResponse, error)
+	PublishPost(ctx context.Context, id uuid.UUID) (*dtos.Post, error)
+}
+
 type Service interface {
 	StatusService
 	JobOfferService
@@ -64,6 +75,7 @@ type Service interface {
 	CategoryService
 	DegreeLevelService
 	PostCategoryService
+	PostService
 }
 
 type service struct {
@@ -73,6 +85,7 @@ type service struct {
 	CategoryService
 	DegreeLevelService
 	PostCategoryService
+	PostService
 }
 
 func NewService(store store.Store) Service {
@@ -93,6 +106,9 @@ func NewService(store store.Store) Service {
 			Store: store,
 		},
 		PostCategoryService: &postCategoryService{
+			Store: store,
+		},
+		PostService: &postService{
 			Store: store,
 		},
 	}

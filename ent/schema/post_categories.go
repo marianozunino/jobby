@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -25,8 +26,13 @@ func (PostCategory) Fields() []ent.Field {
 	}
 }
 func (PostCategory) Edges() []ent.Edge {
-	return []ent.Edge{edge.To("post_categories", PostCategory.Type)}
+	return []ent.Edge{
+		edge.To("posts", Post.Type).StorageKey(edge.Table("post_category"), edge.Columns("category_id", "post_id")),
+	}
 }
+
 func (PostCategory) Annotations() []schema.Annotation {
-	return nil
+	return []schema.Annotation{
+		entsql.Annotation{Table: "post_categories"},
+	}
 }
