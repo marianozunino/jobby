@@ -8,7 +8,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/jobby/dtos"
 )
 
 // CreateDegreeLevel is the resolver for the createDegreeLevel field.

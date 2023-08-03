@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/dtos"
-	"github.com/marianozunino/cc-backend-go/service"
+	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/service"
 )
 
 type ctxKey string
@@ -15,10 +15,10 @@ const (
 	Key = ctxKey("dataloaders")
 )
 
-//go:generate go run github.com/vektah/dataloaden JobOffersLoader github.com/google/uuid.UUID []*github.com/marianozunino/cc-backend-go/dtos.JobOffer
-//go:generate go run github.com/vektah/dataloaden ChildCategoriesLoader github.com/google/uuid.UUID []*github.com/marianozunino/cc-backend-go/dtos.Category
-//go:generate go run github.com/vektah/dataloaden ParentCategoryLoader github.com/google/uuid.UUID *github.com/marianozunino/cc-backend-go/dtos.Category
-//go:generate go run github.com/vektah/dataloaden PostCategoriesLoader github.com/google/uuid.UUID []*github.com/marianozunino/cc-backend-go/dtos.PostCategory
+//go:generate go run github.com/vektah/dataloaden JobOffersLoader github.com/google/uuid.UUID []*github.com/marianozunino/jobby/dtos.JobOffer
+//go:generate go run github.com/vektah/dataloaden ChildCategoriesLoader github.com/google/uuid.UUID []*github.com/marianozunino/jobby/dtos.Category
+//go:generate go run github.com/vektah/dataloaden ParentCategoryLoader github.com/google/uuid.UUID *github.com/marianozunino/jobby/dtos.Category
+//go:generate go run github.com/vektah/dataloaden PostCategoriesLoader github.com/google/uuid.UUID []*github.com/marianozunino/jobby/dtos.PostCategory
 type Loaders struct {
 	JobOffersByStatusId        *JobOffersLoader
 	ChildCategoriesForParentId *ChildCategoriesLoader

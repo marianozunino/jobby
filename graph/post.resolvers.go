@@ -8,9 +8,9 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/dtos"
-	"github.com/marianozunino/cc-backend-go/graph/generated"
-	"github.com/marianozunino/cc-backend-go/graph/middleware"
+	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/graph/generated"
+	"github.com/marianozunino/jobby/graph/middleware"
 )
 
 // CreatePost is the resolver for the createPost field.

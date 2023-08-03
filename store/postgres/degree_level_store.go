@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/dtos"
-	"github.com/marianozunino/cc-backend-go/ent"
-	"github.com/marianozunino/cc-backend-go/ent/degreelevel"
-	"github.com/marianozunino/cc-backend-go/store"
+	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/ent"
+	"github.com/marianozunino/jobby/ent/degreelevel"
+	"github.com/marianozunino/jobby/store"
 )
 
 // assert that DegreeLevelStore implements store.DegreeLevelStore

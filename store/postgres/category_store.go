@@ -6,10 +6,10 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/dtos"
-	"github.com/marianozunino/cc-backend-go/ent"
-	"github.com/marianozunino/cc-backend-go/ent/category"
-	"github.com/marianozunino/cc-backend-go/store"
+	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/ent"
+	"github.com/marianozunino/jobby/ent/category"
+	"github.com/marianozunino/jobby/store"
 )
 
 // assert that StatusStore implements store.StatusStore

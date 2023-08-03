@@ -12,10 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/application"
-	"github.com/marianozunino/cc-backend-go/ent/interview"
-	"github.com/marianozunino/cc-backend-go/ent/predicate"
-	"github.com/marianozunino/cc-backend-go/ent/user"
+	"github.com/marianozunino/jobby/ent/application"
+	"github.com/marianozunino/jobby/ent/interview"
+	"github.com/marianozunino/jobby/ent/predicate"
+	"github.com/marianozunino/jobby/ent/user"
 )
 
 // InterviewUpdate is the builder for updating Interview entities.

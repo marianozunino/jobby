@@ -12,11 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofile"
-	"github.com/marianozunino/cc-backend-go/ent/application"
-	"github.com/marianozunino/cc-backend-go/ent/interview"
-	"github.com/marianozunino/cc-backend-go/ent/joboffer"
-	"github.com/marianozunino/cc-backend-go/ent/predicate"
+	"github.com/marianozunino/jobby/ent/applicantprofile"
+	"github.com/marianozunino/jobby/ent/application"
+	"github.com/marianozunino/jobby/ent/interview"
+	"github.com/marianozunino/jobby/ent/joboffer"
+	"github.com/marianozunino/jobby/ent/predicate"
 )
 
 // ApplicationUpdate is the builder for updating Application entities.

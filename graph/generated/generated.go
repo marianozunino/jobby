@@ -15,7 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/jobby/dtos"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -5266,7 +5266,7 @@ func (ec *executionContext) _Mutation_createPostCategory(ctx context.Context, fi
 		if data, ok := tmp.(*dtos.PostCategory); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.PostCategory`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.PostCategory`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5355,7 +5355,7 @@ func (ec *executionContext) _Mutation_deletePostCategory(ctx context.Context, fi
 		if data, ok := tmp.(*dtos.PostCategory); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.PostCategory`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.PostCategory`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5454,7 +5454,7 @@ func (ec *executionContext) _Mutation_updatePostCategory(ctx context.Context, fi
 		if data, ok := tmp.(*dtos.PostCategory); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.PostCategory`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.PostCategory`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5543,7 +5543,7 @@ func (ec *executionContext) _Mutation_createPost(ctx context.Context, field grap
 		if data, ok := tmp.(*dtos.Post); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.Post`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Post`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5644,7 +5644,7 @@ func (ec *executionContext) _Mutation_deletePost(ctx context.Context, field grap
 		if data, ok := tmp.(*dtos.Post); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.Post`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Post`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5745,7 +5745,7 @@ func (ec *executionContext) _Mutation_updatePost(ctx context.Context, field grap
 		if data, ok := tmp.(*dtos.Post); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.Post`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Post`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5846,7 +5846,7 @@ func (ec *executionContext) _Mutation_publishPost(ctx context.Context, field gra
 		if data, ok := tmp.(*dtos.Post); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.Post`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Post`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8348,7 +8348,7 @@ func (ec *executionContext) _Query_messages(ctx context.Context, field graphql.C
 		if data, ok := tmp.(*dtos.PaginatedMessageResponse); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.PaginatedMessageResponse`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.PaginatedMessageResponse`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8433,7 +8433,7 @@ func (ec *executionContext) _Query_message(ctx context.Context, field graphql.Co
 		if data, ok := tmp.(*dtos.Message); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.Message`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Message`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)

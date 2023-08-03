@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/joboffer"
-	"github.com/marianozunino/cc-backend-go/ent/predicate"
-	"github.com/marianozunino/cc-backend-go/ent/status"
+	"github.com/marianozunino/jobby/ent/joboffer"
+	"github.com/marianozunino/jobby/ent/predicate"
+	"github.com/marianozunino/jobby/ent/status"
 )
 
 // StatusQuery is the builder for querying Status entities.

@@ -10,7 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/category"
+	"github.com/marianozunino/jobby/ent/category"
 )
 
 // Category is the model entity for the Category schema.

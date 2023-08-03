@@ -1,8 +1,8 @@
 package graph
 
 import (
-	"github.com/marianozunino/cc-backend-go/graph/dataloader"
-	"github.com/marianozunino/cc-backend-go/service"
+	"github.com/marianozunino/jobby/graph/dataloader"
+	"github.com/marianozunino/jobby/service"
 )
 
 // This file will not be regenerated automatically.

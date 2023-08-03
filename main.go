@@ -3,25 +3,21 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi"
 
-	_ "github.com/marianozunino/cc-backend-go/config"
-	"github.com/marianozunino/cc-backend-go/graph/middleware"
-	"github.com/marianozunino/cc-backend-go/graph/server"
-	"github.com/marianozunino/cc-backend-go/service"
-	store "github.com/marianozunino/cc-backend-go/store/postgres"
-)
-
-const (
-	port = ":18080"
+	"github.com/marianozunino/jobby/config"
+	_ "github.com/marianozunino/jobby/config"
+	"github.com/marianozunino/jobby/graph/middleware"
+	"github.com/marianozunino/jobby/graph/server"
+	"github.com/marianozunino/jobby/service"
+	store "github.com/marianozunino/jobby/store/postgres"
 )
 
 //go:generate go run -mod=mod entgo.io/ent/cmd/ent generate ./ent/schema --template ./ent/nullsetter.tmpl
 //go:generate go run github.com/99designs/gqlgen generate
 func main() {
-	db := store.NewStore(os.Getenv("DATABASE_URL"))
+	db := store.NewStore()
 
 	service := service.NewService(db)
 
@@ -32,6 +28,7 @@ func main() {
 	r.Handle("/graphql", server.NewHandler(service))
 	r.Get("/", server.NewPlaygroundHandler("/graphql"))
 
-	fmt.Printf("connect to http://localhost%s/ for GraphQL playground\n", port)
-	panic(http.ListenAndServe(port, r))
+	fmt.Printf("connect to http://localhost%s/ for GraphQL playground\n", config.Port)
+
+	panic(http.ListenAndServe(config.Port, r))
 }

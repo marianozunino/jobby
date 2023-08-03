@@ -10,9 +10,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/category"
-	"github.com/marianozunino/cc-backend-go/ent/joboffer"
-	"github.com/marianozunino/cc-backend-go/ent/joboffercategory"
+	"github.com/marianozunino/jobby/ent/category"
+	"github.com/marianozunino/jobby/ent/joboffer"
+	"github.com/marianozunino/jobby/ent/joboffercategory"
 )
 
 // JobOfferCategory is the model entity for the JobOfferCategory schema.

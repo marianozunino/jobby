@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofile"
-	"github.com/marianozunino/cc-backend-go/ent/predicate"
-	"github.com/marianozunino/cc-backend-go/ent/workexperience"
+	"github.com/marianozunino/jobby/ent/applicantprofile"
+	"github.com/marianozunino/jobby/ent/predicate"
+	"github.com/marianozunino/jobby/ent/workexperience"
 )
 
 // WorkExperienceQuery is the builder for querying WorkExperience entities.

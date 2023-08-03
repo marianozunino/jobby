@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/joboffer"
-	"github.com/marianozunino/cc-backend-go/ent/status"
+	"github.com/marianozunino/jobby/ent/joboffer"
+	"github.com/marianozunino/jobby/ent/status"
 )
 
 // StatusCreate is the builder for creating a Status entity.

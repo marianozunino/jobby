@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/application"
-	"github.com/marianozunino/cc-backend-go/ent/interview"
-	"github.com/marianozunino/cc-backend-go/ent/user"
+	"github.com/marianozunino/jobby/ent/application"
+	"github.com/marianozunino/jobby/ent/interview"
+	"github.com/marianozunino/jobby/ent/user"
 )
 
 // InterviewCreate is the builder for creating a Interview entity.

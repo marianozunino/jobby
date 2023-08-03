@@ -7,8 +7,8 @@ package graph
 import (
 	"context"
 
-	"github.com/marianozunino/cc-backend-go/dtos"
-	"github.com/marianozunino/cc-backend-go/graph/generated"
+	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/graph/generated"
 )
 
 // CreateStatus is the resolver for the createStatus field.

@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/marianozunino/cc-backend-go/ent/postcategory"
-	"github.com/marianozunino/cc-backend-go/ent/predicate"
+	"github.com/marianozunino/jobby/ent/postcategory"
+	"github.com/marianozunino/jobby/ent/predicate"
 )
 
 // PostCategoryDelete is the builder for deleting a PostCategory entity.

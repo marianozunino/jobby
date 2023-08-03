@@ -9,7 +9,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 
-	"github.com/marianozunino/cc-backend-go/ent"
+	"github.com/marianozunino/jobby/ent"
 )
 
 func errorPresenter(ctx context.Context, e error) *gqlerror.Error {

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/marianozunino/cc-backend-go/graph/middleware"
+	"github.com/marianozunino/jobby/graph/middleware"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 

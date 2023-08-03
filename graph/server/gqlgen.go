@@ -7,12 +7,12 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/playground"
 
-	"github.com/marianozunino/cc-backend-go/graph"
-	"github.com/marianozunino/cc-backend-go/graph/dataloader"
-	"github.com/marianozunino/cc-backend-go/graph/directive"
-	"github.com/marianozunino/cc-backend-go/graph/generated"
-	"github.com/marianozunino/cc-backend-go/graph/middleware"
-	"github.com/marianozunino/cc-backend-go/service"
+	"github.com/marianozunino/jobby/graph"
+	"github.com/marianozunino/jobby/graph/dataloader"
+	"github.com/marianozunino/jobby/graph/directive"
+	"github.com/marianozunino/jobby/graph/generated"
+	"github.com/marianozunino/jobby/graph/middleware"
+	"github.com/marianozunino/jobby/service"
 )
 
 // NewHandler returns a new graphql endpoint handler.

@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofile"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofileskill"
-	"github.com/marianozunino/cc-backend-go/ent/skill"
+	"github.com/marianozunino/jobby/ent/applicantprofile"
+	"github.com/marianozunino/jobby/ent/applicantprofileskill"
+	"github.com/marianozunino/jobby/ent/skill"
 )
 
 // ApplicantProfileSkillCreate is the builder for creating a ApplicantProfileSkill entity.

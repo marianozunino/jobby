@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/marianozunino/cc-backend-go/ent/joboffercategory"
-	"github.com/marianozunino/cc-backend-go/ent/predicate"
+	"github.com/marianozunino/jobby/ent/joboffercategory"
+	"github.com/marianozunino/jobby/ent/predicate"
 )
 
 // JobOfferCategoryDelete is the builder for deleting a JobOfferCategory entity.

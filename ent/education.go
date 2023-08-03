@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/degreelevel"
-	"github.com/marianozunino/cc-backend-go/ent/education"
+	"github.com/marianozunino/jobby/ent/degreelevel"
+	"github.com/marianozunino/jobby/ent/education"
 )
 
 // Education is the model entity for the Education schema.

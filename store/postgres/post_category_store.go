@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/dtos"
-	"github.com/marianozunino/cc-backend-go/ent"
-	"github.com/marianozunino/cc-backend-go/ent/post"
-	"github.com/marianozunino/cc-backend-go/ent/postcategory"
-	"github.com/marianozunino/cc-backend-go/store"
+	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/ent"
+	"github.com/marianozunino/jobby/ent/post"
+	"github.com/marianozunino/jobby/ent/postcategory"
+	"github.com/marianozunino/jobby/store"
 )
 
 // assert that StatusStore implements store.StatusStore

@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/dtos"
-	"github.com/marianozunino/cc-backend-go/ent"
-	"github.com/marianozunino/cc-backend-go/ent/post"
-	"github.com/marianozunino/cc-backend-go/store"
+	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/ent"
+	"github.com/marianozunino/jobby/ent/post"
+	"github.com/marianozunino/jobby/store"
 )
 
 // assert that StatusStore implements store.StatusStore
@@ -32,10 +32,10 @@ func (p *PostStore) PaginatedPosts(ctx context.Context, orderBy *dtos.PostAggreg
 	query := p.Client.Post.Query().Where(post.DeletedAtIsNil())
 
 	rawOrderOptions := createRawOrderOptions(orderBy)
+	orderOptions := make([]post.OrderOption, len(rawOrderOptions))
 
-	var orderOptions []post.OrderOption = make([]post.OrderOption, len(rawOrderOptions))
 	for i, v := range rawOrderOptions {
-		orderOptions[i] = v.(post.OrderOption)
+		orderOptions[i] = post.OrderOption(v)
 	}
 
 	if len(rawOrderOptions) == 0 {

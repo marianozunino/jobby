@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/marianozunino/cc-backend-go/ent"
+	"github.com/marianozunino/jobby/ent"
 )
 
 // The ApplicantInterestFunc type is an adapter to allow the use of ordinary

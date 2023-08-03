@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofileskill"
-	"github.com/marianozunino/cc-backend-go/ent/predicate"
-	"github.com/marianozunino/cc-backend-go/ent/skill"
+	"github.com/marianozunino/jobby/ent/applicantprofileskill"
+	"github.com/marianozunino/jobby/ent/predicate"
+	"github.com/marianozunino/jobby/ent/skill"
 )
 
 // SkillUpdate is the builder for updating Skill entities.

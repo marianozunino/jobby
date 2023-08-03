@@ -10,9 +10,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofile"
-	"github.com/marianozunino/cc-backend-go/ent/application"
-	"github.com/marianozunino/cc-backend-go/ent/joboffer"
+	"github.com/marianozunino/jobby/ent/applicantprofile"
+	"github.com/marianozunino/jobby/ent/application"
+	"github.com/marianozunino/jobby/ent/joboffer"
 )
 
 // Application is the model entity for the Application schema.

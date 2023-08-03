@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/post"
-	"github.com/marianozunino/cc-backend-go/ent/postcategory"
-	"github.com/marianozunino/cc-backend-go/ent/user"
+	"github.com/marianozunino/jobby/ent/post"
+	"github.com/marianozunino/jobby/ent/postcategory"
+	"github.com/marianozunino/jobby/ent/user"
 )
 
 // PostCreate is the builder for creating a Post entity.

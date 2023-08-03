@@ -10,7 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/postcategory"
+	"github.com/marianozunino/jobby/ent/postcategory"
 )
 
 // PostCategory is the model entity for the PostCategory schema.

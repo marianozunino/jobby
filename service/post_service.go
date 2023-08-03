@@ -6,9 +6,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
-	"github.com/marianozunino/cc-backend-go/dtos"
-	"github.com/marianozunino/cc-backend-go/ent"
-	"github.com/marianozunino/cc-backend-go/store"
+	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/ent"
+	"github.com/marianozunino/jobby/store"
 )
 
 type postService struct {

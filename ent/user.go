@@ -10,7 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/user"
+	"github.com/marianozunino/jobby/ent/user"
 )
 
 // User is the model entity for the User schema.

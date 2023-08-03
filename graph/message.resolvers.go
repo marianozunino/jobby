@@ -7,7 +7,7 @@ package graph
 import (
 	"context"
 
-	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/jobby/dtos"
 )
 
 // SendMessages implements generated.MutationResolver.

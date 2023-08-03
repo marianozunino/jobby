@@ -10,9 +10,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofile"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofileskill"
-	"github.com/marianozunino/cc-backend-go/ent/skill"
+	"github.com/marianozunino/jobby/ent/applicantprofile"
+	"github.com/marianozunino/jobby/ent/applicantprofileskill"
+	"github.com/marianozunino/jobby/ent/skill"
 )
 
 // ApplicantProfileSkill is the model entity for the ApplicantProfileSkill schema.

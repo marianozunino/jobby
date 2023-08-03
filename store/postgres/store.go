@@ -1,15 +1,14 @@
 package postgres
 
 import (
-	"os"
 	"reflect"
 
 	"entgo.io/ent/dialect"
-	"entgo.io/ent/dialect/sql"
 	_ "github.com/lib/pq"
-	"github.com/marianozunino/cc-backend-go/dtos"
-	"github.com/marianozunino/cc-backend-go/ent"
-	"github.com/marianozunino/cc-backend-go/store"
+	"github.com/marianozunino/jobby/config"
+	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/ent"
+	"github.com/marianozunino/jobby/store"
 )
 
 type Store struct {
@@ -27,15 +26,15 @@ type Store struct {
 // assert that Store implements store.Store
 var _ store.Store = &Store{}
 
-func NewStore(databaseURL string) store.Store {
-	client, err := ent.Open(dialect.Postgres, os.Getenv("DATABASE_URL"))
-
-	if os.Getenv("DEBUG") == "true" {
-		client = client.Debug()
-	}
+func NewStore() store.Store {
+	client, err := ent.Open(dialect.Postgres, config.DatabaseURL)
 
 	if err != nil {
 		panic(err)
+	}
+
+	if config.EntDebug {
+		client = client.Debug()
 	}
 
 	return &Store{
@@ -55,8 +54,8 @@ func (s Store) Close() error {
 	return s.client.Close()
 }
 
-func createRawOrderOptions[K func(*sql.Selector)](orderBy interface{}) []interface{} {
-	var order []interface{}
+func createRawOrderOptions[K []ent.OrderFunc](orderBy interface{}) []ent.OrderFunc {
+	var order []ent.OrderFunc
 
 	// Use reflection to get the value of the `orderBy` struct
 	val := reflect.ValueOf(orderBy)

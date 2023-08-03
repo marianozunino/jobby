@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/marianozunino/cc-backend-go/ent"
-	"github.com/marianozunino/cc-backend-go/service"
+	"github.com/marianozunino/jobby/ent"
+	"github.com/marianozunino/jobby/service"
 )
 
 // A private key for context that only this package can access. This is important

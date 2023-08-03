@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/marianozunino/cc-backend-go/ent/predicate"
-	"github.com/marianozunino/cc-backend-go/ent/workexperience"
+	"github.com/marianozunino/jobby/ent/predicate"
+	"github.com/marianozunino/jobby/ent/workexperience"
 )
 
 // WorkExperienceDelete is the builder for deleting a WorkExperience entity.

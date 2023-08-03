@@ -1,5 +1,7 @@
 version: 3
 
+dotenv: ['.env']
+
 tasks:
   gen:
     cmds:
@@ -19,3 +21,35 @@ tasks:
       - task gen
       - task build
       - task lint
+  install:deps:
+    cmds:
+      - go mod download
+  migrate:apply:
+    cmds:
+      - |
+        atlas migrate apply \
+        --dir "file://ent/migrate/migrations" \
+        --url $DATABASE_URL
+  migrate:status:
+    cmds:
+      - |
+        atlas migrate status \
+        --dir "file://ent/migrate/migrations" \
+        --url $DATABASE_URL
+  migrate:create:
+    cmds:
+      - |
+        if [ -z "{{.CLI_ARGS}}" ]; then
+          echo "Please provide a migration name";
+          exit 1;
+        fi
+        atlas migrate diff initial_migration \
+        --dir "file://ent/migrate/migrations" \
+        --to "ent://ent/schema" \
+        --dev-url $DATABASE_URL
+
+  setup:
+    cmds:
+      - task install:deps
+      - task migrate:apply
+      - task migrate:status

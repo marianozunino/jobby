@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/joboffer"
-	"github.com/marianozunino/cc-backend-go/ent/status"
+	"github.com/marianozunino/jobby/ent/joboffer"
+	"github.com/marianozunino/jobby/ent/status"
 )
 
 // JobOffer is the model entity for the JobOffer schema.

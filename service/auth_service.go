@@ -9,9 +9,10 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/dtos"
-	"github.com/marianozunino/cc-backend-go/ent"
-	"github.com/marianozunino/cc-backend-go/store"
+	"github.com/marianozunino/jobby/config"
+	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/ent"
+	"github.com/marianozunino/jobby/store"
 )
 
 var _ AuthService = &authService{}
@@ -27,7 +28,8 @@ func (a *authService) CreateToken(ctx context.Context, input *ent.User) (*dtos.A
 	})
 
 	// sign token with secret
-	tokenString, err := token.SignedString([]byte("secret"))
+	tokenString, err := token.SignedString([]byte(config.JwtAccessTokenSecret))
+
 	if err != nil {
 		return nil, err
 	}

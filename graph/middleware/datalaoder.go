@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/marianozunino/cc-backend-go/graph/dataloader"
-	"github.com/marianozunino/cc-backend-go/service"
+	"github.com/marianozunino/jobby/graph/dataloader"
+	"github.com/marianozunino/jobby/service"
 )
 
 // Middleware stores Loaders as a request-scoped context value.

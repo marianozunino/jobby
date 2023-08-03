@@ -10,9 +10,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/application"
-	"github.com/marianozunino/cc-backend-go/ent/interview"
-	"github.com/marianozunino/cc-backend-go/ent/user"
+	"github.com/marianozunino/jobby/ent/application"
+	"github.com/marianozunino/jobby/ent/interview"
+	"github.com/marianozunino/jobby/ent/user"
 )
 
 // Interview is the model entity for the Interview schema.

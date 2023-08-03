@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/contactusmessage"
+	"github.com/marianozunino/jobby/ent/contactusmessage"
 )
 
 // ContactUsMessageCreate is the builder for creating a ContactUsMessage entity.

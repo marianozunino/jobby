@@ -1,4 +1,4 @@
-module github.com/marianozunino/cc-backend-go
+module github.com/marianozunino/jobby
 
 go 1.19
 

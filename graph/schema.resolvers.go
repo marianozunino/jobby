@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/marianozunino/cc-backend-go/graph/generated"
+	"github.com/marianozunino/jobby/graph/generated"
 )
 
 // Mutation returns generated.MutationResolver implementation.

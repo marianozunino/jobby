@@ -11,14 +11,14 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/applicantinterest"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofile"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofileskill"
-	"github.com/marianozunino/cc-backend-go/ent/application"
-	"github.com/marianozunino/cc-backend-go/ent/education"
-	"github.com/marianozunino/cc-backend-go/ent/language"
-	"github.com/marianozunino/cc-backend-go/ent/user"
-	"github.com/marianozunino/cc-backend-go/ent/workexperience"
+	"github.com/marianozunino/jobby/ent/applicantinterest"
+	"github.com/marianozunino/jobby/ent/applicantprofile"
+	"github.com/marianozunino/jobby/ent/applicantprofileskill"
+	"github.com/marianozunino/jobby/ent/application"
+	"github.com/marianozunino/jobby/ent/education"
+	"github.com/marianozunino/jobby/ent/language"
+	"github.com/marianozunino/jobby/ent/user"
+	"github.com/marianozunino/jobby/ent/workexperience"
 )
 
 // ApplicantProfileCreate is the builder for creating a ApplicantProfile entity.

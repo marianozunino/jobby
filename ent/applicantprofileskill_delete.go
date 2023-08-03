@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/marianozunino/cc-backend-go/ent/applicantprofileskill"
-	"github.com/marianozunino/cc-backend-go/ent/predicate"
+	"github.com/marianozunino/jobby/ent/applicantprofileskill"
+	"github.com/marianozunino/jobby/ent/predicate"
 )
 
 // ApplicantProfileSkillDelete is the builder for deleting a ApplicantProfileSkill entity.

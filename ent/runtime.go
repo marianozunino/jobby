@@ -5,9 +5,9 @@ package ent
 import (
 	"time"
 
-	"github.com/marianozunino/cc-backend-go/ent/post"
-	"github.com/marianozunino/cc-backend-go/ent/postcategory"
-	"github.com/marianozunino/cc-backend-go/ent/schema"
+	"github.com/marianozunino/jobby/ent/post"
+	"github.com/marianozunino/jobby/ent/postcategory"
+	"github.com/marianozunino/jobby/ent/schema"
 )
 
 // The init function reads all schema descriptors with runtime code

@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent"
-	"github.com/marianozunino/cc-backend-go/ent/user"
-	"github.com/marianozunino/cc-backend-go/store"
+	"github.com/marianozunino/jobby/ent"
+	"github.com/marianozunino/jobby/ent/user"
+	"github.com/marianozunino/jobby/store"
 )
 
 // assert that StatusStore implements store.StatusStore

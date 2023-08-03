@@ -11,9 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/ent/applicantinterest"
-	"github.com/marianozunino/cc-backend-go/ent/category"
-	"github.com/marianozunino/cc-backend-go/ent/joboffercategory"
+	"github.com/marianozunino/jobby/ent/applicantinterest"
+	"github.com/marianozunino/jobby/ent/category"
+	"github.com/marianozunino/jobby/ent/joboffercategory"
 )
 
 // CategoryCreate is the builder for creating a Category entity.

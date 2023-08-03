@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/marianozunino/cc-backend-go/dtos"
+	"github.com/marianozunino/jobby/dtos"
 )
 
 // JobOffersLoaderConfig captures the config to create a new JobOffersLoader
