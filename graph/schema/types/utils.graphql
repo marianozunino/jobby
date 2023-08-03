@@ -22,3 +22,9 @@ input TimestampFilter {
   lt: Timestamp
   lte: Timestamp
 }
+
+enum Role {
+  ADMIN
+  ANY
+  APPLICANT
+}

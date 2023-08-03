@@ -18,6 +18,8 @@ const (
 	port = ":18080"
 )
 
+//go:generate go run -mod=mod entgo.io/ent/cmd/ent generate ./ent/schema --template ./ent/nullsetter.tmpl
+//go:generate go run github.com/99designs/gqlgen generate
 func main() {
 	db := store.NewStore(os.Getenv("DATABASE_URL"))
 

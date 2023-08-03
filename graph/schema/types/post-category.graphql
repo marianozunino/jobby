@@ -1,0 +1,50 @@
+extend type Mutation {
+  createPostCategory(input: PostCategoryCreateInput!): PostCategory! @auth @hasRole(role: ADMIN)
+  deletePostCategory(id: ID!): PostCategory! @auth
+  updatePostCategory(id: ID!, input: PostCategoryUpdateInput!): PostCategory! @auth @hasRole(role: ADMIN)
+}
+
+type PaginatedPostCategoryResponse {
+  edges: [PostCategory!]!
+  skip: Int
+  take: Int
+  total: Int!
+}
+
+type PostCategory {
+  createdAt: Timestamp!
+  deletedAt: Timestamp
+  id: ID!
+  name: String!
+  slug: String!
+  updatedAt: Timestamp!
+}
+
+input PostCategoryAggregationInput {
+  createdAt: SortOrder
+  deletedAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+  slug: SortOrder
+  updatedAt: SortOrder
+}
+
+input PostCategoryCreateInput {
+  name: String!
+  slug: String
+}
+
+input PostCategoryUpdateInput {
+  name: String!
+}
+
+input PostCategoryWhereInput {
+  id: ID
+  name: String
+  slug: String
+}
+
+extend type Query {
+  postCategories(orderBy: PostCategoryAggregationInput, skip: Int = 0, take: Int = 10, where: PostCategoryWhereInput): PaginatedPostCategoryResponse!
+  postCategory(id: ID!): PostCategory!
+}

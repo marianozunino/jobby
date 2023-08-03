@@ -25,46 +25,46 @@ type BooleanFilter struct {
 }
 
 type Category struct {
-	ID        uuid.UUID   `json:"id"`
-	Name      string      `json:"name"`
-	Slug      string      `json:"slug"`
-	ParentID  *uuid.UUID  `json:"parentId,omitempty"`
-	IsRoot    bool        `json:"isRoot"`
 	Children  []*Category `json:"children"`
-	Parent    *Category   `json:"parent,omitempty"`
 	CreatedAt time.Time   `json:"createdAt"`
-	UpdatedAt time.Time   `json:"updatedAt"`
 	DeletedAt *time.Time  `json:"deletedAt,omitempty"`
+	ID        uuid.UUID   `json:"id"`
+	IsRoot    bool        `json:"isRoot"`
+	Name      string      `json:"name"`
+	Parent    *Category   `json:"parent,omitempty"`
+	ParentID  *uuid.UUID  `json:"parentId,omitempty"`
+	Slug      string      `json:"slug"`
+	UpdatedAt time.Time   `json:"updatedAt"`
 }
 
 type CategoryAggregationInput struct {
+	CreatedAt *SortOrder `json:"createdAt,omitempty"`
+	DeletedAt *SortOrder `json:"deletedAt,omitempty"`
 	ID        *SortOrder `json:"id,omitempty"`
+	IsRoot    *SortOrder `json:"isRoot,omitempty"`
 	Name      *SortOrder `json:"name,omitempty"`
 	Slug      *SortOrder `json:"slug,omitempty"`
-	IsRoot    *SortOrder `json:"isRoot,omitempty"`
-	CreatedAt *SortOrder `json:"createdAt,omitempty"`
 	UpdatedAt *SortOrder `json:"updatedAt,omitempty"`
-	DeletedAt *SortOrder `json:"deletedAt,omitempty"`
 }
 
 type CategoryCreateInput struct {
-	Name     string     `json:"name"`
-	Slug     *string    `json:"slug,omitempty"`
 	IsRoot   bool       `json:"isRoot"`
+	Name     string     `json:"name"`
 	ParentID *uuid.UUID `json:"parentId,omitempty"`
+	Slug     *string    `json:"slug,omitempty"`
 }
 
 type CategoryUpdateInput struct {
-	Name     string     `json:"name"`
 	IsRoot   bool       `json:"isRoot"`
+	Name     string     `json:"name"`
 	ParentID *uuid.UUID `json:"parentId,omitempty"`
 }
 
 type CategoryWhereInput struct {
 	ID     *uuid.UUID `json:"id,omitempty"`
+	IsRoot *bool      `json:"isRoot,omitempty"`
 	Name   *string    `json:"name,omitempty"`
 	Slug   *string    `json:"slug,omitempty"`
-	IsRoot *bool      `json:"isRoot,omitempty"`
 }
 
 type DegreeLevel struct {
@@ -158,9 +158,9 @@ type MessageUpdateInput struct {
 
 type PaginatedCategoryResponse struct {
 	Edges []*Category `json:"edges"`
-	Total int         `json:"total"`
-	Take  *int        `json:"take,omitempty"`
 	Skip  *int        `json:"skip,omitempty"`
+	Take  *int        `json:"take,omitempty"`
+	Total int         `json:"total"`
 }
 
 type PaginatedDegreeLevelResponse struct {
@@ -179,9 +179,9 @@ type PaginatedMessageResponse struct {
 
 type PaginatedPostCategoryResponse struct {
 	Edges []*PostCategory `json:"edges"`
-	Total int             `json:"total"`
-	Take  *int            `json:"take,omitempty"`
 	Skip  *int            `json:"skip,omitempty"`
+	Take  *int            `json:"take,omitempty"`
+	Total int             `json:"total"`
 }
 
 type PaginatedPostResponse struct {
@@ -226,21 +226,21 @@ type PostAggregationInput struct {
 }
 
 type PostCategory struct {
+	CreatedAt time.Time  `json:"createdAt"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	ID        uuid.UUID  `json:"id"`
 	Name      string     `json:"name"`
 	Slug      string     `json:"slug"`
-	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
-	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 }
 
 type PostCategoryAggregationInput struct {
+	CreatedAt *SortOrder `json:"createdAt,omitempty"`
+	DeletedAt *SortOrder `json:"deletedAt,omitempty"`
 	ID        *SortOrder `json:"id,omitempty"`
 	Name      *SortOrder `json:"name,omitempty"`
 	Slug      *SortOrder `json:"slug,omitempty"`
-	CreatedAt *SortOrder `json:"createdAt,omitempty"`
 	UpdatedAt *SortOrder `json:"updatedAt,omitempty"`
-	DeletedAt *SortOrder `json:"deletedAt,omitempty"`
 }
 
 type PostCategoryCreateInput struct {
@@ -332,19 +332,19 @@ type Role string
 
 const (
 	RoleAdmin     Role = "ADMIN"
-	RoleApplicant Role = "APPLICANT"
 	RoleAny       Role = "ANY"
+	RoleApplicant Role = "APPLICANT"
 )
 
 var AllRole = []Role{
 	RoleAdmin,
-	RoleApplicant,
 	RoleAny,
+	RoleApplicant,
 }
 
 func (e Role) IsValid() bool {
 	switch e {
-	case RoleAdmin, RoleApplicant, RoleAny:
+	case RoleAdmin, RoleAny, RoleApplicant:
 		return true
 	}
 	return false

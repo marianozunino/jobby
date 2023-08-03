@@ -198,14 +198,14 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Categories     func(childComplexity int, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) int
+		Categories     func(childComplexity int, orderBy *dtos.CategoryAggregationInput, skip *int, take *int, where *dtos.CategoryWhereInput) int
 		Category       func(childComplexity int, id uuid.UUID) int
 		DegreeLevel    func(childComplexity int, id uuid.UUID) int
 		DegreeLevels   func(childComplexity int, orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) int
 		Message        func(childComplexity int, id string) int
 		Messages       func(childComplexity int, orderBy *dtos.MessageAggregationInput, take *int, skip *int) int
 		Post           func(childComplexity int, id uuid.UUID) int
-		PostCategories func(childComplexity int, orderBy *dtos.PostCategoryAggregationInput, take *int, skip *int, where *dtos.PostCategoryWhereInput) int
+		PostCategories func(childComplexity int, orderBy *dtos.PostCategoryAggregationInput, skip *int, take *int, where *dtos.PostCategoryWhereInput) int
 		PostCategory   func(childComplexity int, id uuid.UUID) int
 		Posts          func(childComplexity int, orderBy *dtos.PostAggregationInput, take *int, skip *int, where *dtos.PostWhereInput) int
 		Status         func(childComplexity int, id string) int
@@ -224,6 +224,7 @@ type ComplexityRoot struct {
 
 type CategoryResolver interface {
 	Children(ctx context.Context, obj *dtos.Category) ([]*dtos.Category, error)
+
 	Parent(ctx context.Context, obj *dtos.Category) (*dtos.Category, error)
 }
 type MutationResolver interface {
@@ -252,14 +253,14 @@ type PostResolver interface {
 	Categories(ctx context.Context, obj *dtos.Post) ([]*dtos.PostCategory, error)
 }
 type QueryResolver interface {
+	Categories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, skip *int, take *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error)
 	Category(ctx context.Context, id uuid.UUID) (*dtos.Category, error)
-	Categories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error)
 	DegreeLevel(ctx context.Context, id uuid.UUID) (*dtos.DegreeLevel, error)
 	DegreeLevels(ctx context.Context, orderBy *dtos.DegreeLevelAggregationInput, take *int, skip *int, where *dtos.DegreeLevelWhereInput) (*dtos.PaginatedDegreeLevelResponse, error)
 	Messages(ctx context.Context, orderBy *dtos.MessageAggregationInput, take *int, skip *int) (*dtos.PaginatedMessageResponse, error)
 	Message(ctx context.Context, id string) (*dtos.Message, error)
+	PostCategories(ctx context.Context, orderBy *dtos.PostCategoryAggregationInput, skip *int, take *int, where *dtos.PostCategoryWhereInput) (*dtos.PaginatedPostCategoryResponse, error)
 	PostCategory(ctx context.Context, id uuid.UUID) (*dtos.PostCategory, error)
-	PostCategories(ctx context.Context, orderBy *dtos.PostCategoryAggregationInput, take *int, skip *int, where *dtos.PostCategoryWhereInput) (*dtos.PaginatedPostCategoryResponse, error)
 	Post(ctx context.Context, id uuid.UUID) (*dtos.Post, error)
 	Posts(ctx context.Context, orderBy *dtos.PostAggregationInput, take *int, skip *int, where *dtos.PostWhereInput) (*dtos.PaginatedPostResponse, error)
 	Status(ctx context.Context, id string) (*dtos.Status, error)
@@ -1122,7 +1123,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Categories(childComplexity, args["orderBy"].(*dtos.CategoryAggregationInput), args["take"].(*int), args["skip"].(*int), args["where"].(*dtos.CategoryWhereInput)), true
+		return e.complexity.Query.Categories(childComplexity, args["orderBy"].(*dtos.CategoryAggregationInput), args["skip"].(*int), args["take"].(*int), args["where"].(*dtos.CategoryWhereInput)), true
 
 	case "Query.category":
 		if e.complexity.Query.Category == nil {
@@ -1206,7 +1207,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.PostCategories(childComplexity, args["orderBy"].(*dtos.PostCategoryAggregationInput), args["take"].(*int), args["skip"].(*int), args["where"].(*dtos.PostCategoryWhereInput)), true
+		return e.complexity.Query.PostCategories(childComplexity, args["orderBy"].(*dtos.PostCategoryAggregationInput), args["skip"].(*int), args["take"].(*int), args["where"].(*dtos.PostCategoryWhereInput)), true
 
 	case "Query.postCategory":
 		if e.complexity.Query.PostCategory == nil {
@@ -1430,39 +1431,23 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../../schema/scalars.graphql", Input: `# A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+	{Name: "../schema/directives.graphql", Input: `directive @auth on FIELD_DEFINITION
+
+directive @goField(forceResolver: Boolean, name: String, omittable: Boolean) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
+directive @goModel(model: String, models: [String!]) on OBJECT | INPUT_OBJECT | SCALAR | ENUM | INTERFACE | UNION
+
+directive @goTag(key: String!, value: String) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
+directive @hasRole(role: Role!) on FIELD_DEFINITION
+`, BuiltIn: false},
+	{Name: "../schema/scalars.graphql", Input: `# A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 scalar Timestamp
 
 # UUID v4 custom scalar type
 scalar UUIDv4
 `, BuiltIn: false},
-	{Name: "../../schema/schema.graphql", Input: `directive @goModel(
-  model: String
-  models: [String!]
-) on OBJECT | INPUT_OBJECT | SCALAR | ENUM | INTERFACE | UNION
-
-directive @goField(
-  forceResolver: Boolean
-  name: String
-  omittable: Boolean
-) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
-
-directive @goTag(
-  key: String!
-  value: String
-) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
-
-directive @auth on FIELD_DEFINITION
-
-directive @hasRole(role: Role!) on FIELD_DEFINITION
-
-enum Role {
-  ADMIN
-  APPLICANT
-  ANY
-}
-
-type Mutation
+	{Name: "../schema/schema.graphql", Input: `type Mutation
 type Query
 
 schema {
@@ -1470,7 +1455,7 @@ schema {
   mutation: Mutation
 }
 `, BuiltIn: false},
-	{Name: "../../schema/types/auth.graphql", Input: `type Auth {
+	{Name: "../schema/types/auth.graphql", Input: `type Auth {
   accessToken: String!
 }
 
@@ -1483,75 +1468,47 @@ extend type Mutation {
   login(input: AuthInput!): Auth! @goField(forceResolver: true)
 }
 `, BuiltIn: false},
-	{Name: "../../schema/types/category.graphql", Input: `type Category {
-  id: ID!
-  name: String!
-  slug: String!
-
-  parentId: ID
-  isRoot: Boolean!
+	{Name: "../schema/types/category.graphql", Input: `type Category {
   children: [Category!]! @goField(forceResolver: true)
-  parent: Category @goField(forceResolver: true)
-
   createdAt: Timestamp!
-  updatedAt: Timestamp!
   deletedAt: Timestamp
+  id: ID!
+  isRoot: Boolean!
+  name: String!
+  parent: Category @goField(forceResolver: true)
+  parentId: ID
+  slug: String!
+  updatedAt: Timestamp!
 }
 
 input CategoryAggregationInput {
+  createdAt: SortOrder
+  deletedAt: SortOrder
   id: SortOrder
+  isRoot: SortOrder
   name: SortOrder
   slug: SortOrder
-  isRoot: SortOrder
-
-  createdAt: SortOrder
   updatedAt: SortOrder
-  deletedAt: SortOrder
+}
+
+input CategoryCreateInput {
+  isRoot: Boolean!
+  name: String!
+  parentId: ID
+  slug: String
+}
+
+input CategoryUpdateInput {
+  isRoot: Boolean!
+  name: String!
+  parentId: ID
 }
 
 input CategoryWhereInput {
   id: ID
+  isRoot: Boolean
   name: String
   slug: String
-  isRoot: Boolean
-}
-
-input CategoryCreateInput {
-  name: String!
-
-  # if slug is not provided, it will be generated from name
-  slug: String
-
-  # if isRoot is true, parentID will be ignored
-  # if isRoot is false, parentID will be required
-  isRoot: Boolean!
-  parentId: ID
-}
-
-input CategoryUpdateInput {
-  name: String!
-
-  # if isRoot is true, parentID will be ignored
-  # if isRoot is false, parentID will be required
-  isRoot: Boolean!
-  parentId: ID
-}
-
-type PaginatedCategoryResponse {
-  edges: [Category!]!
-  total: Int!
-  take: Int
-  skip: Int
-}
-
-extend type Query {
-  category(id: ID!): Category!
-  categories(
-    orderBy: CategoryAggregationInput
-    take: Int = 10
-    skip: Int = 0
-    where: CategoryWhereInput
-  ): PaginatedCategoryResponse!
 }
 
 extend type Mutation {
@@ -1559,8 +1516,20 @@ extend type Mutation {
   deleteCategory(id: ID!): Category!
   updateCategory(id: ID!, input: CategoryUpdateInput!): Category!
 }
+
+type PaginatedCategoryResponse {
+  edges: [Category!]!
+  skip: Int
+  take: Int
+  total: Int!
+}
+
+extend type Query {
+  categories(orderBy: CategoryAggregationInput, skip: Int = 0, take: Int = 10, where: CategoryWhereInput): PaginatedCategoryResponse!
+  category(id: ID!): Category!
+}
 `, BuiltIn: false},
-	{Name: "../../schema/types/degree-level.graphql", Input: `type DegreeLevel {
+	{Name: "../schema/types/degree-level.graphql", Input: `type DegreeLevel {
   id: ID!
   name: String!
 
@@ -1614,7 +1583,7 @@ extend type Mutation {
   updateDegreeLevel(id: ID!, input: DegreeLevelUpdateInput!): DegreeLevel!
 }
 `, BuiltIn: false},
-	{Name: "../../schema/types/job-offer.graphql", Input: `type JobOffer {
+	{Name: "../schema/types/job-offer.graphql", Input: `type JobOffer {
   id: ID!
   slug: String!
   title: String!
@@ -1636,7 +1605,7 @@ extend type Mutation {
   statusId: ID!
 }
 `, BuiltIn: false},
-	{Name: "../../schema/types/message.graphql", Input: `type Message {
+	{Name: "../schema/types/message.graphql", Input: `type Message {
   id: ID!
   name: String!
   email: String!
@@ -1695,24 +1664,44 @@ extend type Query {
   message(id: UUIDv4!): Message! @auth
 }
 `, BuiltIn: false},
-	{Name: "../../schema/types/post-category.graphql", Input: `type PostCategory {
+	{Name: "../schema/types/post-category.graphql", Input: `extend type Mutation {
+  createPostCategory(input: PostCategoryCreateInput!): PostCategory! @auth @hasRole(role: ADMIN)
+  deletePostCategory(id: ID!): PostCategory! @auth
+  updatePostCategory(id: ID!, input: PostCategoryUpdateInput!): PostCategory! @auth @hasRole(role: ADMIN)
+}
+
+type PaginatedPostCategoryResponse {
+  edges: [PostCategory!]!
+  skip: Int
+  take: Int
+  total: Int!
+}
+
+type PostCategory {
+  createdAt: Timestamp!
+  deletedAt: Timestamp
   id: ID!
   name: String!
   slug: String!
-
-  createdAt: Timestamp!
   updatedAt: Timestamp!
-  deletedAt: Timestamp
 }
 
 input PostCategoryAggregationInput {
+  createdAt: SortOrder
+  deletedAt: SortOrder
   id: SortOrder
   name: SortOrder
   slug: SortOrder
-
-  createdAt: SortOrder
   updatedAt: SortOrder
-  deletedAt: SortOrder
+}
+
+input PostCategoryCreateInput {
+  name: String!
+  slug: String
+}
+
+input PostCategoryUpdateInput {
+  name: String!
 }
 
 input PostCategoryWhereInput {
@@ -1721,44 +1710,12 @@ input PostCategoryWhereInput {
   slug: String
 }
 
-input PostCategoryCreateInput {
-  name: String!
-
-  # if slug is not provided, it will be generated from name
-  slug: String
-}
-
-input PostCategoryUpdateInput {
-  name: String!
-}
-
-type PaginatedPostCategoryResponse {
-  edges: [PostCategory!]!
-  total: Int!
-  take: Int
-  skip: Int
-}
 extend type Query {
+  postCategories(orderBy: PostCategoryAggregationInput, skip: Int = 0, take: Int = 10, where: PostCategoryWhereInput): PaginatedPostCategoryResponse!
   postCategory(id: ID!): PostCategory!
-  postCategories(
-    orderBy: PostCategoryAggregationInput
-    take: Int = 10
-    skip: Int = 0
-    where: PostCategoryWhereInput
-  ): PaginatedPostCategoryResponse!
-}
-
-extend type Mutation {
-  createPostCategory(input: PostCategoryCreateInput!): PostCategory!
-    @auth
-    @hasRole(role: ADMIN)
-  deletePostCategory(id: ID!): PostCategory! @auth
-  updatePostCategory(id: ID!, input: PostCategoryUpdateInput!): PostCategory!
-    @auth
-    @hasRole(role: ADMIN)
 }
 `, BuiltIn: false},
-	{Name: "../../schema/types/post.graphql", Input: `type Post {
+	{Name: "../schema/types/post.graphql", Input: `type Post {
   id: ID!
   title: String!
   content: String!
@@ -1853,7 +1810,7 @@ extend type Mutation {
   publishPost(id: ID!): Post! @auth
 }
 `, BuiltIn: false},
-	{Name: "../../schema/types/status.graphql", Input: `type Status {
+	{Name: "../schema/types/status.graphql", Input: `type Status {
   id: ID!
   name: String!
   createdAt: Timestamp!
@@ -1900,7 +1857,7 @@ extend type Query {
   ): PaginatedStatusResponse!
 }
 `, BuiltIn: false},
-	{Name: "../../schema/types/utils.graphql", Input: `enum SortOrder {
+	{Name: "../schema/types/utils.graphql", Input: `enum SortOrder {
   asc
   desc
 }
@@ -1923,6 +1880,12 @@ input TimestampFilter {
   gte: Timestamp
   lt: Timestamp
   lte: Timestamp
+}
+
+enum Role {
+  ADMIN
+  ANY
+  APPLICANT
 }
 `, BuiltIn: false},
 }
@@ -2329,23 +2292,23 @@ func (ec *executionContext) field_Query_categories_args(ctx context.Context, raw
 	}
 	args["orderBy"] = arg0
 	var arg1 *int
-	if tmp, ok := rawArgs["take"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("take"))
+	if tmp, ok := rawArgs["skip"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skip"))
 		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["take"] = arg1
+	args["skip"] = arg1
 	var arg2 *int
-	if tmp, ok := rawArgs["skip"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skip"))
+	if tmp, ok := rawArgs["take"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("take"))
 		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["skip"] = arg2
+	args["take"] = arg2
 	var arg3 *dtos.CategoryWhereInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
@@ -2491,23 +2454,23 @@ func (ec *executionContext) field_Query_postCategories_args(ctx context.Context,
 	}
 	args["orderBy"] = arg0
 	var arg1 *int
-	if tmp, ok := rawArgs["take"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("take"))
+	if tmp, ok := rawArgs["skip"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skip"))
 		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["take"] = arg1
+	args["skip"] = arg1
 	var arg2 *int
-	if tmp, ok := rawArgs["skip"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skip"))
+	if tmp, ok := rawArgs["take"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("take"))
 		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["skip"] = arg2
+	args["take"] = arg2
 	var arg3 *dtos.PostCategoryWhereInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
@@ -2722,6 +2685,157 @@ func (ec *executionContext) fieldContext_Auth_accessToken(ctx context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _Category_children(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_children(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Category().Children(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*dtos.Category)
+	fc.Result = res
+	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_children(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "children":
+				return ec.fieldContext_Category_children(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Category_createdAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_Category_deletedAt(ctx, field)
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "isRoot":
+				return ec.fieldContext_Category_isRoot(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "parent":
+				return ec.fieldContext_Category_parent(ctx, field)
+			case "parentId":
+				return ec.fieldContext_Category_parentId(ctx, field)
+			case "slug":
+				return ec.fieldContext_Category_slug(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Category_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Category_createdAt(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTimestamp2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Timestamp does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Category_deletedAt(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_deletedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeletedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_deletedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Timestamp does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Category_id(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Category_id(ctx, field)
 	if err != nil {
@@ -2754,135 +2868,6 @@ func (ec *executionContext) _Category_id(ctx context.Context, field graphql.Coll
 }
 
 func (ec *executionContext) fieldContext_Category_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Category",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Category_name(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Category_name(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Name, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Category_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Category",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Category_slug(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Category_slug(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Slug, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Category_slug(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Category",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Category_parentId(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Category_parentId(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ParentID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*uuid.UUID)
-	fc.Result = res
-	return ec.marshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Category_parentId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Category",
 		Field:      field,
@@ -2939,8 +2924,8 @@ func (ec *executionContext) fieldContext_Category_isRoot(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Category_children(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Category_children(ctx, field)
+func (ec *executionContext) _Category_name(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_name(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2953,7 +2938,7 @@ func (ec *executionContext) _Category_children(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Category().Children(rctx, obj)
+		return obj.Name, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2965,41 +2950,19 @@ func (ec *executionContext) _Category_children(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*dtos.Category)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryᚄ(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Category_children(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Category_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Category",
 		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Category_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Category_name(ctx, field)
-			case "slug":
-				return ec.fieldContext_Category_slug(ctx, field)
-			case "parentId":
-				return ec.fieldContext_Category_parentId(ctx, field)
-			case "isRoot":
-				return ec.fieldContext_Category_isRoot(ctx, field)
-			case "children":
-				return ec.fieldContext_Category_children(ctx, field)
-			case "parent":
-				return ec.fieldContext_Category_parent(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Category_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Category_updatedAt(ctx, field)
-			case "deletedAt":
-				return ec.fieldContext_Category_deletedAt(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3041,26 +3004,26 @@ func (ec *executionContext) fieldContext_Category_parent(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Category_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Category_name(ctx, field)
-			case "slug":
-				return ec.fieldContext_Category_slug(ctx, field)
-			case "parentId":
-				return ec.fieldContext_Category_parentId(ctx, field)
-			case "isRoot":
-				return ec.fieldContext_Category_isRoot(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
-			case "parent":
-				return ec.fieldContext_Category_parent(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Category_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Category_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Category_deletedAt(ctx, field)
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "isRoot":
+				return ec.fieldContext_Category_isRoot(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "parent":
+				return ec.fieldContext_Category_parent(ctx, field)
+			case "parentId":
+				return ec.fieldContext_Category_parentId(ctx, field)
+			case "slug":
+				return ec.fieldContext_Category_slug(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Category_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -3068,8 +3031,8 @@ func (ec *executionContext) fieldContext_Category_parent(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Category_createdAt(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Category_createdAt(ctx, field)
+func (ec *executionContext) _Category_parentId(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_parentId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3082,7 +3045,48 @@ func (ec *executionContext) _Category_createdAt(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.CreatedAt, nil
+		return obj.ParentID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*uuid.UUID)
+	fc.Result = res
+	return ec.marshalOID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Category_parentId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Category",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Category_slug(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Category_slug(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Slug, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3094,19 +3098,19 @@ func (ec *executionContext) _Category_createdAt(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNTimestamp2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Category_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Category_slug(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Category",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Timestamp does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3144,47 +3148,6 @@ func (ec *executionContext) _Category_updatedAt(ctx context.Context, field graph
 }
 
 func (ec *executionContext) fieldContext_Category_updatedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Category",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Timestamp does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Category_deletedAt(ctx context.Context, field graphql.CollectedField, obj *dtos.Category) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Category_deletedAt(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DeletedAt, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*time.Time)
-	fc.Result = res
-	return ec.marshalOTimestamp2ᚖtimeᚐTime(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Category_deletedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Category",
 		Field:      field,
@@ -4647,26 +4610,26 @@ func (ec *executionContext) fieldContext_Mutation_createCategory(ctx context.Con
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Category_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Category_name(ctx, field)
-			case "slug":
-				return ec.fieldContext_Category_slug(ctx, field)
-			case "parentId":
-				return ec.fieldContext_Category_parentId(ctx, field)
-			case "isRoot":
-				return ec.fieldContext_Category_isRoot(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
-			case "parent":
-				return ec.fieldContext_Category_parent(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Category_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Category_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Category_deletedAt(ctx, field)
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "isRoot":
+				return ec.fieldContext_Category_isRoot(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "parent":
+				return ec.fieldContext_Category_parent(ctx, field)
+			case "parentId":
+				return ec.fieldContext_Category_parentId(ctx, field)
+			case "slug":
+				return ec.fieldContext_Category_slug(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Category_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -4724,26 +4687,26 @@ func (ec *executionContext) fieldContext_Mutation_deleteCategory(ctx context.Con
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Category_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Category_name(ctx, field)
-			case "slug":
-				return ec.fieldContext_Category_slug(ctx, field)
-			case "parentId":
-				return ec.fieldContext_Category_parentId(ctx, field)
-			case "isRoot":
-				return ec.fieldContext_Category_isRoot(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
-			case "parent":
-				return ec.fieldContext_Category_parent(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Category_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Category_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Category_deletedAt(ctx, field)
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "isRoot":
+				return ec.fieldContext_Category_isRoot(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "parent":
+				return ec.fieldContext_Category_parent(ctx, field)
+			case "parentId":
+				return ec.fieldContext_Category_parentId(ctx, field)
+			case "slug":
+				return ec.fieldContext_Category_slug(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Category_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -4801,26 +4764,26 @@ func (ec *executionContext) fieldContext_Mutation_updateCategory(ctx context.Con
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Category_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Category_name(ctx, field)
-			case "slug":
-				return ec.fieldContext_Category_slug(ctx, field)
-			case "parentId":
-				return ec.fieldContext_Category_parentId(ctx, field)
-			case "isRoot":
-				return ec.fieldContext_Category_isRoot(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
-			case "parent":
-				return ec.fieldContext_Category_parent(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Category_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Category_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Category_deletedAt(ctx, field)
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "isRoot":
+				return ec.fieldContext_Category_isRoot(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "parent":
+				return ec.fieldContext_Category_parent(ctx, field)
+			case "parentId":
+				return ec.fieldContext_Category_parentId(ctx, field)
+			case "slug":
+				return ec.fieldContext_Category_slug(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Category_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -5328,18 +5291,18 @@ func (ec *executionContext) fieldContext_Mutation_createPostCategory(ctx context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "createdAt":
+				return ec.fieldContext_PostCategory_createdAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			case "id":
 				return ec.fieldContext_PostCategory_id(ctx, field)
 			case "name":
 				return ec.fieldContext_PostCategory_name(ctx, field)
 			case "slug":
 				return ec.fieldContext_PostCategory_slug(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_PostCategory_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_PostCategory_updatedAt(ctx, field)
-			case "deletedAt":
-				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type PostCategory", field.Name)
 		},
@@ -5417,18 +5380,18 @@ func (ec *executionContext) fieldContext_Mutation_deletePostCategory(ctx context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "createdAt":
+				return ec.fieldContext_PostCategory_createdAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			case "id":
 				return ec.fieldContext_PostCategory_id(ctx, field)
 			case "name":
 				return ec.fieldContext_PostCategory_name(ctx, field)
 			case "slug":
 				return ec.fieldContext_PostCategory_slug(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_PostCategory_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_PostCategory_updatedAt(ctx, field)
-			case "deletedAt":
-				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type PostCategory", field.Name)
 		},
@@ -5516,18 +5479,18 @@ func (ec *executionContext) fieldContext_Mutation_updatePostCategory(ctx context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "createdAt":
+				return ec.fieldContext_PostCategory_createdAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			case "id":
 				return ec.fieldContext_PostCategory_id(ctx, field)
 			case "name":
 				return ec.fieldContext_PostCategory_name(ctx, field)
 			case "slug":
 				return ec.fieldContext_PostCategory_slug(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_PostCategory_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_PostCategory_updatedAt(ctx, field)
-			case "deletedAt":
-				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type PostCategory", field.Name)
 		},
@@ -6196,26 +6159,26 @@ func (ec *executionContext) fieldContext_PaginatedCategoryResponse_edges(ctx con
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Category_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Category_name(ctx, field)
-			case "slug":
-				return ec.fieldContext_Category_slug(ctx, field)
-			case "parentId":
-				return ec.fieldContext_Category_parentId(ctx, field)
-			case "isRoot":
-				return ec.fieldContext_Category_isRoot(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
-			case "parent":
-				return ec.fieldContext_Category_parent(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Category_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Category_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Category_deletedAt(ctx, field)
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "isRoot":
+				return ec.fieldContext_Category_isRoot(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "parent":
+				return ec.fieldContext_Category_parent(ctx, field)
+			case "parentId":
+				return ec.fieldContext_Category_parentId(ctx, field)
+			case "slug":
+				return ec.fieldContext_Category_slug(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Category_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -6223,8 +6186,8 @@ func (ec *executionContext) fieldContext_PaginatedCategoryResponse_edges(ctx con
 	return fc, nil
 }
 
-func (ec *executionContext) _PaginatedCategoryResponse_total(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedCategoryResponse) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PaginatedCategoryResponse_total(ctx, field)
+func (ec *executionContext) _PaginatedCategoryResponse_skip(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedCategoryResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaginatedCategoryResponse_skip(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -6237,24 +6200,21 @@ func (ec *executionContext) _PaginatedCategoryResponse_total(ctx context.Context
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Total, nil
+		return obj.Skip, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(*int)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PaginatedCategoryResponse_total(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PaginatedCategoryResponse_skip(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PaginatedCategoryResponse",
 		Field:      field,
@@ -6308,8 +6268,8 @@ func (ec *executionContext) fieldContext_PaginatedCategoryResponse_take(ctx cont
 	return fc, nil
 }
 
-func (ec *executionContext) _PaginatedCategoryResponse_skip(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedCategoryResponse) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PaginatedCategoryResponse_skip(ctx, field)
+func (ec *executionContext) _PaginatedCategoryResponse_total(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedCategoryResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaginatedCategoryResponse_total(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -6322,21 +6282,24 @@ func (ec *executionContext) _PaginatedCategoryResponse_skip(ctx context.Context,
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Skip, nil
+		return obj.Total, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PaginatedCategoryResponse_skip(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PaginatedCategoryResponse_total(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PaginatedCategoryResponse",
 		Field:      field,
@@ -6758,18 +6721,18 @@ func (ec *executionContext) fieldContext_PaginatedPostCategoryResponse_edges(ctx
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "createdAt":
+				return ec.fieldContext_PostCategory_createdAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			case "id":
 				return ec.fieldContext_PostCategory_id(ctx, field)
 			case "name":
 				return ec.fieldContext_PostCategory_name(ctx, field)
 			case "slug":
 				return ec.fieldContext_PostCategory_slug(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_PostCategory_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_PostCategory_updatedAt(ctx, field)
-			case "deletedAt":
-				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type PostCategory", field.Name)
 		},
@@ -6777,8 +6740,8 @@ func (ec *executionContext) fieldContext_PaginatedPostCategoryResponse_edges(ctx
 	return fc, nil
 }
 
-func (ec *executionContext) _PaginatedPostCategoryResponse_total(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedPostCategoryResponse) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PaginatedPostCategoryResponse_total(ctx, field)
+func (ec *executionContext) _PaginatedPostCategoryResponse_skip(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedPostCategoryResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaginatedPostCategoryResponse_skip(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -6791,24 +6754,21 @@ func (ec *executionContext) _PaginatedPostCategoryResponse_total(ctx context.Con
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Total, nil
+		return obj.Skip, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(*int)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PaginatedPostCategoryResponse_total(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PaginatedPostCategoryResponse_skip(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PaginatedPostCategoryResponse",
 		Field:      field,
@@ -6862,8 +6822,8 @@ func (ec *executionContext) fieldContext_PaginatedPostCategoryResponse_take(ctx 
 	return fc, nil
 }
 
-func (ec *executionContext) _PaginatedPostCategoryResponse_skip(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedPostCategoryResponse) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PaginatedPostCategoryResponse_skip(ctx, field)
+func (ec *executionContext) _PaginatedPostCategoryResponse_total(ctx context.Context, field graphql.CollectedField, obj *dtos.PaginatedPostCategoryResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaginatedPostCategoryResponse_total(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -6876,21 +6836,24 @@ func (ec *executionContext) _PaginatedPostCategoryResponse_skip(ctx context.Cont
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Skip, nil
+		return obj.Total, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PaginatedPostCategoryResponse_skip(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PaginatedPostCategoryResponse_total(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PaginatedPostCategoryResponse",
 		Field:      field,
@@ -7797,20 +7760,105 @@ func (ec *executionContext) fieldContext_Post_categories(ctx context.Context, fi
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "createdAt":
+				return ec.fieldContext_PostCategory_createdAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			case "id":
 				return ec.fieldContext_PostCategory_id(ctx, field)
 			case "name":
 				return ec.fieldContext_PostCategory_name(ctx, field)
 			case "slug":
 				return ec.fieldContext_PostCategory_slug(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_PostCategory_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_PostCategory_updatedAt(ctx, field)
-			case "deletedAt":
-				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type PostCategory", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PostCategory_createdAt(ctx context.Context, field graphql.CollectedField, obj *dtos.PostCategory) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PostCategory_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTimestamp2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PostCategory_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PostCategory",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Timestamp does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PostCategory_deletedAt(ctx context.Context, field graphql.CollectedField, obj *dtos.PostCategory) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PostCategory_deletedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeletedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTimestamp2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PostCategory_deletedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PostCategory",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Timestamp does not have child fields")
 		},
 	}
 	return fc, nil
@@ -7948,50 +7996,6 @@ func (ec *executionContext) fieldContext_PostCategory_slug(ctx context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _PostCategory_createdAt(ctx context.Context, field graphql.CollectedField, obj *dtos.PostCategory) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PostCategory_createdAt(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.CreatedAt, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(time.Time)
-	fc.Result = res
-	return ec.marshalNTimestamp2timeᚐTime(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_PostCategory_createdAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "PostCategory",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Timestamp does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _PostCategory_updatedAt(ctx context.Context, field graphql.CollectedField, obj *dtos.PostCategory) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PostCategory_updatedAt(ctx, field)
 	if err != nil {
@@ -8036,8 +8040,8 @@ func (ec *executionContext) fieldContext_PostCategory_updatedAt(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _PostCategory_deletedAt(ctx context.Context, field graphql.CollectedField, obj *dtos.PostCategory) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PostCategory_deletedAt(ctx, field)
+func (ec *executionContext) _Query_categories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_categories(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -8050,29 +8054,53 @@ func (ec *executionContext) _PostCategory_deletedAt(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.DeletedAt, nil
+		return ec.resolvers.Query().Categories(rctx, fc.Args["orderBy"].(*dtos.CategoryAggregationInput), fc.Args["skip"].(*int), fc.Args["take"].(*int), fc.Args["where"].(*dtos.CategoryWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*time.Time)
+	res := resTmp.(*dtos.PaginatedCategoryResponse)
 	fc.Result = res
-	return ec.marshalOTimestamp2ᚖtimeᚐTime(ctx, field.Selections, res)
+	return ec.marshalNPaginatedCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedCategoryResponse(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PostCategory_deletedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "PostCategory",
+		Object:     "Query",
 		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
+		IsMethod:   true,
+		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Timestamp does not have child fields")
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_PaginatedCategoryResponse_edges(ctx, field)
+			case "skip":
+				return ec.fieldContext_PaginatedCategoryResponse_skip(ctx, field)
+			case "take":
+				return ec.fieldContext_PaginatedCategoryResponse_take(ctx, field)
+			case "total":
+				return ec.fieldContext_PaginatedCategoryResponse_total(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PaginatedCategoryResponse", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_categories_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -8116,26 +8144,26 @@ func (ec *executionContext) fieldContext_Query_category(ctx context.Context, fie
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Category_id(ctx, field)
-			case "name":
-				return ec.fieldContext_Category_name(ctx, field)
-			case "slug":
-				return ec.fieldContext_Category_slug(ctx, field)
-			case "parentId":
-				return ec.fieldContext_Category_parentId(ctx, field)
-			case "isRoot":
-				return ec.fieldContext_Category_isRoot(ctx, field)
 			case "children":
 				return ec.fieldContext_Category_children(ctx, field)
-			case "parent":
-				return ec.fieldContext_Category_parent(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Category_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_Category_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Category_deletedAt(ctx, field)
+			case "id":
+				return ec.fieldContext_Category_id(ctx, field)
+			case "isRoot":
+				return ec.fieldContext_Category_isRoot(ctx, field)
+			case "name":
+				return ec.fieldContext_Category_name(ctx, field)
+			case "parent":
+				return ec.fieldContext_Category_parent(ctx, field)
+			case "parentId":
+				return ec.fieldContext_Category_parentId(ctx, field)
+			case "slug":
+				return ec.fieldContext_Category_slug(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Category_updatedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Category", field.Name)
 		},
@@ -8148,71 +8176,6 @@ func (ec *executionContext) fieldContext_Query_category(ctx context.Context, fie
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_category_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_categories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_categories(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Categories(rctx, fc.Args["orderBy"].(*dtos.CategoryAggregationInput), fc.Args["take"].(*int), fc.Args["skip"].(*int), fc.Args["where"].(*dtos.CategoryWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*dtos.PaginatedCategoryResponse)
-	fc.Result = res
-	return ec.marshalNPaginatedCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedCategoryResponse(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_PaginatedCategoryResponse_edges(ctx, field)
-			case "total":
-				return ec.fieldContext_PaginatedCategoryResponse_total(ctx, field)
-			case "take":
-				return ec.fieldContext_PaginatedCategoryResponse_take(ctx, field)
-			case "skip":
-				return ec.fieldContext_PaginatedCategoryResponse_skip(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type PaginatedCategoryResponse", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_categories_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -8529,6 +8492,71 @@ func (ec *executionContext) fieldContext_Query_message(ctx context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_postCategories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_postCategories(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().PostCategories(rctx, fc.Args["orderBy"].(*dtos.PostCategoryAggregationInput), fc.Args["skip"].(*int), fc.Args["take"].(*int), fc.Args["where"].(*dtos.PostCategoryWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dtos.PaginatedPostCategoryResponse)
+	fc.Result = res
+	return ec.marshalNPaginatedPostCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedPostCategoryResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_postCategories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_PaginatedPostCategoryResponse_edges(ctx, field)
+			case "skip":
+				return ec.fieldContext_PaginatedPostCategoryResponse_skip(ctx, field)
+			case "take":
+				return ec.fieldContext_PaginatedPostCategoryResponse_take(ctx, field)
+			case "total":
+				return ec.fieldContext_PaginatedPostCategoryResponse_total(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type PaginatedPostCategoryResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_postCategories_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_postCategory(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_postCategory(ctx, field)
 	if err != nil {
@@ -8568,18 +8596,18 @@ func (ec *executionContext) fieldContext_Query_postCategory(ctx context.Context,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
+			case "createdAt":
+				return ec.fieldContext_PostCategory_createdAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			case "id":
 				return ec.fieldContext_PostCategory_id(ctx, field)
 			case "name":
 				return ec.fieldContext_PostCategory_name(ctx, field)
 			case "slug":
 				return ec.fieldContext_PostCategory_slug(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_PostCategory_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_PostCategory_updatedAt(ctx, field)
-			case "deletedAt":
-				return ec.fieldContext_PostCategory_deletedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type PostCategory", field.Name)
 		},
@@ -8592,71 +8620,6 @@ func (ec *executionContext) fieldContext_Query_postCategory(ctx context.Context,
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_postCategory_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_postCategories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_postCategories(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().PostCategories(rctx, fc.Args["orderBy"].(*dtos.PostCategoryAggregationInput), fc.Args["take"].(*int), fc.Args["skip"].(*int), fc.Args["where"].(*dtos.PostCategoryWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*dtos.PaginatedPostCategoryResponse)
-	fc.Result = res
-	return ec.marshalNPaginatedPostCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedPostCategoryResponse(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_postCategories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_PaginatedPostCategoryResponse_edges(ctx, field)
-			case "total":
-				return ec.fieldContext_PaginatedPostCategoryResponse_total(ctx, field)
-			case "take":
-				return ec.fieldContext_PaginatedPostCategoryResponse_take(ctx, field)
-			case "skip":
-				return ec.fieldContext_PaginatedPostCategoryResponse_skip(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type PaginatedPostCategoryResponse", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_postCategories_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -11218,13 +11181,31 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "slug", "isRoot", "createdAt", "updatedAt", "deletedAt"}
+	fieldsInOrder := [...]string{"createdAt", "deletedAt", "id", "isRoot", "name", "slug", "updatedAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "deletedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DeletedAt = data
 		case "id":
 			var err error
 
@@ -11234,6 +11215,15 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 				return it, err
 			}
 			it.ID = data
+		case "isRoot":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isRoot"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsRoot = data
 		case "name":
 			var err error
 
@@ -11252,24 +11242,6 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 				return it, err
 			}
 			it.Slug = data
-		case "isRoot":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isRoot"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.IsRoot = data
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.CreatedAt = data
 		case "updatedAt":
 			var err error
 
@@ -11279,15 +11251,6 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 				return it, err
 			}
 			it.UpdatedAt = data
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.DeletedAt = data
 		}
 	}
 
@@ -11301,31 +11264,13 @@ func (ec *executionContext) unmarshalInputCategoryCreateInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "slug", "isRoot", "parentId"}
+	fieldsInOrder := [...]string{"isRoot", "name", "parentId", "slug"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "name":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Name = data
-		case "slug":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Slug = data
 		case "isRoot":
 			var err error
 
@@ -11335,6 +11280,15 @@ func (ec *executionContext) unmarshalInputCategoryCreateInput(ctx context.Contex
 				return it, err
 			}
 			it.IsRoot = data
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
 		case "parentId":
 			var err error
 
@@ -11344,6 +11298,15 @@ func (ec *executionContext) unmarshalInputCategoryCreateInput(ctx context.Contex
 				return it, err
 			}
 			it.ParentID = data
+		case "slug":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Slug = data
 		}
 	}
 
@@ -11357,22 +11320,13 @@ func (ec *executionContext) unmarshalInputCategoryUpdateInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "isRoot", "parentId"}
+	fieldsInOrder := [...]string{"isRoot", "name", "parentId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "name":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Name = data
 		case "isRoot":
 			var err error
 
@@ -11382,6 +11336,15 @@ func (ec *executionContext) unmarshalInputCategoryUpdateInput(ctx context.Contex
 				return it, err
 			}
 			it.IsRoot = data
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
 		case "parentId":
 			var err error
 
@@ -11404,7 +11367,7 @@ func (ec *executionContext) unmarshalInputCategoryWhereInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "slug", "isRoot"}
+	fieldsInOrder := [...]string{"id", "isRoot", "name", "slug"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -11420,6 +11383,15 @@ func (ec *executionContext) unmarshalInputCategoryWhereInput(ctx context.Context
 				return it, err
 			}
 			it.ID = data
+		case "isRoot":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isRoot"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsRoot = data
 		case "name":
 			var err error
 
@@ -11438,15 +11410,6 @@ func (ec *executionContext) unmarshalInputCategoryWhereInput(ctx context.Context
 				return it, err
 			}
 			it.Slug = data
-		case "isRoot":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isRoot"))
-			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.IsRoot = data
 		}
 	}
 
@@ -11946,13 +11909,31 @@ func (ec *executionContext) unmarshalInputPostCategoryAggregationInput(ctx conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "slug", "createdAt", "updatedAt", "deletedAt"}
+	fieldsInOrder := [...]string{"createdAt", "deletedAt", "id", "name", "slug", "updatedAt"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreatedAt = data
+		case "deletedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DeletedAt = data
 		case "id":
 			var err error
 
@@ -11980,15 +11961,6 @@ func (ec *executionContext) unmarshalInputPostCategoryAggregationInput(ctx conte
 				return it, err
 			}
 			it.Slug = data
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.CreatedAt = data
 		case "updatedAt":
 			var err error
 
@@ -11998,15 +11970,6 @@ func (ec *executionContext) unmarshalInputPostCategoryAggregationInput(ctx conte
 				return it, err
 			}
 			it.UpdatedAt = data
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.DeletedAt = data
 		}
 	}
 
@@ -12678,28 +12641,6 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Category")
-		case "id":
-			out.Values[i] = ec._Category_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "name":
-			out.Values[i] = ec._Category_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "slug":
-			out.Values[i] = ec._Category_slug(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
-		case "parentId":
-			out.Values[i] = ec._Category_parentId(ctx, field, obj)
-		case "isRoot":
-			out.Values[i] = ec._Category_isRoot(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
 		case "children":
 			field := field
 
@@ -12736,6 +12677,28 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "createdAt":
+			out.Values[i] = ec._Category_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "deletedAt":
+			out.Values[i] = ec._Category_deletedAt(ctx, field, obj)
+		case "id":
+			out.Values[i] = ec._Category_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "isRoot":
+			out.Values[i] = ec._Category_isRoot(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._Category_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "parent":
 			field := field
 
@@ -12769,8 +12732,10 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-		case "createdAt":
-			out.Values[i] = ec._Category_createdAt(ctx, field, obj)
+		case "parentId":
+			out.Values[i] = ec._Category_parentId(ctx, field, obj)
+		case "slug":
+			out.Values[i] = ec._Category_slug(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
@@ -12779,8 +12744,6 @@ func (ec *executionContext) _Category(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
-		case "deletedAt":
-			out.Values[i] = ec._Category_deletedAt(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -13247,15 +13210,15 @@ func (ec *executionContext) _PaginatedCategoryResponse(ctx context.Context, sel 
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "skip":
+			out.Values[i] = ec._PaginatedCategoryResponse_skip(ctx, field, obj)
+		case "take":
+			out.Values[i] = ec._PaginatedCategoryResponse_take(ctx, field, obj)
 		case "total":
 			out.Values[i] = ec._PaginatedCategoryResponse_total(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "take":
-			out.Values[i] = ec._PaginatedCategoryResponse_take(ctx, field, obj)
-		case "skip":
-			out.Values[i] = ec._PaginatedCategoryResponse_skip(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -13391,15 +13354,15 @@ func (ec *executionContext) _PaginatedPostCategoryResponse(ctx context.Context, 
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "skip":
+			out.Values[i] = ec._PaginatedPostCategoryResponse_skip(ctx, field, obj)
+		case "take":
+			out.Values[i] = ec._PaginatedPostCategoryResponse_take(ctx, field, obj)
 		case "total":
 			out.Values[i] = ec._PaginatedPostCategoryResponse_total(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "take":
-			out.Values[i] = ec._PaginatedPostCategoryResponse_take(ctx, field, obj)
-		case "skip":
-			out.Values[i] = ec._PaginatedPostCategoryResponse_skip(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -13646,6 +13609,13 @@ func (ec *executionContext) _PostCategory(ctx context.Context, sel ast.Selection
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("PostCategory")
+		case "createdAt":
+			out.Values[i] = ec._PostCategory_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deletedAt":
+			out.Values[i] = ec._PostCategory_deletedAt(ctx, field, obj)
 		case "id":
 			out.Values[i] = ec._PostCategory_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -13661,18 +13631,11 @@ func (ec *executionContext) _PostCategory(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "createdAt":
-			out.Values[i] = ec._PostCategory_createdAt(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "updatedAt":
 			out.Values[i] = ec._PostCategory_updatedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "deletedAt":
-			out.Values[i] = ec._PostCategory_deletedAt(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -13715,7 +13678,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "category":
+		case "categories":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -13724,7 +13687,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_category(ctx, field)
+				res = ec._Query_categories(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -13737,7 +13700,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "categories":
+		case "category":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -13746,7 +13709,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_categories(ctx, field)
+				res = ec._Query_category(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -13847,7 +13810,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "postCategory":
+		case "postCategories":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -13856,7 +13819,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_postCategory(ctx, field)
+				res = ec._Query_postCategories(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -13869,7 +13832,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "postCategories":
+		case "postCategory":
 			field := field
 
 			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
@@ -13878,7 +13841,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_postCategories(ctx, field)
+				res = ec._Query_postCategory(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

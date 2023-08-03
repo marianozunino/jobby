@@ -1,0 +1,26 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+      - id: go-fmt
+      - id: go-imports
+      - id: go-critic
+      - id: go-build
+      - id: go-mod-tidy
+  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+    rev: v9.5.0
+    hooks:
+      - id: commitlint
+        stages: [commit-msg]
+        additional_dependencies: ['@commitlint/config-conventional']
+  - repo: https://github.com/leehambley/pre-commit-graphql.git
+    rev: 97d85ddd4900ea403743d9d3ab6d8515ddbefd16
+    hooks:
+    - id: format-graphql

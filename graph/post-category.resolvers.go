@@ -26,12 +26,12 @@ func (r *mutationResolver) UpdatePostCategory(ctx context.Context, id uuid.UUID,
 	return r.Service.UpdatePostCategory(ctx, id, input)
 }
 
+// PostCategories is the resolver for the postCategories field.
+func (r *queryResolver) PostCategories(ctx context.Context, orderBy *dtos.PostCategoryAggregationInput, skip *int, take *int, where *dtos.PostCategoryWhereInput) (*dtos.PaginatedPostCategoryResponse, error) {
+	return r.Service.PaginatedPostCategories(ctx, orderBy, take, skip, where)
+}
+
 // PostCategory is the resolver for the postCategory field.
 func (r *queryResolver) PostCategory(ctx context.Context, id uuid.UUID) (*dtos.PostCategory, error) {
 	return r.Service.GetPostCategory(ctx, id)
-}
-
-// PostCategories is the resolver for the postCategories field.
-func (r *queryResolver) PostCategories(ctx context.Context, orderBy *dtos.PostCategoryAggregationInput, take *int, skip *int, where *dtos.PostCategoryWhereInput) (*dtos.PaginatedPostCategoryResponse, error) {
-	return r.Service.PaginatedPostCategories(ctx, orderBy, take, skip, where)
 }

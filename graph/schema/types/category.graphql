@@ -1,0 +1,60 @@
+type Category {
+  children: [Category!]! @goField(forceResolver: true)
+  createdAt: Timestamp!
+  deletedAt: Timestamp
+  id: ID!
+  isRoot: Boolean!
+  name: String!
+  parent: Category @goField(forceResolver: true)
+  parentId: ID
+  slug: String!
+  updatedAt: Timestamp!
+}
+
+input CategoryAggregationInput {
+  createdAt: SortOrder
+  deletedAt: SortOrder
+  id: SortOrder
+  isRoot: SortOrder
+  name: SortOrder
+  slug: SortOrder
+  updatedAt: SortOrder
+}
+
+input CategoryCreateInput {
+  isRoot: Boolean!
+  name: String!
+  parentId: ID
+  slug: String
+}
+
+input CategoryUpdateInput {
+  isRoot: Boolean!
+  name: String!
+  parentId: ID
+}
+
+input CategoryWhereInput {
+  id: ID
+  isRoot: Boolean
+  name: String
+  slug: String
+}
+
+extend type Mutation {
+  createCategory(input: CategoryCreateInput!): Category!
+  deleteCategory(id: ID!): Category!
+  updateCategory(id: ID!, input: CategoryUpdateInput!): Category!
+}
+
+type PaginatedCategoryResponse {
+  edges: [Category!]!
+  skip: Int
+  take: Int
+  total: Int!
+}
+
+extend type Query {
+  categories(orderBy: CategoryAggregationInput, skip: Int = 0, take: Int = 10, where: CategoryWhereInput): PaginatedCategoryResponse!
+  category(id: ID!): Category!
+}

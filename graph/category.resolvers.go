@@ -40,14 +40,14 @@ func (r *mutationResolver) UpdateCategory(ctx context.Context, id uuid.UUID, inp
 	return r.Service.UpdateCategory(ctx, id, input)
 }
 
+// Categories is the resolver for the categories field.
+func (r *queryResolver) Categories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, skip *int, take *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error) {
+	return r.Service.PaginatedCategories(ctx, orderBy, take, skip, where)
+}
+
 // Category is the resolver for the category field.
 func (r *queryResolver) Category(ctx context.Context, id uuid.UUID) (*dtos.Category, error) {
 	return r.Service.GetCategory(ctx, id)
-}
-
-// Categories is the resolver for the categories field.
-func (r *queryResolver) Categories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error) {
-	return r.Service.PaginatedCategories(ctx, orderBy, take, skip, where)
 }
 
 // Category returns generated.CategoryResolver implementation.
