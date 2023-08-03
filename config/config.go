@@ -8,16 +8,19 @@ import (
 )
 
 // DatabaseURL is the URL of the database
-var DatabaseURL string = os.Getenv("DATABASE_URL")
+var DatabaseURL string
 
 // Port is the port of the server
-var Port string = os.Getenv("PORT")
+var Port string
 
 // JwtAccessTokenSecret is the secret used to sign the JWT access token
-var JwtAccessTokenSecret string = os.Getenv("JWT_ACCESS_TOKEN_SECRET")
+var JwtAccessTokenSecret string
 
 // EntDebug is the debug mode for ent
-var EntDebug bool = os.Getenv("ENT_DEBUG") == "true"
+var EntDebug bool
+
+// InstrospectionEnabled is the introspection mode for gqlgen
+var InstrospectionEnabled bool
 
 func init() {
 	err := godotenv.Load(".env")
@@ -34,6 +37,10 @@ func init() {
 		os.Setenv("ENT_DEBUG", "false")
 	}
 
+	if os.Getenv("INSTROSPECTION_ENABLED") == "" {
+		os.Setenv("INSTROSPECTION_ENABLED", "false")
+	}
+
 	if os.Getenv("DATABASE_URL") == "" {
 		panic("DATABASE_URL environment variable is not set")
 	}
@@ -41,4 +48,10 @@ func init() {
 	if os.Getenv("JWT_ACCESS_TOKEN_SECRET") == "" {
 		panic("JWT_ACCESS_TOKEN_SECRET environment variable is not set")
 	}
+
+	DatabaseURL = os.Getenv("DATABASE_URL")
+	Port = os.Getenv("PORT")
+	JwtAccessTokenSecret = os.Getenv("JWT_ACCESS_TOKEN_SECRET")
+	EntDebug = os.Getenv("ENT_DEBUG") == "true"
+	InstrospectionEnabled = os.Getenv("INSTROSPECTION_ENABLED") == "true"
 }
