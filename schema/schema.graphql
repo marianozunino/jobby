@@ -16,6 +16,14 @@ directive @goTag(
 
 directive @auth on FIELD_DEFINITION
 
+directive @hasRole(role: Role!) on FIELD_DEFINITION
+
+enum Role {
+  ADMIN
+  APPLICANT
+  ANY
+}
+
 type Mutation
 type Query
 

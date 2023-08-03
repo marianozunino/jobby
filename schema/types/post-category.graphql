@@ -53,6 +53,10 @@ extend type Query {
 
 extend type Mutation {
   createPostCategory(input: PostCategoryCreateInput!): PostCategory!
-  deletePostCategory(id: ID!): PostCategory!
+    @auth
+    @hasRole(role: ADMIN)
+  deletePostCategory(id: ID!): PostCategory! @auth
   updatePostCategory(id: ID!, input: PostCategoryUpdateInput!): PostCategory!
+    @auth
+    @hasRole(role: ADMIN)
 }

@@ -46,7 +46,8 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	Auth func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	Auth    func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	HasRole func(ctx context.Context, obj interface{}, next graphql.Resolver, role dtos.Role) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -1453,6 +1454,14 @@ directive @goTag(
 
 directive @auth on FIELD_DEFINITION
 
+directive @hasRole(role: Role!) on FIELD_DEFINITION
+
+enum Role {
+  ADMIN
+  APPLICANT
+  ANY
+}
+
 type Mutation
 type Query
 
@@ -1741,8 +1750,12 @@ extend type Query {
 
 extend type Mutation {
   createPostCategory(input: PostCategoryCreateInput!): PostCategory!
-  deletePostCategory(id: ID!): PostCategory!
+    @auth
+    @hasRole(role: ADMIN)
+  deletePostCategory(id: ID!): PostCategory! @auth
   updatePostCategory(id: ID!, input: PostCategoryUpdateInput!): PostCategory!
+    @auth
+    @hasRole(role: ADMIN)
 }
 `, BuiltIn: false},
 	{Name: "../../schema/types/post.graphql", Input: `type Post {
@@ -1834,10 +1847,10 @@ extend type Query {
 }
 
 extend type Mutation {
-  createPost(input: PostCreateInput!): Post!
-  deletePost(id: ID!): Post!
-  updatePost(id: ID!, input: PostUpdateInput!): Post!
-  publishPost(id: ID!): Post!
+  createPost(input: PostCreateInput!): Post! @auth
+  deletePost(id: ID!): Post! @auth
+  updatePost(id: ID!, input: PostUpdateInput!): Post! @auth
+  publishPost(id: ID!): Post! @auth
 }
 `, BuiltIn: false},
 	{Name: "../../schema/types/status.graphql", Input: `type Status {
@@ -1918,6 +1931,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 dtos.Role
+	if tmp, ok := rawArgs["role"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+		arg0, err = ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐRole(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["role"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createCategory_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -5244,8 +5272,38 @@ func (ec *executionContext) _Mutation_createPostCategory(ctx context.Context, fi
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreatePostCategory(rctx, fc.Args["input"].(dtos.PostCategoryCreateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreatePostCategory(rctx, fc.Args["input"].(dtos.PostCategoryCreateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.PostCategory); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.PostCategory`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5313,8 +5371,28 @@ func (ec *executionContext) _Mutation_deletePostCategory(ctx context.Context, fi
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeletePostCategory(rctx, fc.Args["id"].(uuid.UUID))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeletePostCategory(rctx, fc.Args["id"].(uuid.UUID))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.PostCategory); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.PostCategory`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5382,8 +5460,38 @@ func (ec *executionContext) _Mutation_updatePostCategory(ctx context.Context, fi
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdatePostCategory(rctx, fc.Args["id"].(uuid.UUID), fc.Args["input"].(dtos.PostCategoryUpdateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdatePostCategory(rctx, fc.Args["id"].(uuid.UUID), fc.Args["input"].(dtos.PostCategoryUpdateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.PostCategory); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.PostCategory`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5451,8 +5559,28 @@ func (ec *executionContext) _Mutation_createPost(ctx context.Context, field grap
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreatePost(rctx, fc.Args["input"].(dtos.PostCreateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreatePost(rctx, fc.Args["input"].(dtos.PostCreateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Post); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.Post`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5532,8 +5660,28 @@ func (ec *executionContext) _Mutation_deletePost(ctx context.Context, field grap
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeletePost(rctx, fc.Args["id"].(uuid.UUID))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeletePost(rctx, fc.Args["id"].(uuid.UUID))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Post); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.Post`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5613,8 +5761,28 @@ func (ec *executionContext) _Mutation_updatePost(ctx context.Context, field grap
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdatePost(rctx, fc.Args["id"].(uuid.UUID), fc.Args["input"].(dtos.PostUpdateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdatePost(rctx, fc.Args["id"].(uuid.UUID), fc.Args["input"].(dtos.PostUpdateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Post); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.Post`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5694,8 +5862,28 @@ func (ec *executionContext) _Mutation_publishPost(ctx context.Context, field gra
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PublishPost(rctx, fc.Args["id"].(uuid.UUID))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().PublishPost(rctx, fc.Args["id"].(uuid.UUID))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Post); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/cc-backend-go/dtos.Post`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -14796,6 +14984,16 @@ func (ec *executionContext) unmarshalNPostCreateInput2githubᚗcomᚋmarianozuni
 func (ec *executionContext) unmarshalNPostUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostUpdateInput(ctx context.Context, v interface{}) (dtos.PostUpdateInput, error) {
 	res, err := ec.unmarshalInputPostUpdateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNRole2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐRole(ctx context.Context, v interface{}) (dtos.Role, error) {
+	var res dtos.Role
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNRole2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐRole(ctx context.Context, sel ast.SelectionSet, v dtos.Role) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalNStatus2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatus(ctx context.Context, sel ast.SelectionSet, v dtos.Status) graphql.Marshaler {
