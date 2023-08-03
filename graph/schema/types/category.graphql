@@ -42,9 +42,9 @@ input CategoryWhereInput {
 }
 
 extend type Mutation {
-  createCategory(input: CategoryCreateInput!): Category!
-  deleteCategory(id: ID!): Category!
-  updateCategory(id: ID!, input: CategoryUpdateInput!): Category!
+  createCategory(input: CategoryCreateInput!): Category! @auth @hasRole(role: ADMIN)
+  deleteCategory(id: ID!): Category! @auth @hasRole(role: ADMIN)
+  updateCategory(id: ID!, input: CategoryUpdateInput!): Category! @auth @hasRole(role: ADMIN)
 }
 
 type PaginatedCategoryResponse {

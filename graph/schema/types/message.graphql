@@ -44,8 +44,10 @@ type PaginatedMessageResponse {
 
 extend type Mutation {
   sendMessage(input: MessageCreateInput!): Message!
-  deleteMessage(id: UUIDv4!): Message!
+  deleteMessage(id: UUIDv4!): Message! @auth @hasRole(role: ADMIN)
   updateMessage(id: UUIDv4!, input: MessageUpdateInput!): Message!
+    @auth
+    @hasRole(role: ADMIN)
 }
 
 extend type Query {

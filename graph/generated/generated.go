@@ -1511,12 +1511,6 @@ input CategoryWhereInput {
   slug: String
 }
 
-extend type Mutation {
-  createCategory(input: CategoryCreateInput!): Category!
-  deleteCategory(id: ID!): Category!
-  updateCategory(id: ID!, input: CategoryUpdateInput!): Category!
-}
-
 type PaginatedCategoryResponse {
   edges: [Category!]!
   skip: Int
@@ -1524,8 +1518,23 @@ type PaginatedCategoryResponse {
   total: Int!
 }
 
+extend type Mutation {
+  createCategory(input: CategoryCreateInput!): Category!
+    @auth
+    @hasRole(role: ADMIN)
+  deleteCategory(id: ID!): Category! @auth @hasRole(role: ADMIN)
+  updateCategory(id: ID!, input: CategoryUpdateInput!): Category!
+    @auth
+    @hasRole(role: ADMIN)
+}
+
 extend type Query {
-  categories(orderBy: CategoryAggregationInput, skip: Int = 0, take: Int = 10, where: CategoryWhereInput): PaginatedCategoryResponse!
+  categories(
+    orderBy: CategoryAggregationInput
+    skip: Int = 0
+    take: Int = 10
+    where: CategoryWhereInput
+  ): PaginatedCategoryResponse!
   category(id: ID!): Category!
 }
 `, BuiltIn: false},
@@ -1579,8 +1588,12 @@ extend type Query {
 
 extend type Mutation {
   createDegreeLevel(input: DegreeLevelCreateInput!): DegreeLevel!
-  deleteDegreeLevel(id: ID!): DegreeLevel!
+    @auth
+    @hasRole(role: ADMIN)
+  deleteDegreeLevel(id: ID!): DegreeLevel! @auth @hasRole(role: ADMIN)
   updateDegreeLevel(id: ID!, input: DegreeLevelUpdateInput!): DegreeLevel!
+    @auth
+    @hasRole(role: ADMIN)
 }
 `, BuiltIn: false},
 	{Name: "../schema/types/job-offer.graphql", Input: `type JobOffer {
@@ -1651,8 +1664,10 @@ type PaginatedMessageResponse {
 
 extend type Mutation {
   sendMessage(input: MessageCreateInput!): Message!
-  deleteMessage(id: UUIDv4!): Message!
+  deleteMessage(id: UUIDv4!): Message! @auth @hasRole(role: ADMIN)
   updateMessage(id: UUIDv4!, input: MessageUpdateInput!): Message!
+    @auth
+    @hasRole(role: ADMIN)
 }
 
 extend type Query {
@@ -1665,9 +1680,13 @@ extend type Query {
 }
 `, BuiltIn: false},
 	{Name: "../schema/types/post-category.graphql", Input: `extend type Mutation {
-  createPostCategory(input: PostCategoryCreateInput!): PostCategory! @auth @hasRole(role: ADMIN)
-  deletePostCategory(id: ID!): PostCategory! @auth
-  updatePostCategory(id: ID!, input: PostCategoryUpdateInput!): PostCategory! @auth @hasRole(role: ADMIN)
+  createPostCategory(input: PostCategoryCreateInput!): PostCategory!
+    @auth
+    @hasRole(role: ADMIN)
+  deletePostCategory(id: ID!): PostCategory! @auth @hasRole(role: ADMIN)
+  updatePostCategory(id: ID!, input: PostCategoryUpdateInput!): PostCategory!
+    @auth
+    @hasRole(role: ADMIN)
 }
 
 type PaginatedPostCategoryResponse {
@@ -1711,7 +1730,12 @@ input PostCategoryWhereInput {
 }
 
 extend type Query {
-  postCategories(orderBy: PostCategoryAggregationInput, skip: Int = 0, take: Int = 10, where: PostCategoryWhereInput): PaginatedPostCategoryResponse!
+  postCategories(
+    orderBy: PostCategoryAggregationInput
+    skip: Int = 0
+    take: Int = 10
+    where: PostCategoryWhereInput
+  ): PaginatedPostCategoryResponse!
   postCategory(id: ID!): PostCategory!
 }
 `, BuiltIn: false},
@@ -1804,10 +1828,13 @@ extend type Query {
 }
 
 extend type Mutation {
-  createPost(input: PostCreateInput!): Post! @auth
-  deletePost(id: ID!): Post! @auth
-  updatePost(id: ID!, input: PostUpdateInput!): Post! @auth
-  publishPost(id: ID!): Post! @auth
+  createPost(input: PostCreateInput!): Post! @auth @auth @hasRole(role: ADMIN)
+  deletePost(id: ID!): Post! @auth @auth @hasRole(role: ADMIN)
+  updatePost(id: ID!, input: PostUpdateInput!): Post!
+    @auth
+    @auth
+    @hasRole(role: ADMIN)
+  publishPost(id: ID!): Post! @auth @auth @hasRole(role: ADMIN)
 }
 `, BuiltIn: false},
 	{Name: "../schema/types/status.graphql", Input: `type Status {
@@ -1843,9 +1870,11 @@ type PaginatedStatusResponse {
 }
 
 extend type Mutation {
-  createStatus(input: StatusCreateInput!): Status!
-  deleteStatus(id: UUIDv4!): Status!
+  createStatus(input: StatusCreateInput!): Status! @auth @hasRole(role: ADMIN)
+  deleteStatus(id: UUIDv4!): Status! @auth @hasRole(role: ADMIN)
   updateStatus(id: UUIDv4!, input: StatusUpdateInput!): Status!
+    @auth
+    @hasRole(role: ADMIN)
 }
 
 extend type Query {
@@ -1901,7 +1930,7 @@ func (ec *executionContext) dir_hasRole_args(ctx context.Context, rawArgs map[st
 	var arg0 dtos.Role
 	if tmp, ok := rawArgs["role"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
-		arg0, err = ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐRole(ctx, tmp)
+		arg0, err = ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1916,7 +1945,7 @@ func (ec *executionContext) field_Mutation_createCategory_args(ctx context.Conte
 	var arg0 dtos.CategoryCreateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCategoryCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryCreateInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCategoryCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryCreateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1931,7 +1960,7 @@ func (ec *executionContext) field_Mutation_createDegreeLevel_args(ctx context.Co
 	var arg0 dtos.DegreeLevelCreateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDegreeLevelCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelCreateInput(ctx, tmp)
+		arg0, err = ec.unmarshalNDegreeLevelCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevelCreateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1946,7 +1975,7 @@ func (ec *executionContext) field_Mutation_createPostCategory_args(ctx context.C
 	var arg0 dtos.PostCategoryCreateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNPostCategoryCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryCreateInput(ctx, tmp)
+		arg0, err = ec.unmarshalNPostCategoryCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryCreateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1961,7 +1990,7 @@ func (ec *executionContext) field_Mutation_createPost_args(ctx context.Context, 
 	var arg0 dtos.PostCreateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNPostCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCreateInput(ctx, tmp)
+		arg0, err = ec.unmarshalNPostCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCreateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1976,7 +2005,7 @@ func (ec *executionContext) field_Mutation_createStatus_args(ctx context.Context
 	var arg0 dtos.StatusCreateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNStatusCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatusCreateInput(ctx, tmp)
+		arg0, err = ec.unmarshalNStatusCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatusCreateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2081,7 +2110,7 @@ func (ec *executionContext) field_Mutation_login_args(ctx context.Context, rawAr
 	var arg0 dtos.AuthInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNAuthInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐAuthInput(ctx, tmp)
+		arg0, err = ec.unmarshalNAuthInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐAuthInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2111,7 +2140,7 @@ func (ec *executionContext) field_Mutation_sendMessage_args(ctx context.Context,
 	var arg0 dtos.MessageCreateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNMessageCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessageCreateInput(ctx, tmp)
+		arg0, err = ec.unmarshalNMessageCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessageCreateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2135,7 +2164,7 @@ func (ec *executionContext) field_Mutation_updateCategory_args(ctx context.Conte
 	var arg1 dtos.CategoryUpdateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNCategoryUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryUpdateInput(ctx, tmp)
+		arg1, err = ec.unmarshalNCategoryUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2159,7 +2188,7 @@ func (ec *executionContext) field_Mutation_updateDegreeLevel_args(ctx context.Co
 	var arg1 dtos.DegreeLevelUpdateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNDegreeLevelUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelUpdateInput(ctx, tmp)
+		arg1, err = ec.unmarshalNDegreeLevelUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevelUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2183,7 +2212,7 @@ func (ec *executionContext) field_Mutation_updateMessage_args(ctx context.Contex
 	var arg1 dtos.MessageUpdateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNMessageUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessageUpdateInput(ctx, tmp)
+		arg1, err = ec.unmarshalNMessageUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessageUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2207,7 +2236,7 @@ func (ec *executionContext) field_Mutation_updatePostCategory_args(ctx context.C
 	var arg1 dtos.PostCategoryUpdateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNPostCategoryUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryUpdateInput(ctx, tmp)
+		arg1, err = ec.unmarshalNPostCategoryUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2231,7 +2260,7 @@ func (ec *executionContext) field_Mutation_updatePost_args(ctx context.Context, 
 	var arg1 dtos.PostUpdateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNPostUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostUpdateInput(ctx, tmp)
+		arg1, err = ec.unmarshalNPostUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2255,7 +2284,7 @@ func (ec *executionContext) field_Mutation_updateStatus_args(ctx context.Context
 	var arg1 dtos.StatusUpdateInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNStatusUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatusUpdateInput(ctx, tmp)
+		arg1, err = ec.unmarshalNStatusUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatusUpdateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2285,7 +2314,7 @@ func (ec *executionContext) field_Query_categories_args(ctx context.Context, raw
 	var arg0 *dtos.CategoryAggregationInput
 	if tmp, ok := rawArgs["orderBy"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg0, err = ec.unmarshalOCategoryAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryAggregationInput(ctx, tmp)
+		arg0, err = ec.unmarshalOCategoryAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryAggregationInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2312,7 +2341,7 @@ func (ec *executionContext) field_Query_categories_args(ctx context.Context, raw
 	var arg3 *dtos.CategoryWhereInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg3, err = ec.unmarshalOCategoryWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryWhereInput(ctx, tmp)
+		arg3, err = ec.unmarshalOCategoryWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2357,7 +2386,7 @@ func (ec *executionContext) field_Query_degreeLevels_args(ctx context.Context, r
 	var arg0 *dtos.DegreeLevelAggregationInput
 	if tmp, ok := rawArgs["orderBy"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg0, err = ec.unmarshalODegreeLevelAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelAggregationInput(ctx, tmp)
+		arg0, err = ec.unmarshalODegreeLevelAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevelAggregationInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2384,7 +2413,7 @@ func (ec *executionContext) field_Query_degreeLevels_args(ctx context.Context, r
 	var arg3 *dtos.DegreeLevelWhereInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg3, err = ec.unmarshalODegreeLevelWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelWhereInput(ctx, tmp)
+		arg3, err = ec.unmarshalODegreeLevelWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevelWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2414,7 +2443,7 @@ func (ec *executionContext) field_Query_messages_args(ctx context.Context, rawAr
 	var arg0 *dtos.MessageAggregationInput
 	if tmp, ok := rawArgs["orderBy"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg0, err = ec.unmarshalOMessageAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessageAggregationInput(ctx, tmp)
+		arg0, err = ec.unmarshalOMessageAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessageAggregationInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2447,7 +2476,7 @@ func (ec *executionContext) field_Query_postCategories_args(ctx context.Context,
 	var arg0 *dtos.PostCategoryAggregationInput
 	if tmp, ok := rawArgs["orderBy"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg0, err = ec.unmarshalOPostCategoryAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryAggregationInput(ctx, tmp)
+		arg0, err = ec.unmarshalOPostCategoryAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryAggregationInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2474,7 +2503,7 @@ func (ec *executionContext) field_Query_postCategories_args(ctx context.Context,
 	var arg3 *dtos.PostCategoryWhereInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg3, err = ec.unmarshalOPostCategoryWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryWhereInput(ctx, tmp)
+		arg3, err = ec.unmarshalOPostCategoryWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2519,7 +2548,7 @@ func (ec *executionContext) field_Query_posts_args(ctx context.Context, rawArgs 
 	var arg0 *dtos.PostAggregationInput
 	if tmp, ok := rawArgs["orderBy"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg0, err = ec.unmarshalOPostAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostAggregationInput(ctx, tmp)
+		arg0, err = ec.unmarshalOPostAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostAggregationInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2546,7 +2575,7 @@ func (ec *executionContext) field_Query_posts_args(ctx context.Context, rawArgs 
 	var arg3 *dtos.PostWhereInput
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg3, err = ec.unmarshalOPostWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostWhereInput(ctx, tmp)
+		arg3, err = ec.unmarshalOPostWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2576,7 +2605,7 @@ func (ec *executionContext) field_Query_statuses_args(ctx context.Context, rawAr
 	var arg0 *dtos.StatusAggregationInput
 	if tmp, ok := rawArgs["orderBy"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg0, err = ec.unmarshalOStatusAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatusAggregationInput(ctx, tmp)
+		arg0, err = ec.unmarshalOStatusAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatusAggregationInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2713,7 +2742,7 @@ func (ec *executionContext) _Category_children(ctx context.Context, field graphq
 	}
 	res := resTmp.([]*dtos.Category)
 	fc.Result = res
-	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryᚄ(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Category_children(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2993,7 +3022,7 @@ func (ec *executionContext) _Category_parent(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*dtos.Category)
 	fc.Result = res
-	return ec.marshalOCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategory(ctx, field.Selections, res)
+	return ec.marshalOCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Category_parent(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4540,7 +4569,7 @@ func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*dtos.Auth)
 	fc.Result = res
-	return ec.marshalNAuth2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐAuth(ctx, field.Selections, res)
+	return ec.marshalNAuth2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐAuth(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_login(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4584,8 +4613,38 @@ func (ec *executionContext) _Mutation_createCategory(ctx context.Context, field 
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateCategory(rctx, fc.Args["input"].(dtos.CategoryCreateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreateCategory(rctx, fc.Args["input"].(dtos.CategoryCreateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Category); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Category`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4599,7 +4658,7 @@ func (ec *executionContext) _Mutation_createCategory(ctx context.Context, field 
 	}
 	res := resTmp.(*dtos.Category)
 	fc.Result = res
-	return ec.marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategory(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4661,8 +4720,38 @@ func (ec *executionContext) _Mutation_deleteCategory(ctx context.Context, field 
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteCategory(rctx, fc.Args["id"].(uuid.UUID))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeleteCategory(rctx, fc.Args["id"].(uuid.UUID))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Category); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Category`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4676,7 +4765,7 @@ func (ec *executionContext) _Mutation_deleteCategory(ctx context.Context, field 
 	}
 	res := resTmp.(*dtos.Category)
 	fc.Result = res
-	return ec.marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategory(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4738,8 +4827,38 @@ func (ec *executionContext) _Mutation_updateCategory(ctx context.Context, field 
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateCategory(rctx, fc.Args["id"].(uuid.UUID), fc.Args["input"].(dtos.CategoryUpdateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdateCategory(rctx, fc.Args["id"].(uuid.UUID), fc.Args["input"].(dtos.CategoryUpdateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Category); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Category`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4753,7 +4872,7 @@ func (ec *executionContext) _Mutation_updateCategory(ctx context.Context, field 
 	}
 	res := resTmp.(*dtos.Category)
 	fc.Result = res
-	return ec.marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategory(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4815,8 +4934,38 @@ func (ec *executionContext) _Mutation_createDegreeLevel(ctx context.Context, fie
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateDegreeLevel(rctx, fc.Args["input"].(dtos.DegreeLevelCreateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreateDegreeLevel(rctx, fc.Args["input"].(dtos.DegreeLevelCreateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.DegreeLevel); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.DegreeLevel`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4830,7 +4979,7 @@ func (ec *executionContext) _Mutation_createDegreeLevel(ctx context.Context, fie
 	}
 	res := resTmp.(*dtos.DegreeLevel)
 	fc.Result = res
-	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
+	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createDegreeLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4882,8 +5031,38 @@ func (ec *executionContext) _Mutation_deleteDegreeLevel(ctx context.Context, fie
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteDegreeLevel(rctx, fc.Args["id"].(uuid.UUID))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeleteDegreeLevel(rctx, fc.Args["id"].(uuid.UUID))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.DegreeLevel); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.DegreeLevel`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4897,7 +5076,7 @@ func (ec *executionContext) _Mutation_deleteDegreeLevel(ctx context.Context, fie
 	}
 	res := resTmp.(*dtos.DegreeLevel)
 	fc.Result = res
-	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
+	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteDegreeLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4949,8 +5128,38 @@ func (ec *executionContext) _Mutation_updateDegreeLevel(ctx context.Context, fie
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateDegreeLevel(rctx, fc.Args["id"].(uuid.UUID), fc.Args["input"].(dtos.DegreeLevelUpdateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdateDegreeLevel(rctx, fc.Args["id"].(uuid.UUID), fc.Args["input"].(dtos.DegreeLevelUpdateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.DegreeLevel); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.DegreeLevel`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4964,7 +5173,7 @@ func (ec *executionContext) _Mutation_updateDegreeLevel(ctx context.Context, fie
 	}
 	res := resTmp.(*dtos.DegreeLevel)
 	fc.Result = res
-	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
+	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateDegreeLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5031,7 +5240,7 @@ func (ec *executionContext) _Mutation_sendMessage(ctx context.Context, field gra
 	}
 	res := resTmp.(*dtos.Message)
 	fc.Result = res
-	return ec.marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessage(ctx, field.Selections, res)
+	return ec.marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_sendMessage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5089,8 +5298,38 @@ func (ec *executionContext) _Mutation_deleteMessage(ctx context.Context, field g
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteMessage(rctx, fc.Args["id"].(string))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeleteMessage(rctx, fc.Args["id"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Message); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Message`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5104,7 +5343,7 @@ func (ec *executionContext) _Mutation_deleteMessage(ctx context.Context, field g
 	}
 	res := resTmp.(*dtos.Message)
 	fc.Result = res
-	return ec.marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessage(ctx, field.Selections, res)
+	return ec.marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteMessage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5162,8 +5401,38 @@ func (ec *executionContext) _Mutation_updateMessage(ctx context.Context, field g
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateMessage(rctx, fc.Args["id"].(string), fc.Args["input"].(dtos.MessageUpdateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdateMessage(rctx, fc.Args["id"].(string), fc.Args["input"].(dtos.MessageUpdateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Message); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Message`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5177,7 +5446,7 @@ func (ec *executionContext) _Mutation_updateMessage(ctx context.Context, field g
 	}
 	res := resTmp.(*dtos.Message)
 	fc.Result = res
-	return ec.marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessage(ctx, field.Selections, res)
+	return ec.marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateMessage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5246,7 +5515,7 @@ func (ec *executionContext) _Mutation_createPostCategory(ctx context.Context, fi
 			return ec.directives.Auth(ctx, nil, directive0)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
 			if err != nil {
 				return nil, err
 			}
@@ -5280,7 +5549,7 @@ func (ec *executionContext) _Mutation_createPostCategory(ctx context.Context, fi
 	}
 	res := resTmp.(*dtos.PostCategory)
 	fc.Result = res
-	return ec.marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategory(ctx, field.Selections, res)
+	return ec.marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createPostCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5344,8 +5613,18 @@ func (ec *executionContext) _Mutation_deletePostCategory(ctx context.Context, fi
 			}
 			return ec.directives.Auth(ctx, nil, directive0)
 		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
 
-		tmp, err := directive1(rctx)
+		tmp, err := directive2(rctx)
 		if err != nil {
 			return nil, graphql.ErrorOnPath(ctx, err)
 		}
@@ -5369,7 +5648,7 @@ func (ec *executionContext) _Mutation_deletePostCategory(ctx context.Context, fi
 	}
 	res := resTmp.(*dtos.PostCategory)
 	fc.Result = res
-	return ec.marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategory(ctx, field.Selections, res)
+	return ec.marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deletePostCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5434,7 +5713,7 @@ func (ec *executionContext) _Mutation_updatePostCategory(ctx context.Context, fi
 			return ec.directives.Auth(ctx, nil, directive0)
 		}
 		directive2 := func(ctx context.Context) (interface{}, error) {
-			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐRole(ctx, "ADMIN")
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
 			if err != nil {
 				return nil, err
 			}
@@ -5468,7 +5747,7 @@ func (ec *executionContext) _Mutation_updatePostCategory(ctx context.Context, fi
 	}
 	res := resTmp.(*dtos.PostCategory)
 	fc.Result = res
-	return ec.marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategory(ctx, field.Selections, res)
+	return ec.marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updatePostCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5532,8 +5811,24 @@ func (ec *executionContext) _Mutation_createPost(ctx context.Context, field grap
 			}
 			return ec.directives.Auth(ctx, nil, directive0)
 		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive1)
+		}
+		directive3 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive2, role)
+		}
 
-		tmp, err := directive1(rctx)
+		tmp, err := directive3(rctx)
 		if err != nil {
 			return nil, graphql.ErrorOnPath(ctx, err)
 		}
@@ -5557,7 +5852,7 @@ func (ec *executionContext) _Mutation_createPost(ctx context.Context, field grap
 	}
 	res := resTmp.(*dtos.Post)
 	fc.Result = res
-	return ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPost(ctx, field.Selections, res)
+	return ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPost(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createPost(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5633,8 +5928,24 @@ func (ec *executionContext) _Mutation_deletePost(ctx context.Context, field grap
 			}
 			return ec.directives.Auth(ctx, nil, directive0)
 		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive1)
+		}
+		directive3 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive2, role)
+		}
 
-		tmp, err := directive1(rctx)
+		tmp, err := directive3(rctx)
 		if err != nil {
 			return nil, graphql.ErrorOnPath(ctx, err)
 		}
@@ -5658,7 +5969,7 @@ func (ec *executionContext) _Mutation_deletePost(ctx context.Context, field grap
 	}
 	res := resTmp.(*dtos.Post)
 	fc.Result = res
-	return ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPost(ctx, field.Selections, res)
+	return ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPost(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deletePost(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5734,8 +6045,24 @@ func (ec *executionContext) _Mutation_updatePost(ctx context.Context, field grap
 			}
 			return ec.directives.Auth(ctx, nil, directive0)
 		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive1)
+		}
+		directive3 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive2, role)
+		}
 
-		tmp, err := directive1(rctx)
+		tmp, err := directive3(rctx)
 		if err != nil {
 			return nil, graphql.ErrorOnPath(ctx, err)
 		}
@@ -5759,7 +6086,7 @@ func (ec *executionContext) _Mutation_updatePost(ctx context.Context, field grap
 	}
 	res := resTmp.(*dtos.Post)
 	fc.Result = res
-	return ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPost(ctx, field.Selections, res)
+	return ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPost(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updatePost(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5835,8 +6162,24 @@ func (ec *executionContext) _Mutation_publishPost(ctx context.Context, field gra
 			}
 			return ec.directives.Auth(ctx, nil, directive0)
 		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive1)
+		}
+		directive3 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive2, role)
+		}
 
-		tmp, err := directive1(rctx)
+		tmp, err := directive3(rctx)
 		if err != nil {
 			return nil, graphql.ErrorOnPath(ctx, err)
 		}
@@ -5860,7 +6203,7 @@ func (ec *executionContext) _Mutation_publishPost(ctx context.Context, field gra
 	}
 	res := resTmp.(*dtos.Post)
 	fc.Result = res
-	return ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPost(ctx, field.Selections, res)
+	return ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPost(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_publishPost(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5926,8 +6269,38 @@ func (ec *executionContext) _Mutation_createStatus(ctx context.Context, field gr
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateStatus(rctx, fc.Args["input"].(dtos.StatusCreateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreateStatus(rctx, fc.Args["input"].(dtos.StatusCreateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Status); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Status`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5941,7 +6314,7 @@ func (ec *executionContext) _Mutation_createStatus(ctx context.Context, field gr
 	}
 	res := resTmp.(*dtos.Status)
 	fc.Result = res
-	return ec.marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatus(ctx, field.Selections, res)
+	return ec.marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5995,8 +6368,38 @@ func (ec *executionContext) _Mutation_deleteStatus(ctx context.Context, field gr
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteStatus(rctx, fc.Args["id"].(string))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeleteStatus(rctx, fc.Args["id"].(string))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Status); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Status`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6010,7 +6413,7 @@ func (ec *executionContext) _Mutation_deleteStatus(ctx context.Context, field gr
 	}
 	res := resTmp.(*dtos.Status)
 	fc.Result = res
-	return ec.marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatus(ctx, field.Selections, res)
+	return ec.marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_deleteStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6064,8 +6467,38 @@ func (ec *executionContext) _Mutation_updateStatus(ctx context.Context, field gr
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateStatus(rctx, fc.Args["id"].(string), fc.Args["input"].(dtos.StatusUpdateInput))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdateStatus(rctx, fc.Args["id"].(string), fc.Args["input"].(dtos.StatusUpdateInput))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.Auth == nil {
+				return nil, errors.New("directive auth is not implemented")
+			}
+			return ec.directives.Auth(ctx, nil, directive0)
+		}
+		directive2 := func(ctx context.Context) (interface{}, error) {
+			role, err := ec.unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx, "ADMIN")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.HasRole == nil {
+				return nil, errors.New("directive hasRole is not implemented")
+			}
+			return ec.directives.HasRole(ctx, nil, directive1, role)
+		}
+
+		tmp, err := directive2(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*dtos.Status); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/marianozunino/jobby/dtos.Status`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6079,7 +6512,7 @@ func (ec *executionContext) _Mutation_updateStatus(ctx context.Context, field gr
 	}
 	res := resTmp.(*dtos.Status)
 	fc.Result = res
-	return ec.marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatus(ctx, field.Selections, res)
+	return ec.marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6148,7 +6581,7 @@ func (ec *executionContext) _PaginatedCategoryResponse_edges(ctx context.Context
 	}
 	res := resTmp.([]*dtos.Category)
 	fc.Result = res
-	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryᚄ(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PaginatedCategoryResponse_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6340,7 +6773,7 @@ func (ec *executionContext) _PaginatedDegreeLevelResponse_edges(ctx context.Cont
 	}
 	res := resTmp.([]*dtos.DegreeLevel)
 	fc.Result = res
-	return ec.marshalNDegreeLevel2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelᚄ(ctx, field.Selections, res)
+	return ec.marshalNDegreeLevel2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevelᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PaginatedDegreeLevelResponse_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6522,7 +6955,7 @@ func (ec *executionContext) _PaginatedMessageResponse_edges(ctx context.Context,
 	}
 	res := resTmp.([]*dtos.Message)
 	fc.Result = res
-	return ec.marshalNMessage2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessageᚄ(ctx, field.Selections, res)
+	return ec.marshalNMessage2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessageᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PaginatedMessageResponse_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6710,7 +7143,7 @@ func (ec *executionContext) _PaginatedPostCategoryResponse_edges(ctx context.Con
 	}
 	res := resTmp.([]*dtos.PostCategory)
 	fc.Result = res
-	return ec.marshalNPostCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryᚄ(ctx, field.Selections, res)
+	return ec.marshalNPostCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PaginatedPostCategoryResponse_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -6894,7 +7327,7 @@ func (ec *executionContext) _PaginatedPostResponse_edges(ctx context.Context, fi
 	}
 	res := resTmp.([]*dtos.Post)
 	fc.Result = res
-	return ec.marshalNPost2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostᚄ(ctx, field.Selections, res)
+	return ec.marshalNPost2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PaginatedPostResponse_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7090,7 +7523,7 @@ func (ec *executionContext) _PaginatedStatusResponse_edges(ctx context.Context, 
 	}
 	res := resTmp.([]*dtos.Status)
 	fc.Result = res
-	return ec.marshalNStatus2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatusᚄ(ctx, field.Selections, res)
+	return ec.marshalNStatus2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatusᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_PaginatedStatusResponse_edges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -7749,7 +8182,7 @@ func (ec *executionContext) _Post_categories(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*dtos.PostCategory)
 	fc.Result = res
-	return ec.marshalNPostCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryᚄ(ctx, field.Selections, res)
+	return ec.marshalNPostCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Post_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8068,7 +8501,7 @@ func (ec *executionContext) _Query_categories(ctx context.Context, field graphql
 	}
 	res := resTmp.(*dtos.PaginatedCategoryResponse)
 	fc.Result = res
-	return ec.marshalNPaginatedCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedCategoryResponse(ctx, field.Selections, res)
+	return ec.marshalNPaginatedCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedCategoryResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8133,7 +8566,7 @@ func (ec *executionContext) _Query_category(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*dtos.Category)
 	fc.Result = res
-	return ec.marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategory(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_category(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8210,7 +8643,7 @@ func (ec *executionContext) _Query_degreeLevel(ctx context.Context, field graphq
 	}
 	res := resTmp.(*dtos.DegreeLevel)
 	fc.Result = res
-	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
+	return ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevel(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_degreeLevel(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8277,7 +8710,7 @@ func (ec *executionContext) _Query_degreeLevels(ctx context.Context, field graph
 	}
 	res := resTmp.(*dtos.PaginatedDegreeLevelResponse)
 	fc.Result = res
-	return ec.marshalNPaginatedDegreeLevelResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedDegreeLevelResponse(ctx, field.Selections, res)
+	return ec.marshalNPaginatedDegreeLevelResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedDegreeLevelResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_degreeLevels(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8362,7 +8795,7 @@ func (ec *executionContext) _Query_messages(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*dtos.PaginatedMessageResponse)
 	fc.Result = res
-	return ec.marshalNPaginatedMessageResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedMessageResponse(ctx, field.Selections, res)
+	return ec.marshalNPaginatedMessageResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedMessageResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_messages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8447,7 +8880,7 @@ func (ec *executionContext) _Query_message(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*dtos.Message)
 	fc.Result = res
-	return ec.marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessage(ctx, field.Selections, res)
+	return ec.marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_message(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8520,7 +8953,7 @@ func (ec *executionContext) _Query_postCategories(ctx context.Context, field gra
 	}
 	res := resTmp.(*dtos.PaginatedPostCategoryResponse)
 	fc.Result = res
-	return ec.marshalNPaginatedPostCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedPostCategoryResponse(ctx, field.Selections, res)
+	return ec.marshalNPaginatedPostCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedPostCategoryResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_postCategories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8585,7 +9018,7 @@ func (ec *executionContext) _Query_postCategory(ctx context.Context, field graph
 	}
 	res := resTmp.(*dtos.PostCategory)
 	fc.Result = res
-	return ec.marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategory(ctx, field.Selections, res)
+	return ec.marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategory(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_postCategory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8654,7 +9087,7 @@ func (ec *executionContext) _Query_post(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.(*dtos.Post)
 	fc.Result = res
-	return ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPost(ctx, field.Selections, res)
+	return ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPost(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_post(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8735,7 +9168,7 @@ func (ec *executionContext) _Query_posts(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.(*dtos.PaginatedPostResponse)
 	fc.Result = res
-	return ec.marshalNPaginatedPostResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedPostResponse(ctx, field.Selections, res)
+	return ec.marshalNPaginatedPostResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedPostResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_posts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8800,7 +9233,7 @@ func (ec *executionContext) _Query_status(ctx context.Context, field graphql.Col
 	}
 	res := resTmp.(*dtos.Status)
 	fc.Result = res
-	return ec.marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatus(ctx, field.Selections, res)
+	return ec.marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -8869,7 +9302,7 @@ func (ec *executionContext) _Query_statuses(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*dtos.PaginatedStatusResponse)
 	fc.Result = res
-	return ec.marshalNPaginatedStatusResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedStatusResponse(ctx, field.Selections, res)
+	return ec.marshalNPaginatedStatusResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedStatusResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_statuses(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -9280,7 +9713,7 @@ func (ec *executionContext) _Status_jobOffers(ctx context.Context, field graphql
 	}
 	res := resTmp.([]*dtos.JobOffer)
 	fc.Result = res
-	return ec.marshalNJobOffer2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐJobOffer(ctx, field.Selections, res)
+	return ec.marshalNJobOffer2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐJobOffer(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Status_jobOffers(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -11192,7 +11625,7 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11201,7 +11634,7 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11210,7 +11643,7 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11219,7 +11652,7 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isRoot"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11228,7 +11661,7 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11237,7 +11670,7 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11246,7 +11679,7 @@ func (ec *executionContext) unmarshalInputCategoryAggregationInput(ctx context.C
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11434,7 +11867,7 @@ func (ec *executionContext) unmarshalInputDegreeLevelAggregationInput(ctx contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11443,7 +11876,7 @@ func (ec *executionContext) unmarshalInputDegreeLevelAggregationInput(ctx contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11452,7 +11885,7 @@ func (ec *executionContext) unmarshalInputDegreeLevelAggregationInput(ctx contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11461,7 +11894,7 @@ func (ec *executionContext) unmarshalInputDegreeLevelAggregationInput(ctx contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11470,7 +11903,7 @@ func (ec *executionContext) unmarshalInputDegreeLevelAggregationInput(ctx contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11624,7 +12057,7 @@ func (ec *executionContext) unmarshalInputMessageAggregationInput(ctx context.Co
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11633,7 +12066,7 @@ func (ec *executionContext) unmarshalInputMessageAggregationInput(ctx context.Co
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11642,7 +12075,7 @@ func (ec *executionContext) unmarshalInputMessageAggregationInput(ctx context.Co
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11651,7 +12084,7 @@ func (ec *executionContext) unmarshalInputMessageAggregationInput(ctx context.Co
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phone"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11660,7 +12093,7 @@ func (ec *executionContext) unmarshalInputMessageAggregationInput(ctx context.Co
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11669,7 +12102,7 @@ func (ec *executionContext) unmarshalInputMessageAggregationInput(ctx context.Co
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11678,7 +12111,7 @@ func (ec *executionContext) unmarshalInputMessageAggregationInput(ctx context.Co
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11819,7 +12252,7 @@ func (ec *executionContext) unmarshalInputPostAggregationInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11828,7 +12261,7 @@ func (ec *executionContext) unmarshalInputPostAggregationInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11837,7 +12270,7 @@ func (ec *executionContext) unmarshalInputPostAggregationInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11846,7 +12279,7 @@ func (ec *executionContext) unmarshalInputPostAggregationInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isHighlighted"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11855,7 +12288,7 @@ func (ec *executionContext) unmarshalInputPostAggregationInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isPublished"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11864,7 +12297,7 @@ func (ec *executionContext) unmarshalInputPostAggregationInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("publishedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11873,7 +12306,7 @@ func (ec *executionContext) unmarshalInputPostAggregationInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11882,7 +12315,7 @@ func (ec *executionContext) unmarshalInputPostAggregationInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11891,7 +12324,7 @@ func (ec *executionContext) unmarshalInputPostAggregationInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11920,7 +12353,7 @@ func (ec *executionContext) unmarshalInputPostCategoryAggregationInput(ctx conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11929,7 +12362,7 @@ func (ec *executionContext) unmarshalInputPostCategoryAggregationInput(ctx conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11938,7 +12371,7 @@ func (ec *executionContext) unmarshalInputPostCategoryAggregationInput(ctx conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11947,7 +12380,7 @@ func (ec *executionContext) unmarshalInputPostCategoryAggregationInput(ctx conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11956,7 +12389,7 @@ func (ec *executionContext) unmarshalInputPostCategoryAggregationInput(ctx conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11965,7 +12398,7 @@ func (ec *executionContext) unmarshalInputPostCategoryAggregationInput(ctx conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12384,7 +12817,7 @@ func (ec *executionContext) unmarshalInputStatusAggregationInput(ctx context.Con
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12393,7 +12826,7 @@ func (ec *executionContext) unmarshalInputStatusAggregationInput(ctx context.Con
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12402,7 +12835,7 @@ func (ec *executionContext) unmarshalInputStatusAggregationInput(ctx context.Con
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12411,7 +12844,7 @@ func (ec *executionContext) unmarshalInputStatusAggregationInput(ctx context.Con
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -12420,7 +12853,7 @@ func (ec *executionContext) unmarshalInputStatusAggregationInput(ctx context.Con
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx, v)
+			data, err := ec.unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -14391,11 +14824,11 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNAuth2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐAuth(ctx context.Context, sel ast.SelectionSet, v dtos.Auth) graphql.Marshaler {
+func (ec *executionContext) marshalNAuth2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐAuth(ctx context.Context, sel ast.SelectionSet, v dtos.Auth) graphql.Marshaler {
 	return ec._Auth(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNAuth2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐAuth(ctx context.Context, sel ast.SelectionSet, v *dtos.Auth) graphql.Marshaler {
+func (ec *executionContext) marshalNAuth2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐAuth(ctx context.Context, sel ast.SelectionSet, v *dtos.Auth) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14405,7 +14838,7 @@ func (ec *executionContext) marshalNAuth2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑ
 	return ec._Auth(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNAuthInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐAuthInput(ctx context.Context, v interface{}) (dtos.AuthInput, error) {
+func (ec *executionContext) unmarshalNAuthInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐAuthInput(ctx context.Context, v interface{}) (dtos.AuthInput, error) {
 	res, err := ec.unmarshalInputAuthInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -14425,11 +14858,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCategory2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategory(ctx context.Context, sel ast.SelectionSet, v dtos.Category) graphql.Marshaler {
+func (ec *executionContext) marshalNCategory2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategory(ctx context.Context, sel ast.SelectionSet, v dtos.Category) graphql.Marshaler {
 	return ec._Category(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.Category) graphql.Marshaler {
+func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.Category) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -14453,7 +14886,7 @@ func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋmarianozunino�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategory(ctx, sel, v[i])
+			ret[i] = ec.marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategory(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -14473,7 +14906,7 @@ func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋmarianozunino�
 	return ret
 }
 
-func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategory(ctx context.Context, sel ast.SelectionSet, v *dtos.Category) graphql.Marshaler {
+func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategory(ctx context.Context, sel ast.SelectionSet, v *dtos.Category) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14483,21 +14916,21 @@ func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋmarianozuninoᚋc
 	return ec._Category(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCategoryCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryCreateInput(ctx context.Context, v interface{}) (dtos.CategoryCreateInput, error) {
+func (ec *executionContext) unmarshalNCategoryCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryCreateInput(ctx context.Context, v interface{}) (dtos.CategoryCreateInput, error) {
 	res, err := ec.unmarshalInputCategoryCreateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCategoryUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryUpdateInput(ctx context.Context, v interface{}) (dtos.CategoryUpdateInput, error) {
+func (ec *executionContext) unmarshalNCategoryUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryUpdateInput(ctx context.Context, v interface{}) (dtos.CategoryUpdateInput, error) {
 	res, err := ec.unmarshalInputCategoryUpdateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNDegreeLevel2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx context.Context, sel ast.SelectionSet, v dtos.DegreeLevel) graphql.Marshaler {
+func (ec *executionContext) marshalNDegreeLevel2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevel(ctx context.Context, sel ast.SelectionSet, v dtos.DegreeLevel) graphql.Marshaler {
 	return ec._DegreeLevel(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNDegreeLevel2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.DegreeLevel) graphql.Marshaler {
+func (ec *executionContext) marshalNDegreeLevel2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevelᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.DegreeLevel) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -14521,7 +14954,7 @@ func (ec *executionContext) marshalNDegreeLevel2ᚕᚖgithubᚗcomᚋmarianozuni
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx, sel, v[i])
+			ret[i] = ec.marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevel(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -14541,7 +14974,7 @@ func (ec *executionContext) marshalNDegreeLevel2ᚕᚖgithubᚗcomᚋmarianozuni
 	return ret
 }
 
-func (ec *executionContext) marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevel(ctx context.Context, sel ast.SelectionSet, v *dtos.DegreeLevel) graphql.Marshaler {
+func (ec *executionContext) marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevel(ctx context.Context, sel ast.SelectionSet, v *dtos.DegreeLevel) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14551,12 +14984,12 @@ func (ec *executionContext) marshalNDegreeLevel2ᚖgithubᚗcomᚋmarianozunino�
 	return ec._DegreeLevel(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNDegreeLevelCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelCreateInput(ctx context.Context, v interface{}) (dtos.DegreeLevelCreateInput, error) {
+func (ec *executionContext) unmarshalNDegreeLevelCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevelCreateInput(ctx context.Context, v interface{}) (dtos.DegreeLevelCreateInput, error) {
 	res, err := ec.unmarshalInputDegreeLevelCreateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNDegreeLevelUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelUpdateInput(ctx context.Context, v interface{}) (dtos.DegreeLevelUpdateInput, error) {
+func (ec *executionContext) unmarshalNDegreeLevelUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevelUpdateInput(ctx context.Context, v interface{}) (dtos.DegreeLevelUpdateInput, error) {
 	res, err := ec.unmarshalInputDegreeLevelUpdateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -14623,7 +15056,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNJobOffer2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐJobOffer(ctx context.Context, sel ast.SelectionSet, v []*dtos.JobOffer) graphql.Marshaler {
+func (ec *executionContext) marshalNJobOffer2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐJobOffer(ctx context.Context, sel ast.SelectionSet, v []*dtos.JobOffer) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -14647,7 +15080,7 @@ func (ec *executionContext) marshalNJobOffer2ᚕᚖgithubᚗcomᚋmarianozunino�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOJobOffer2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐJobOffer(ctx, sel, v[i])
+			ret[i] = ec.marshalOJobOffer2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐJobOffer(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -14661,11 +15094,11 @@ func (ec *executionContext) marshalNJobOffer2ᚕᚖgithubᚗcomᚋmarianozunino�
 	return ret
 }
 
-func (ec *executionContext) marshalNMessage2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessage(ctx context.Context, sel ast.SelectionSet, v dtos.Message) graphql.Marshaler {
+func (ec *executionContext) marshalNMessage2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessage(ctx context.Context, sel ast.SelectionSet, v dtos.Message) graphql.Marshaler {
 	return ec._Message(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNMessage2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessageᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.Message) graphql.Marshaler {
+func (ec *executionContext) marshalNMessage2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessageᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.Message) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -14689,7 +15122,7 @@ func (ec *executionContext) marshalNMessage2ᚕᚖgithubᚗcomᚋmarianozunino�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessage(ctx, sel, v[i])
+			ret[i] = ec.marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessage(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -14709,7 +15142,7 @@ func (ec *executionContext) marshalNMessage2ᚕᚖgithubᚗcomᚋmarianozunino�
 	return ret
 }
 
-func (ec *executionContext) marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessage(ctx context.Context, sel ast.SelectionSet, v *dtos.Message) graphql.Marshaler {
+func (ec *executionContext) marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessage(ctx context.Context, sel ast.SelectionSet, v *dtos.Message) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14719,21 +15152,21 @@ func (ec *executionContext) marshalNMessage2ᚖgithubᚗcomᚋmarianozuninoᚋcc
 	return ec._Message(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNMessageCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessageCreateInput(ctx context.Context, v interface{}) (dtos.MessageCreateInput, error) {
+func (ec *executionContext) unmarshalNMessageCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessageCreateInput(ctx context.Context, v interface{}) (dtos.MessageCreateInput, error) {
 	res, err := ec.unmarshalInputMessageCreateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNMessageUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessageUpdateInput(ctx context.Context, v interface{}) (dtos.MessageUpdateInput, error) {
+func (ec *executionContext) unmarshalNMessageUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessageUpdateInput(ctx context.Context, v interface{}) (dtos.MessageUpdateInput, error) {
 	res, err := ec.unmarshalInputMessageUpdateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNPaginatedCategoryResponse2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedCategoryResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedCategoryResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedCategoryResponse2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedCategoryResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedCategoryResponse) graphql.Marshaler {
 	return ec._PaginatedCategoryResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPaginatedCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedCategoryResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedCategoryResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedCategoryResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedCategoryResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14743,11 +15176,11 @@ func (ec *executionContext) marshalNPaginatedCategoryResponse2ᚖgithubᚗcomᚋ
 	return ec._PaginatedCategoryResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPaginatedDegreeLevelResponse2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedDegreeLevelResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedDegreeLevelResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedDegreeLevelResponse2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedDegreeLevelResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedDegreeLevelResponse) graphql.Marshaler {
 	return ec._PaginatedDegreeLevelResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPaginatedDegreeLevelResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedDegreeLevelResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedDegreeLevelResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedDegreeLevelResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedDegreeLevelResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedDegreeLevelResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14757,11 +15190,11 @@ func (ec *executionContext) marshalNPaginatedDegreeLevelResponse2ᚖgithubᚗcom
 	return ec._PaginatedDegreeLevelResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPaginatedMessageResponse2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedMessageResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedMessageResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedMessageResponse2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedMessageResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedMessageResponse) graphql.Marshaler {
 	return ec._PaginatedMessageResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPaginatedMessageResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedMessageResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedMessageResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedMessageResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedMessageResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedMessageResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14771,11 +15204,11 @@ func (ec *executionContext) marshalNPaginatedMessageResponse2ᚖgithubᚗcomᚋm
 	return ec._PaginatedMessageResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPaginatedPostCategoryResponse2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedPostCategoryResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedPostCategoryResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedPostCategoryResponse2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedPostCategoryResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedPostCategoryResponse) graphql.Marshaler {
 	return ec._PaginatedPostCategoryResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPaginatedPostCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedPostCategoryResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedPostCategoryResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedPostCategoryResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedPostCategoryResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedPostCategoryResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14785,11 +15218,11 @@ func (ec *executionContext) marshalNPaginatedPostCategoryResponse2ᚖgithubᚗco
 	return ec._PaginatedPostCategoryResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPaginatedPostResponse2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedPostResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedPostResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedPostResponse2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedPostResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedPostResponse) graphql.Marshaler {
 	return ec._PaginatedPostResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPaginatedPostResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedPostResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedPostResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedPostResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedPostResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedPostResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14799,11 +15232,11 @@ func (ec *executionContext) marshalNPaginatedPostResponse2ᚖgithubᚗcomᚋmari
 	return ec._PaginatedPostResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPaginatedStatusResponse2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedStatusResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedStatusResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedStatusResponse2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedStatusResponse(ctx context.Context, sel ast.SelectionSet, v dtos.PaginatedStatusResponse) graphql.Marshaler {
 	return ec._PaginatedStatusResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPaginatedStatusResponse2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPaginatedStatusResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedStatusResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginatedStatusResponse2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPaginatedStatusResponse(ctx context.Context, sel ast.SelectionSet, v *dtos.PaginatedStatusResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14813,11 +15246,11 @@ func (ec *executionContext) marshalNPaginatedStatusResponse2ᚖgithubᚗcomᚋma
 	return ec._PaginatedStatusResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPost2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPost(ctx context.Context, sel ast.SelectionSet, v dtos.Post) graphql.Marshaler {
+func (ec *executionContext) marshalNPost2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPost(ctx context.Context, sel ast.SelectionSet, v dtos.Post) graphql.Marshaler {
 	return ec._Post(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPost2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.Post) graphql.Marshaler {
+func (ec *executionContext) marshalNPost2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.Post) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -14841,7 +15274,7 @@ func (ec *executionContext) marshalNPost2ᚕᚖgithubᚗcomᚋmarianozuninoᚋcc
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPost(ctx, sel, v[i])
+			ret[i] = ec.marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPost(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -14861,7 +15294,7 @@ func (ec *executionContext) marshalNPost2ᚕᚖgithubᚗcomᚋmarianozuninoᚋcc
 	return ret
 }
 
-func (ec *executionContext) marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPost(ctx context.Context, sel ast.SelectionSet, v *dtos.Post) graphql.Marshaler {
+func (ec *executionContext) marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPost(ctx context.Context, sel ast.SelectionSet, v *dtos.Post) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14871,11 +15304,11 @@ func (ec *executionContext) marshalNPost2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑ
 	return ec._Post(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPostCategory2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategory(ctx context.Context, sel ast.SelectionSet, v dtos.PostCategory) graphql.Marshaler {
+func (ec *executionContext) marshalNPostCategory2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategory(ctx context.Context, sel ast.SelectionSet, v dtos.PostCategory) graphql.Marshaler {
 	return ec._PostCategory(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPostCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.PostCategory) graphql.Marshaler {
+func (ec *executionContext) marshalNPostCategory2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.PostCategory) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -14899,7 +15332,7 @@ func (ec *executionContext) marshalNPostCategory2ᚕᚖgithubᚗcomᚋmarianozun
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategory(ctx, sel, v[i])
+			ret[i] = ec.marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategory(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -14919,7 +15352,7 @@ func (ec *executionContext) marshalNPostCategory2ᚕᚖgithubᚗcomᚋmarianozun
 	return ret
 }
 
-func (ec *executionContext) marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategory(ctx context.Context, sel ast.SelectionSet, v *dtos.PostCategory) graphql.Marshaler {
+func (ec *executionContext) marshalNPostCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategory(ctx context.Context, sel ast.SelectionSet, v *dtos.PostCategory) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -14929,41 +15362,41 @@ func (ec *executionContext) marshalNPostCategory2ᚖgithubᚗcomᚋmarianozunino
 	return ec._PostCategory(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNPostCategoryCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryCreateInput(ctx context.Context, v interface{}) (dtos.PostCategoryCreateInput, error) {
+func (ec *executionContext) unmarshalNPostCategoryCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryCreateInput(ctx context.Context, v interface{}) (dtos.PostCategoryCreateInput, error) {
 	res, err := ec.unmarshalInputPostCategoryCreateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNPostCategoryUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryUpdateInput(ctx context.Context, v interface{}) (dtos.PostCategoryUpdateInput, error) {
+func (ec *executionContext) unmarshalNPostCategoryUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryUpdateInput(ctx context.Context, v interface{}) (dtos.PostCategoryUpdateInput, error) {
 	res, err := ec.unmarshalInputPostCategoryUpdateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNPostCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCreateInput(ctx context.Context, v interface{}) (dtos.PostCreateInput, error) {
+func (ec *executionContext) unmarshalNPostCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCreateInput(ctx context.Context, v interface{}) (dtos.PostCreateInput, error) {
 	res, err := ec.unmarshalInputPostCreateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNPostUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostUpdateInput(ctx context.Context, v interface{}) (dtos.PostUpdateInput, error) {
+func (ec *executionContext) unmarshalNPostUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostUpdateInput(ctx context.Context, v interface{}) (dtos.PostUpdateInput, error) {
 	res, err := ec.unmarshalInputPostUpdateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNRole2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐRole(ctx context.Context, v interface{}) (dtos.Role, error) {
+func (ec *executionContext) unmarshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx context.Context, v interface{}) (dtos.Role, error) {
 	var res dtos.Role
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNRole2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐRole(ctx context.Context, sel ast.SelectionSet, v dtos.Role) graphql.Marshaler {
+func (ec *executionContext) marshalNRole2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐRole(ctx context.Context, sel ast.SelectionSet, v dtos.Role) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) marshalNStatus2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatus(ctx context.Context, sel ast.SelectionSet, v dtos.Status) graphql.Marshaler {
+func (ec *executionContext) marshalNStatus2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatus(ctx context.Context, sel ast.SelectionSet, v dtos.Status) graphql.Marshaler {
 	return ec._Status(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNStatus2ᚕᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatusᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.Status) graphql.Marshaler {
+func (ec *executionContext) marshalNStatus2ᚕᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatusᚄ(ctx context.Context, sel ast.SelectionSet, v []*dtos.Status) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -14987,7 +15420,7 @@ func (ec *executionContext) marshalNStatus2ᚕᚖgithubᚗcomᚋmarianozuninoᚋ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatus(ctx, sel, v[i])
+			ret[i] = ec.marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatus(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -15007,7 +15440,7 @@ func (ec *executionContext) marshalNStatus2ᚕᚖgithubᚗcomᚋmarianozuninoᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatus(ctx context.Context, sel ast.SelectionSet, v *dtos.Status) graphql.Marshaler {
+func (ec *executionContext) marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatus(ctx context.Context, sel ast.SelectionSet, v *dtos.Status) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -15017,12 +15450,12 @@ func (ec *executionContext) marshalNStatus2ᚖgithubᚗcomᚋmarianozuninoᚋcc�
 	return ec._Status(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNStatusCreateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatusCreateInput(ctx context.Context, v interface{}) (dtos.StatusCreateInput, error) {
+func (ec *executionContext) unmarshalNStatusCreateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatusCreateInput(ctx context.Context, v interface{}) (dtos.StatusCreateInput, error) {
 	res, err := ec.unmarshalInputStatusCreateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNStatusUpdateInput2githubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatusUpdateInput(ctx context.Context, v interface{}) (dtos.StatusUpdateInput, error) {
+func (ec *executionContext) unmarshalNStatusUpdateInput2githubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatusUpdateInput(ctx context.Context, v interface{}) (dtos.StatusUpdateInput, error) {
 	res, err := ec.unmarshalInputStatusUpdateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -15351,14 +15784,14 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) marshalOCategory2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategory(ctx context.Context, sel ast.SelectionSet, v *dtos.Category) graphql.Marshaler {
+func (ec *executionContext) marshalOCategory2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategory(ctx context.Context, sel ast.SelectionSet, v *dtos.Category) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Category(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOCategoryAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryAggregationInput(ctx context.Context, v interface{}) (*dtos.CategoryAggregationInput, error) {
+func (ec *executionContext) unmarshalOCategoryAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryAggregationInput(ctx context.Context, v interface{}) (*dtos.CategoryAggregationInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -15366,7 +15799,7 @@ func (ec *executionContext) unmarshalOCategoryAggregationInput2ᚖgithubᚗcom�
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOCategoryWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐCategoryWhereInput(ctx context.Context, v interface{}) (*dtos.CategoryWhereInput, error) {
+func (ec *executionContext) unmarshalOCategoryWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐCategoryWhereInput(ctx context.Context, v interface{}) (*dtos.CategoryWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -15374,7 +15807,7 @@ func (ec *executionContext) unmarshalOCategoryWhereInput2ᚖgithubᚗcomᚋmaria
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalODegreeLevelAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelAggregationInput(ctx context.Context, v interface{}) (*dtos.DegreeLevelAggregationInput, error) {
+func (ec *executionContext) unmarshalODegreeLevelAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevelAggregationInput(ctx context.Context, v interface{}) (*dtos.DegreeLevelAggregationInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -15382,7 +15815,7 @@ func (ec *executionContext) unmarshalODegreeLevelAggregationInput2ᚖgithubᚗco
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalODegreeLevelWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐDegreeLevelWhereInput(ctx context.Context, v interface{}) (*dtos.DegreeLevelWhereInput, error) {
+func (ec *executionContext) unmarshalODegreeLevelWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐDegreeLevelWhereInput(ctx context.Context, v interface{}) (*dtos.DegreeLevelWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -15460,14 +15893,14 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return res
 }
 
-func (ec *executionContext) marshalOJobOffer2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐJobOffer(ctx context.Context, sel ast.SelectionSet, v *dtos.JobOffer) graphql.Marshaler {
+func (ec *executionContext) marshalOJobOffer2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐJobOffer(ctx context.Context, sel ast.SelectionSet, v *dtos.JobOffer) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._JobOffer(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOMessageAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐMessageAggregationInput(ctx context.Context, v interface{}) (*dtos.MessageAggregationInput, error) {
+func (ec *executionContext) unmarshalOMessageAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐMessageAggregationInput(ctx context.Context, v interface{}) (*dtos.MessageAggregationInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -15475,7 +15908,7 @@ func (ec *executionContext) unmarshalOMessageAggregationInput2ᚖgithubᚗcomᚋ
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOPostAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostAggregationInput(ctx context.Context, v interface{}) (*dtos.PostAggregationInput, error) {
+func (ec *executionContext) unmarshalOPostAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostAggregationInput(ctx context.Context, v interface{}) (*dtos.PostAggregationInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -15483,7 +15916,7 @@ func (ec *executionContext) unmarshalOPostAggregationInput2ᚖgithubᚗcomᚋmar
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOPostCategoryAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryAggregationInput(ctx context.Context, v interface{}) (*dtos.PostCategoryAggregationInput, error) {
+func (ec *executionContext) unmarshalOPostCategoryAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryAggregationInput(ctx context.Context, v interface{}) (*dtos.PostCategoryAggregationInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -15491,7 +15924,7 @@ func (ec *executionContext) unmarshalOPostCategoryAggregationInput2ᚖgithubᚗc
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOPostCategoryWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostCategoryWhereInput(ctx context.Context, v interface{}) (*dtos.PostCategoryWhereInput, error) {
+func (ec *executionContext) unmarshalOPostCategoryWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostCategoryWhereInput(ctx context.Context, v interface{}) (*dtos.PostCategoryWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -15499,7 +15932,7 @@ func (ec *executionContext) unmarshalOPostCategoryWhereInput2ᚖgithubᚗcomᚋm
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOPostWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐPostWhereInput(ctx context.Context, v interface{}) (*dtos.PostWhereInput, error) {
+func (ec *executionContext) unmarshalOPostWhereInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐPostWhereInput(ctx context.Context, v interface{}) (*dtos.PostWhereInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -15507,7 +15940,7 @@ func (ec *executionContext) unmarshalOPostWhereInput2ᚖgithubᚗcomᚋmarianozu
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx context.Context, v interface{}) (*dtos.SortOrder, error) {
+func (ec *executionContext) unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx context.Context, v interface{}) (*dtos.SortOrder, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -15516,14 +15949,14 @@ func (ec *executionContext) unmarshalOSortOrder2ᚖgithubᚗcomᚋmarianozunino�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐSortOrder(ctx context.Context, sel ast.SelectionSet, v *dtos.SortOrder) graphql.Marshaler {
+func (ec *executionContext) marshalOSortOrder2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐSortOrder(ctx context.Context, sel ast.SelectionSet, v *dtos.SortOrder) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return v
 }
 
-func (ec *executionContext) unmarshalOStatusAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋccᚑbackendᚑgoᚋdtosᚐStatusAggregationInput(ctx context.Context, v interface{}) (*dtos.StatusAggregationInput, error) {
+func (ec *executionContext) unmarshalOStatusAggregationInput2ᚖgithubᚗcomᚋmarianozuninoᚋjobbyᚋdtosᚐStatusAggregationInput(ctx context.Context, v interface{}) (*dtos.StatusAggregationInput, error) {
 	if v == nil {
 		return nil, nil
 	}

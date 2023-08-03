@@ -20,13 +20,13 @@ model:
 
 models:
   Timestamp:
-    model: github.com/marianozunino/cc-backend-go/dtos.Timestamp
+    model: github.com/marianozunino/jobby/dtos.Timestamp
   Status:
     fields:
       jobOffers:
         resolver: true
   ID:
-    model: github.com/marianozunino/cc-backend-go/dtos.UUID
+    model: github.com/marianozunino/jobby/dtos.UUID
 
 
 

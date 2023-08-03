@@ -1,6 +1,6 @@
 extend type Mutation {
   createPostCategory(input: PostCategoryCreateInput!): PostCategory! @auth @hasRole(role: ADMIN)
-  deletePostCategory(id: ID!): PostCategory! @auth
+  deletePostCategory(id: ID!): PostCategory! @auth @hasRole(role: ADMIN)
   updatePostCategory(id: ID!, input: PostCategoryUpdateInput!): PostCategory! @auth @hasRole(role: ADMIN)
 }
 

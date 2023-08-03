@@ -31,9 +31,11 @@ type PaginatedStatusResponse {
 }
 
 extend type Mutation {
-  createStatus(input: StatusCreateInput!): Status!
-  deleteStatus(id: UUIDv4!): Status!
+  createStatus(input: StatusCreateInput!): Status! @auth @hasRole(role: ADMIN)
+  deleteStatus(id: UUIDv4!): Status! @auth @hasRole(role: ADMIN)
   updateStatus(id: UUIDv4!, input: StatusUpdateInput!): Status!
+    @auth
+    @hasRole(role: ADMIN)
 }
 
 extend type Query {

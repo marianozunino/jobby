@@ -87,8 +87,11 @@ extend type Query {
 }
 
 extend type Mutation {
-  createPost(input: PostCreateInput!): Post! @auth
-  deletePost(id: ID!): Post! @auth
-  updatePost(id: ID!, input: PostUpdateInput!): Post! @auth
-  publishPost(id: ID!): Post! @auth
+  createPost(input: PostCreateInput!): Post! @auth @auth @hasRole(role: ADMIN)
+  deletePost(id: ID!): Post! @auth @auth @hasRole(role: ADMIN)
+  updatePost(id: ID!, input: PostUpdateInput!): Post!
+    @auth
+    @auth
+    @hasRole(role: ADMIN)
+  publishPost(id: ID!): Post! @auth @auth @hasRole(role: ADMIN)
 }
