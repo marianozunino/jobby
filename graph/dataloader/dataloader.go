@@ -19,11 +19,13 @@ const (
 //go:generate go run github.com/vektah/dataloaden ChildCategoriesLoader github.com/google/uuid.UUID []*github.com/marianozunino/jobby/dtos.Category
 //go:generate go run github.com/vektah/dataloaden ParentCategoryLoader github.com/google/uuid.UUID *github.com/marianozunino/jobby/dtos.Category
 //go:generate go run github.com/vektah/dataloaden PostCategoriesLoader github.com/google/uuid.UUID []*github.com/marianozunino/jobby/dtos.PostCategory
+//go:generate go run github.com/vektah/dataloaden PostAuthorLoader github.com/google/uuid.UUID *github.com/marianozunino/jobby/dtos.User
 type Loaders struct {
 	JobOffersByStatusId        *JobOffersLoader
 	ChildCategoriesForParentId *ChildCategoriesLoader
 	ParentCategoryForChildId   *ParentCategoryLoader
 	PostCategoriesForPostId    *PostCategoriesLoader
+	PostAuthorForPostId        *PostAuthorLoader
 }
 
 func NewLoaders(ctx context.Context, service service.Service) *Loaders {
@@ -33,6 +35,7 @@ func NewLoaders(ctx context.Context, service service.Service) *Loaders {
 		ChildCategoriesForParentId: newChildCategoriesForParentID(ctx, service),
 		ParentCategoryForChildId:   newParentCategoryForChildID(ctx, service),
 		PostCategoriesForPostId:    newPostCategoriesForPostID(ctx, service),
+		PostAuthorForPostId:        newPostAuthorForPostID(ctx, service),
 	}
 }
 
@@ -160,6 +163,31 @@ func newPostCategoriesForPostID(ctx context.Context, service service.Service) *P
 
 			// Prepare the final results slice using the original order of postIDs
 			var finalResults [][]*dtos.PostCategory
+			for _, id := range postIDs {
+				finalResults = append(finalResults, mappedDtos[id])
+			}
+
+			// Return the results
+			return finalResults, nil
+		},
+	})
+}
+
+func newPostAuthorForPostID(ctx context.Context, service service.Service) *PostAuthorLoader {
+	return NewPostAuthorLoader(PostAuthorLoaderConfig{
+		MaxBatch: 100,
+		Wait:     5 * time.Millisecond,
+		Fetch: func(postIDs []uuid.UUID) ([]*dtos.User, []error) {
+			// Fetch post author from the service directly
+			mappedDtos, err := service.PostAuthorFor(ctx, postIDs)
+
+			if err != nil {
+				return nil, []error{err}
+			}
+
+			// Prepare the final results slice using the original order of postIDs
+			var finalResults []*dtos.User
+
 			for _, id := range postIDs {
 				finalResults = append(finalResults, mappedDtos[id])
 			}

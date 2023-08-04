@@ -211,6 +211,7 @@ type Post struct {
 	UpdatedAt     time.Time       `json:"updatedAt"`
 	DeletedAt     *time.Time      `json:"deletedAt,omitempty"`
 	Categories    []*PostCategory `json:"categories"`
+	Author        *User           `json:"author"`
 }
 
 type PostAggregationInput struct {
@@ -326,6 +327,13 @@ type TimestampFilter struct {
 	Gte *time.Time `json:"gte,omitempty"`
 	Lt  *time.Time `json:"lt,omitempty"`
 	Lte *time.Time `json:"lte,omitempty"`
+}
+
+type User struct {
+	ID       uuid.UUID `json:"id"`
+	Email    string    `json:"email"`
+	Role     Role      `json:"role"`
+	FullName string    `json:"fullName"`
 }
 
 type Role string

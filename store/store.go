@@ -84,6 +84,7 @@ type PostStore interface {
 type UserStore interface {
 	User(ctx context.Context, id uuid.UUID) (*ent.User, error)
 	UserByEmail(ctx context.Context, email string) (*ent.User, error)
+	PostAuthorFor(ctx context.Context, postIDs []uuid.UUID) (map[uuid.UUID]*ent.User, error)
 }
 
 type Store interface {

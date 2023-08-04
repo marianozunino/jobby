@@ -153,6 +153,27 @@ func (s *postService) FindUniqueSlug(ctx context.Context, name string) (string, 
 	return "", fmt.Errorf("could not find unique slug for post %s", name)
 }
 
+// PostAuthorFor implements PostService.
+func (p *postService) PostAuthorFor(ctx context.Context, postIDs []uuid.UUID) (map[uuid.UUID]*dtos.User, error) {
+
+	postIdWithAuthor, err := p.Store.PostAuthorFor(ctx, postIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[uuid.UUID]*dtos.User)
+	for postID, author := range postIdWithAuthor {
+		result[postID] = &dtos.User{
+			ID:       author.ID,
+			FullName: author.FullName,
+			Email:    author.Email,
+			Role:     dtos.Role(author.Role),
+		}
+	}
+
+	return result, nil
+}
+
 func (s *postService) BuildFromEntity(entity *ent.Post) *dtos.Post {
 	dto := &dtos.Post{
 		ID:            entity.ID,

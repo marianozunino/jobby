@@ -67,6 +67,7 @@ type PostService interface {
 	GetPosts(ctx context.Context) ([]dtos.Post, error)
 	PaginatedPosts(ctx context.Context, orderBy *dtos.PostAggregationInput, take *int, skip *int, where *dtos.PostWhereInput) (*dtos.PaginatedPostResponse, error)
 	PublishPost(ctx context.Context, id uuid.UUID) (*dtos.Post, error)
+	PostAuthorFor(ctx context.Context, postIDs []uuid.UUID) (map[uuid.UUID]*dtos.User, error)
 }
 
 type AuthService interface {

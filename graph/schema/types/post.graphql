@@ -1,97 +1,79 @@
-type Post {
-  id: ID!
-  title: String!
-  content: String!
-  slug: String!
-
-  isHighlighted: Boolean!
-  isPublished: Boolean!
-  publishedAt: Timestamp
-  previewImage: String
-
-  createdAt: Timestamp!
-  updatedAt: Timestamp!
-  deletedAt: Timestamp
-
-  # relations
-  categories: [PostCategory!]! @goField(forceResolver: true)
-}
-
-input PostAggregationInput {
-  id: SortOrder
-  title: SortOrder
-  slug: SortOrder
-  isHighlighted: SortOrder
-  isPublished: SortOrder
-  publishedAt: SortOrder
-
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  deletedAt: SortOrder
-}
-
-input PostWhereInput {
-  id: ID
-  title: String
-  slug: String
-  isHighlighted: Boolean
-  isPublished: Boolean
-  publishedAt: Timestamp
-
-  createdAt: Timestamp
-  updatedAt: Timestamp
-  deletedAt: Timestamp
-}
-
-input PostCreateInput {
-  name: String!
-
-  # if slug is not provided, it will be generated from name
-  slug: String
-
-  title: String!
-  content: String!
-  previewImage: String
-  isHighlighted: Boolean!
-  isPublished: Boolean!
-
-  categories: [ID!]!
-}
-
-input PostUpdateInput {
-  name: String!
-  slug: String!
-  title: String!
-  content: String!
-  previewImage: String
-  isHighlighted: Boolean!
-
-  categories: [ID!]
+extend type Mutation {
+  createPost(input: PostCreateInput!): Post! @auth @auth @hasRole(role: ADMIN)
+  deletePost(id: ID!): Post! @auth @auth @hasRole(role: ADMIN)
+  publishPost(id: ID!): Post! @auth @auth @hasRole(role: ADMIN)
+  updatePost(id: ID!, input: PostUpdateInput!): Post! @auth @auth @hasRole(role: ADMIN)
 }
 
 type PaginatedPostResponse {
   edges: [Post!]!
-  total: Int!
-  take: Int
   skip: Int
+  take: Int
+  total: Int!
+}
+
+type Post {
+  author: User! @goField(forceResolver: true)
+  categories: [PostCategory!]! @goField(forceResolver: true)
+  content: String!
+  createdAt: Timestamp!
+  deletedAt: Timestamp
+  id: ID!
+  isHighlighted: Boolean!
+  isPublished: Boolean!
+  previewImage: String
+  publishedAt: Timestamp
+  slug: String!
+  title: String!
+  updatedAt: Timestamp!
+}
+
+input PostAggregationInput {
+  createdAt: SortOrder
+  deletedAt: SortOrder
+  id: SortOrder
+  isHighlighted: SortOrder
+  isPublished: SortOrder
+  publishedAt: SortOrder
+  slug: SortOrder
+  title: SortOrder
+  updatedAt: SortOrder
+}
+
+input PostCreateInput {
+  categories: [ID!]!
+  content: String!
+  isHighlighted: Boolean!
+  isPublished: Boolean!
+  name: String!
+  previewImage: String
+  slug: String
+  title: String!
+}
+
+input PostUpdateInput {
+  categories: [ID!]
+  content: String!
+  isHighlighted: Boolean!
+  name: String!
+  previewImage: String
+  slug: String!
+  title: String!
+}
+
+input PostWhereInput {
+  createdAt: Timestamp
+  deletedAt: Timestamp
+  id: ID
+  isHighlighted: Boolean
+  isPublished: Boolean
+  publishedAt: Timestamp
+  slug: String
+  title: String
+  updatedAt: Timestamp
 }
 
 extend type Query {
   post(id: ID!): Post!
-  posts(
-    orderBy: PostAggregationInput
-    take: Int = 10
-    skip: Int = 0
-    where: PostWhereInput
-  ): PaginatedPostResponse!
-}
-
-extend type Mutation {
-  createPost(input: PostCreateInput!): Post! @auth @auth @hasRole(role: ADMIN)
-  deletePost(id: ID!): Post! @auth @auth @hasRole(role: ADMIN)
-  updatePost(id: ID!, input: PostUpdateInput!): Post!
-    @auth
-    @auth
-    @hasRole(role: ADMIN)
-  publishPost(id: ID!): Post! @auth @auth @hasRole(role: ADMIN)
+  posts(orderBy: PostAggregationInput, skip: Int = 0, take: Int = 10, where: PostWhereInput): PaginatedPostResponse!
 }

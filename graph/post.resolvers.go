@@ -40,6 +40,11 @@ func (r *postResolver) Categories(ctx context.Context, obj *dtos.Post) ([]*dtos.
 	return r.DataLoaders.Retrieve(ctx).PostCategoriesForPostId.Load(obj.ID)
 }
 
+// Author is the resolver for the author field.
+func (r *postResolver) Author(ctx context.Context, obj *dtos.Post) (*dtos.User, error) {
+	return r.DataLoaders.Retrieve(ctx).PostAuthorForPostId.Load(obj.ID)
+}
+
 // Post is the resolver for the post field.
 func (r *queryResolver) Post(ctx context.Context, id uuid.UUID) (*dtos.Post, error) {
 	return r.Service.GetPost(ctx, id)
