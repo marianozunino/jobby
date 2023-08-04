@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 	"github.com/marianozunino/jobby/dtos"
+	"github.com/marianozunino/jobby/dtos/mapper"
 	"github.com/marianozunino/jobby/ent"
 	"github.com/marianozunino/jobby/store"
 )
@@ -41,7 +42,7 @@ func (p *postService) CreatePost(ctx context.Context, input dtos.PostCreateInput
 	if post, err := p.Store.CreatePost(ctx, model); err != nil {
 		return nil, err
 	} else {
-		return p.BuildFromEntity(post), nil
+		return mapper.PostToDto(post), nil
 	}
 
 }
@@ -52,7 +53,7 @@ func (p *postService) DeletePost(ctx context.Context, id uuid.UUID) (*dtos.Post,
 		return nil, err
 	}
 
-	return p.BuildFromEntity(post), nil
+	return mapper.PostToDto(post), nil
 }
 
 func (p *postService) UpdatePost(ctx context.Context, id uuid.UUID, input dtos.PostUpdateInput) (*dtos.Post, error) {
@@ -77,7 +78,7 @@ func (p *postService) UpdatePost(ctx context.Context, id uuid.UUID, input dtos.P
 		return nil, err
 	}
 
-	return p.BuildFromEntity(post), nil
+	return mapper.PostToDto(post), nil
 }
 
 func (p *postService) GetPost(ctx context.Context, id uuid.UUID) (*dtos.Post, error) {
@@ -87,7 +88,7 @@ func (p *postService) GetPost(ctx context.Context, id uuid.UUID) (*dtos.Post, er
 		return nil, err
 	}
 
-	return p.BuildFromEntity(post), nil
+	return mapper.PostToDto(post), nil
 }
 
 func (p *postService) GetPosts(ctx context.Context) ([]dtos.Post, error) {
@@ -102,7 +103,7 @@ func (p *postService) PaginatedPosts(ctx context.Context, orderBy *dtos.PostAggr
 		return nil, err
 	}
 
-	posts := p.BuildFromEntities(data)
+	posts := mapper.PostsToDtos(data)
 
 	count, err := p.Store.CountPosts(ctx)
 	if err != nil {
@@ -125,8 +126,7 @@ func (p *postService) PublishPost(ctx context.Context, id uuid.UUID) (*dtos.Post
 		return nil, err
 	}
 
-	return p.BuildFromEntity(post), nil
-
+	return mapper.PostToDto(post), nil
 }
 
 func (s *postService) FindUniqueSlug(ctx context.Context, name string) (string, error) {
@@ -163,36 +163,8 @@ func (p *postService) PostAuthorFor(ctx context.Context, postIDs []uuid.UUID) (m
 
 	result := make(map[uuid.UUID]*dtos.User)
 	for postID, author := range postIdWithAuthor {
-		result[postID] = &dtos.User{
-			ID:       author.ID,
-			FullName: author.FullName,
-			Email:    author.Email,
-			Role:     dtos.Role(author.Role),
-		}
+		result[postID] = mapper.UserToDto(author)
 	}
 
 	return result, nil
-}
-
-func (s *postService) BuildFromEntity(entity *ent.Post) *dtos.Post {
-	dto := &dtos.Post{
-		ID:            entity.ID,
-		Title:         entity.Title,
-		Slug:          entity.Slug,
-		PreviewImage:  entity.PreviewImage,
-		IsPublished:   entity.IsPublished,
-		IsHighlighted: entity.IsHighlighted,
-		CreatedAt:     entity.CreatedAt,
-		UpdatedAt:     entity.UpdatedAt,
-		DeletedAt:     entity.DeletedAt,
-	}
-	return dto
-}
-
-func (s *postService) BuildFromEntities(entities ent.Posts) []*dtos.Post {
-	dtos := make([]*dtos.Post, len(entities))
-	for i, entity := range entities {
-		dtos[i] = s.BuildFromEntity(entity)
-	}
-	return dtos
 }
