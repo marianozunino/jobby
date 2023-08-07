@@ -20,12 +20,18 @@ const (
 //go:generate go run github.com/vektah/dataloaden ParentCategoryLoader github.com/google/uuid.UUID *github.com/marianozunino/jobby/dtos.Category
 //go:generate go run github.com/vektah/dataloaden PostCategoriesLoader github.com/google/uuid.UUID []*github.com/marianozunino/jobby/dtos.PostCategory
 //go:generate go run github.com/vektah/dataloaden PostAuthorLoader github.com/google/uuid.UUID *github.com/marianozunino/jobby/dtos.User
+//go:generate go run github.com/vektah/dataloaden JobOffersForCategoryLoader github.com/google/uuid.UUID []*github.com/marianozunino/jobby/dtos.JobOffer
+//go:generate go run github.com/vektah/dataloaden StatusForJobOfferLoader github.com/google/uuid.UUID *github.com/marianozunino/jobby/dtos.Status
+//go:generate go run github.com/vektah/dataloaden CategoriesForJobOfferLoader github.com/google/uuid.UUID []*github.com/marianozunino/jobby/dtos.Category
 type Loaders struct {
 	JobOffersByStatusId        *JobOffersLoader
 	ChildCategoriesForParentId *ChildCategoriesLoader
 	ParentCategoryForChildId   *ParentCategoryLoader
 	PostCategoriesForPostId    *PostCategoriesLoader
 	PostAuthorForPostId        *PostAuthorLoader
+	JobOffersForCategoryId     *JobOffersForCategoryLoader
+	StatusForJobOfferId        *StatusForJobOfferLoader
+	CategoriesForJobOfferId    *CategoriesForJobOfferLoader
 }
 
 func NewLoaders(ctx context.Context, service service.Service) *Loaders {
@@ -36,6 +42,9 @@ func NewLoaders(ctx context.Context, service service.Service) *Loaders {
 		ParentCategoryForChildId:   newParentCategoryForChildID(ctx, service),
 		PostCategoriesForPostId:    newPostCategoriesForPostID(ctx, service),
 		PostAuthorForPostId:        newPostAuthorForPostID(ctx, service),
+		JobOffersForCategoryId:     newJobOffersForCategoryID(ctx, service),
+		StatusForJobOfferId:        newStatusForJobOfferID(ctx, service),
+		CategoriesForJobOfferId:    newCategoriesForJobOfferID(ctx, service),
 	}
 }
 
@@ -189,6 +198,81 @@ func newPostAuthorForPostID(ctx context.Context, service service.Service) *PostA
 			var finalResults []*dtos.User
 
 			for _, id := range postIDs {
+				finalResults = append(finalResults, mappedDtos[id])
+			}
+
+			// Return the results
+			return finalResults, nil
+		},
+	})
+}
+
+func newJobOffersForCategoryID(ctx context.Context, service service.Service) *JobOffersForCategoryLoader {
+	return NewJobOffersForCategoryLoader(JobOffersForCategoryLoaderConfig{
+		MaxBatch: 100,
+		Wait:     5 * time.Millisecond,
+		Fetch: func(categoryIDs []uuid.UUID) ([][]*dtos.JobOffer, []error) {
+			// Fetch job offers from the service directly
+			mappedDtos, err := service.JobOffersForCategories(ctx, categoryIDs)
+
+			if err != nil {
+				return nil, []error{err}
+			}
+
+			// Prepare the final results slice using the original order of categoryIDs
+			var finalResults [][]*dtos.JobOffer
+
+			for _, id := range categoryIDs {
+				finalResults = append(finalResults, mappedDtos[id])
+			}
+
+			// Return the results
+			return finalResults, nil
+		},
+	})
+}
+
+func newStatusForJobOfferID(ctx context.Context, service service.Service) *StatusForJobOfferLoader {
+	return NewStatusForJobOfferLoader(StatusForJobOfferLoaderConfig{
+		MaxBatch: 100,
+		Wait:     5 * time.Millisecond,
+		Fetch: func(jobOfferIDs []uuid.UUID) ([]*dtos.Status, []error) {
+			// Fetch status from the service directly
+			mappedDtos, err := service.StatusForJobOffers(ctx, jobOfferIDs)
+
+			if err != nil {
+				return nil, []error{err}
+			}
+
+			// Prepare the final results slice using the original order of jobOfferIDs
+			var finalResults []*dtos.Status
+
+			for _, id := range jobOfferIDs {
+				finalResults = append(finalResults, mappedDtos[id])
+			}
+
+			// Return the results
+			return finalResults, nil
+		},
+	})
+}
+
+func newCategoriesForJobOfferID(ctx context.Context, service service.Service) *CategoriesForJobOfferLoader {
+	return NewCategoriesForJobOfferLoader(CategoriesForJobOfferLoaderConfig{
+		MaxBatch: 100,
+		Wait:     5 * time.Millisecond,
+		Fetch: func(jobOfferIDs []uuid.UUID) ([][]*dtos.Category, []error) {
+			// Fetch categories from the service directly
+			mappedDtos, err := service.CategoriesForJobOffers(ctx, jobOfferIDs)
+
+			if err != nil {
+				return nil, []error{err}
+			}
+
+			// Prepare the final results slice using the original order of jobOfferIDs
+			var finalResults [][]*dtos.Category
+
+			for _, id := range jobOfferIDs {
 				finalResults = append(finalResults, mappedDtos[id])
 			}
 

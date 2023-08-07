@@ -25,6 +25,11 @@ func (r *categoryResolver) Parent(ctx context.Context, obj *dtos.Category) (*dto
 	return r.DataLoaders.Retrieve(ctx).ParentCategoryForChildId.Load(*obj.ParentID)
 }
 
+// Jobs is the resolver for the jobs field.
+func (r *categoryResolver) Jobs(ctx context.Context, obj *dtos.Category) ([]*dtos.JobOffer, error) {
+	return r.DataLoaders.Retrieve(ctx).JobOffersForCategoryId.Load(obj.ID)
+}
+
 // CreateCategory is the resolver for the createCategory field.
 func (r *mutationResolver) CreateCategory(ctx context.Context, input dtos.CategoryCreateInput) (*dtos.Category, error) {
 	return r.Service.CreateCategory(ctx, input)

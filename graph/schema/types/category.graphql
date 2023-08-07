@@ -4,6 +4,7 @@ type Category {
   deletedAt: Timestamp
   id: ID!
   isRoot: Boolean!
+  jobs: [JobOffer!]! @goField(forceResolver: true)
   name: String!
   parent: Category @goField(forceResolver: true)
   parentId: ID

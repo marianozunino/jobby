@@ -25,24 +25,24 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id uuid.UUID) (*dtos.
 	return r.Service.DeletePost(ctx, id)
 }
 
-// UpdatePost is the resolver for the updatePost field.
-func (r *mutationResolver) UpdatePost(ctx context.Context, id uuid.UUID, input dtos.PostUpdateInput) (*dtos.Post, error) {
-	return r.Service.UpdatePost(ctx, id, input)
-}
-
 // PublishPost is the resolver for the publishPost field.
 func (r *mutationResolver) PublishPost(ctx context.Context, id uuid.UUID) (*dtos.Post, error) {
 	return r.Service.PublishPost(ctx, id)
 }
 
-// Categories is the resolver for the categories field.
-func (r *postResolver) Categories(ctx context.Context, obj *dtos.Post) ([]*dtos.PostCategory, error) {
-	return r.DataLoaders.Retrieve(ctx).PostCategoriesForPostId.Load(obj.ID)
+// UpdatePost is the resolver for the updatePost field.
+func (r *mutationResolver) UpdatePost(ctx context.Context, id uuid.UUID, input dtos.PostUpdateInput) (*dtos.Post, error) {
+	return r.Service.UpdatePost(ctx, id, input)
 }
 
 // Author is the resolver for the author field.
 func (r *postResolver) Author(ctx context.Context, obj *dtos.Post) (*dtos.User, error) {
 	return r.DataLoaders.Retrieve(ctx).PostAuthorForPostId.Load(obj.ID)
+}
+
+// Categories is the resolver for the categories field.
+func (r *postResolver) Categories(ctx context.Context, obj *dtos.Post) ([]*dtos.PostCategory, error) {
+	return r.DataLoaders.Retrieve(ctx).PostCategoriesForPostId.Load(obj.ID)
 }
 
 // Post is the resolver for the post field.
@@ -51,7 +51,7 @@ func (r *queryResolver) Post(ctx context.Context, id uuid.UUID) (*dtos.Post, err
 }
 
 // Posts is the resolver for the posts field.
-func (r *queryResolver) Posts(ctx context.Context, orderBy *dtos.PostAggregationInput, take *int, skip *int, where *dtos.PostWhereInput) (*dtos.PaginatedPostResponse, error) {
+func (r *queryResolver) Posts(ctx context.Context, orderBy *dtos.PostAggregationInput, skip *int, take *int, where *dtos.PostWhereInput) (*dtos.PaginatedPostResponse, error) {
 	return r.Service.PaginatedPosts(ctx, orderBy, take, skip, where)
 }
 

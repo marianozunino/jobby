@@ -9,6 +9,7 @@ import (
 	"github.com/marianozunino/jobby/dtos"
 	"github.com/marianozunino/jobby/ent"
 	"github.com/marianozunino/jobby/ent/category"
+	"github.com/marianozunino/jobby/ent/joboffercategory"
 	"github.com/marianozunino/jobby/store"
 )
 
@@ -152,4 +153,21 @@ func (c *CategoryStore) ChildCategoriesFor(ctx context.Context, ids []uuid.UUID)
 // CategoriesWithParents implements store.CategoryStore.
 func (c *CategoryStore) ParentCategoriesFor(ctx context.Context, ids []uuid.UUID) (ent.Categories, error) {
 	return c.Client.Category.Query().Where(category.IDIn(ids...)).All(ctx)
+}
+
+// CategoriesForJobOffers implements store.CategoryStore.
+func (c *CategoryStore) CategoriesForJobOffers(ctx context.Context, jobOfferIDs []uuid.UUID) (map[uuid.UUID]ent.Categories, error) {
+	mappedCategories := make(map[uuid.UUID]ent.Categories)
+
+	jobOffersWithCategories, err := c.Client.JobOfferCategory.Query().Where(joboffercategory.JobOfferIDIn(jobOfferIDs...)).WithCategory().All(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, relation := range jobOffersWithCategories {
+		mappedCategories[relation.JobOfferID] = append(mappedCategories[relation.JobOfferID], relation.Edges.Category)
+	}
+
+	return mappedCategories, nil
 }

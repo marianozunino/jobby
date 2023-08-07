@@ -24,10 +24,12 @@ type StatusStore interface {
 	DeleteStatus(ctx context.Context, id uuid.UUID) (*ent.Status, error)
 	PaginatedStatuses(ctx context.Context, orderBy *dtos.StatusAggregationInput, take *int, skip *int) (ent.StatusSlice, error)
 	CountStatuses(ctx context.Context) (int, error)
+	StatusForJobOffers(ctx context.Context, jobOfferIDs []uuid.UUID) (map[uuid.UUID]*ent.Status, error)
 }
 
 type JobOfferStore interface {
 	JobOffersWithStatus(ctx context.Context, statusID []uuid.UUID) (ent.JobOffers, error)
+	JobOffersForCategories(ctx context.Context, categoryIDs []uuid.UUID) (map[uuid.UUID]ent.JobOffers, error)
 }
 
 type MessageStore interface {
@@ -49,6 +51,7 @@ type CategoryStore interface {
 	ChildCategoriesFor(ctx context.Context, parentIDs []uuid.UUID) (ent.Categories, error)
 	ParentCategoriesFor(ctx context.Context, childIDs []uuid.UUID) (ent.Categories, error)
 	IsSlugTaken(ctx context.Context, slug string) (bool, error)
+	CategoriesForJobOffers(ctx context.Context, jobOfferIDs []uuid.UUID) (map[uuid.UUID]ent.Categories, error)
 }
 
 type PostCategoryStore interface {

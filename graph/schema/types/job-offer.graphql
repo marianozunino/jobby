@@ -18,4 +18,8 @@ type JobOffer {
   updatedAt: Timestamp!
   deletedAt: Timestamp
   statusId: ID!
+
+  # Relations
+  categories: [Category!]! @goField(forceResolver: true)
+  status: Status! @goField(forceResolver: true)
 }

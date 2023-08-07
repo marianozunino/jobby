@@ -124,7 +124,7 @@ func (c *PostCategoryStore) UpdatePostCategory(ctx context.Context, category *en
 // PostCategoriesFor implements store.PostStore.
 
 func (p *PostStore) PostCategoriesFor(ctx context.Context, postIDs []uuid.UUID) (map[uuid.UUID]ent.PostCategories, error) {
-	posts, err := p.Client.Debug().Post.Query().Where(post.IDIn(postIDs...)).WithPostCategory().All(ctx)
+	posts, err := p.Client.Post.Query().Where(post.IDIn(postIDs...)).WithPostCategory().All(ctx)
 
 	if err != nil {
 		return nil, err

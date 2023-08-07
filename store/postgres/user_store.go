@@ -29,7 +29,7 @@ func (u *UserStore) UserByEmail(ctx context.Context, email string) (*ent.User, e
 
 // PostAuthorFor implements store.UserStore.
 func (u *UserStore) PostAuthorFor(ctx context.Context, postIDs []uuid.UUID) (map[uuid.UUID]*ent.User, error) {
-	postWithUser, err := u.Client.Debug().User.Query().QueryPosts().WithUser().Where(post.IDIn(postIDs...)).All(ctx)
+	postWithUser, err := u.Client.User.Query().QueryPosts().WithUser().Where(post.IDIn(postIDs...)).All(ctx)
 
 	if err != nil {
 		return nil, err

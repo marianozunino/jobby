@@ -55,3 +55,20 @@ func (j *jobOfferService) BuildFromEntities(entities ent.JobOffers) []*dtos.JobO
 	}
 	return dtos
 }
+
+// JobOffersForCategories implements JobOfferService.
+func (j *jobOfferService) JobOffersForCategories(ctx context.Context, categoryIDs []uuid.UUID) (map[uuid.UUID][]*dtos.JobOffer, error) {
+	mappedJobOffers := make(map[uuid.UUID][]*dtos.JobOffer)
+
+	categoriesWithJobOffers, err := j.Store.JobOffersForCategories(ctx, categoryIDs)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for categoryID, jobOffers := range categoriesWithJobOffers {
+		mappedJobOffers[categoryID] = j.BuildFromEntities(jobOffers)
+	}
+
+	return mappedJobOffers, nil
+}

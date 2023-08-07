@@ -16,10 +16,12 @@ type StatusService interface {
 	GetStatus(ctx context.Context, id string) (*dtos.Status, error)
 	GetStatuses(ctx context.Context) ([]dtos.Status, error)
 	PaginatedStatuses(ctx context.Context, orderBy *dtos.StatusAggregationInput, take *int, skip *int) (*dtos.PaginatedStatusResponse, error)
+	StatusForJobOffers(ctx context.Context, jobOfferIDs []uuid.UUID) (map[uuid.UUID]*dtos.Status, error)
 }
 
 type JobOfferService interface {
 	JobOffersWithStatus(ctx context.Context, statusID []uuid.UUID) ([]*dtos.JobOffer, error)
+	JobOffersForCategories(ctx context.Context, categoryIDs []uuid.UUID) (map[uuid.UUID][]*dtos.JobOffer, error)
 }
 
 type MessageService interface {
@@ -39,6 +41,7 @@ type CategoryService interface {
 	PaginatedCategories(ctx context.Context, orderBy *dtos.CategoryAggregationInput, take *int, skip *int, where *dtos.CategoryWhereInput) (*dtos.PaginatedCategoryResponse, error)
 	ChildCategoriesFor(ctx context.Context, parentIDs []uuid.UUID) ([]*dtos.Category, error)
 	ParentCategoriesFor(ctx context.Context, childIDs []uuid.UUID) ([]*dtos.Category, error)
+	CategoriesForJobOffers(ctx context.Context, jobOfferIDs []uuid.UUID) (map[uuid.UUID][]*dtos.Category, error)
 }
 
 type PostCategoryService interface {

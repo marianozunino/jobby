@@ -198,3 +198,19 @@ func (s *categoryService) FindUniqueSlug(ctx context.Context, name string) (stri
 
 	return "", fmt.Errorf("could not find unique slug for category %s", name)
 }
+
+// CategoriesForJobOffers implements CategoryService.
+func (c *categoryService) CategoriesForJobOffers(ctx context.Context, jobOfferIDs []uuid.UUID) (map[uuid.UUID][]*dtos.Category, error) {
+	categories, err := c.Store.CategoriesForJobOffers(ctx, jobOfferIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[uuid.UUID][]*dtos.Category, len(categories))
+	for jobOfferID, categories := range categories {
+		result[jobOfferID] = c.BuildFromEntities(categories)
+	}
+
+	return result, nil
+
+}

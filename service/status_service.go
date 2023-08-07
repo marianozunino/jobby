@@ -13,6 +13,8 @@ type statusService struct {
 	Store store.Store
 }
 
+var _ StatusService = &statusService{}
+
 // GetStatuses implements StatusService.
 func (*statusService) GetStatuses(ctx context.Context) ([]dtos.Status, error) {
 	panic("unimplemented")
@@ -133,4 +135,17 @@ func (s *statusService) BuildFromEntities(entities ent.StatusSlice) []*dtos.Stat
 	return dtos
 }
 
-var _ StatusService = &statusService{}
+// StatusForJobOffers implements StatusService.
+func (s *statusService) StatusForJobOffers(ctx context.Context, jobOfferIDs []uuid.UUID) (map[uuid.UUID]*dtos.Status, error) {
+	statuses, err := s.Store.StatusForJobOffers(ctx, jobOfferIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[uuid.UUID]*dtos.Status)
+	for jobOfferID, status := range statuses {
+		result[jobOfferID] = s.BuildFromEntity(status)
+	}
+
+	return result, nil
+}

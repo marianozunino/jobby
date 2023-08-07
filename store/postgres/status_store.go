@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/marianozunino/jobby/dtos"
 	"github.com/marianozunino/jobby/ent"
+	"github.com/marianozunino/jobby/ent/joboffer"
 	"github.com/marianozunino/jobby/ent/status"
 	"github.com/marianozunino/jobby/store"
 )
@@ -107,6 +108,25 @@ func (ss *StatusStore) PaginatedStatuses(ctx context.Context, orderBy *dtos.Stat
 // CountStatuses implements store.StatusStore.
 func (ss *StatusStore) CountStatuses(ctx context.Context) (int, error) {
 	return ss.Client.Status.Query().Where(status.DeletedAtIsNil()).Count(ctx)
+}
+
+// StatusForJobOffers implements store.StatusStore.
+func (ss *StatusStore) StatusForJobOffers(ctx context.Context, jobOfferIDs []uuid.UUID) (map[uuid.UUID]*ent.Status, error) {
+	mappedStatuses := make(map[uuid.UUID]*ent.Status)
+
+	jobWithStatuses, err := ss.Client.JobOffer.Query().Where(
+		joboffer.IDIn(jobOfferIDs...),
+	).WithStatus().All(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, jobWithStatus := range jobWithStatuses {
+		mappedStatuses[jobWithStatus.ID] = jobWithStatus.Edges.Status
+	}
+
+	return mappedStatuses, nil
 }
 
 // assert that StatusStore implements store.StatusStore

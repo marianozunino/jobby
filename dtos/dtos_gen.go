@@ -25,16 +25,17 @@ type BooleanFilter struct {
 }
 
 type Category struct {
-	Children  []*Category `json:"children"`
-	CreatedAt time.Time   `json:"createdAt"`
-	DeletedAt *time.Time  `json:"deletedAt,omitempty"`
 	ID        uuid.UUID   `json:"id"`
 	IsRoot    bool        `json:"isRoot"`
 	Name      string      `json:"name"`
-	Parent    *Category   `json:"parent,omitempty"`
 	ParentID  *uuid.UUID  `json:"parentId,omitempty"`
 	Slug      string      `json:"slug"`
+	CreatedAt time.Time   `json:"createdAt"`
+	DeletedAt *time.Time  `json:"deletedAt,omitempty"`
 	UpdatedAt time.Time   `json:"updatedAt"`
+	Children  []*Category `json:"children"`
+	Parent    *Category   `json:"parent,omitempty"`
+	Jobs      []*JobOffer `json:"jobs"`
 }
 
 type CategoryAggregationInput struct {
@@ -101,24 +102,26 @@ type IDFilter struct {
 }
 
 type JobOffer struct {
-	ID             uuid.UUID  `json:"id"`
-	Slug           string     `json:"slug"`
-	Title          string     `json:"title"`
-	Reference      int        `json:"reference"`
-	StartDate      time.Time  `json:"startDate"`
-	EndDate        time.Time  `json:"endDate"`
-	Address1       string     `json:"address1"`
-	Address2       string     `json:"address2"`
-	Department     string     `json:"department"`
-	Description    string     `json:"description"`
-	WorkingHours   string     `json:"workingHours"`
-	Salary         string     `json:"salary"`
-	IsFeatured     bool       `json:"isFeatured"`
-	HasBeenEmailed bool       `json:"hasBeenEmailed"`
-	CreatedAt      time.Time  `json:"createdAt"`
-	UpdatedAt      time.Time  `json:"updatedAt"`
-	DeletedAt      *time.Time `json:"deletedAt,omitempty"`
-	StatusID       uuid.UUID  `json:"statusId"`
+	ID             uuid.UUID   `json:"id"`
+	Slug           string      `json:"slug"`
+	Title          string      `json:"title"`
+	Reference      int         `json:"reference"`
+	StartDate      time.Time   `json:"startDate"`
+	EndDate        time.Time   `json:"endDate"`
+	Address1       string      `json:"address1"`
+	Address2       string      `json:"address2"`
+	Department     string      `json:"department"`
+	Description    string      `json:"description"`
+	WorkingHours   string      `json:"workingHours"`
+	Salary         string      `json:"salary"`
+	IsFeatured     bool        `json:"isFeatured"`
+	HasBeenEmailed bool        `json:"hasBeenEmailed"`
+	CreatedAt      time.Time   `json:"createdAt"`
+	UpdatedAt      time.Time   `json:"updatedAt"`
+	DeletedAt      *time.Time  `json:"deletedAt,omitempty"`
+	StatusID       uuid.UUID   `json:"statusId"`
+	Categories     []*Category `json:"categories"`
+	Status         *Status     `json:"status"`
 }
 
 type Message struct {
@@ -186,9 +189,9 @@ type PaginatedPostCategoryResponse struct {
 
 type PaginatedPostResponse struct {
 	Edges []*Post `json:"edges"`
-	Total int     `json:"total"`
-	Take  *int    `json:"take,omitempty"`
 	Skip  *int    `json:"skip,omitempty"`
+	Take  *int    `json:"take,omitempty"`
+	Total int     `json:"total"`
 }
 
 type PaginatedStatusResponse struct {
@@ -199,31 +202,31 @@ type PaginatedStatusResponse struct {
 }
 
 type Post struct {
-	ID            uuid.UUID       `json:"id"`
-	Title         string          `json:"title"`
+	Author        *User           `json:"author"`
+	Categories    []*PostCategory `json:"categories"`
 	Content       string          `json:"content"`
-	Slug          string          `json:"slug"`
+	CreatedAt     time.Time       `json:"createdAt"`
+	DeletedAt     *time.Time      `json:"deletedAt,omitempty"`
+	ID            uuid.UUID       `json:"id"`
 	IsHighlighted bool            `json:"isHighlighted"`
 	IsPublished   bool            `json:"isPublished"`
-	PublishedAt   *time.Time      `json:"publishedAt,omitempty"`
 	PreviewImage  *string         `json:"previewImage,omitempty"`
-	CreatedAt     time.Time       `json:"createdAt"`
+	PublishedAt   *time.Time      `json:"publishedAt,omitempty"`
+	Slug          string          `json:"slug"`
+	Title         string          `json:"title"`
 	UpdatedAt     time.Time       `json:"updatedAt"`
-	DeletedAt     *time.Time      `json:"deletedAt,omitempty"`
-	Categories    []*PostCategory `json:"categories"`
-	Author        *User           `json:"author"`
 }
 
 type PostAggregationInput struct {
+	CreatedAt     *SortOrder `json:"createdAt,omitempty"`
+	DeletedAt     *SortOrder `json:"deletedAt,omitempty"`
 	ID            *SortOrder `json:"id,omitempty"`
-	Title         *SortOrder `json:"title,omitempty"`
-	Slug          *SortOrder `json:"slug,omitempty"`
 	IsHighlighted *SortOrder `json:"isHighlighted,omitempty"`
 	IsPublished   *SortOrder `json:"isPublished,omitempty"`
 	PublishedAt   *SortOrder `json:"publishedAt,omitempty"`
-	CreatedAt     *SortOrder `json:"createdAt,omitempty"`
+	Slug          *SortOrder `json:"slug,omitempty"`
+	Title         *SortOrder `json:"title,omitempty"`
 	UpdatedAt     *SortOrder `json:"updatedAt,omitempty"`
-	DeletedAt     *SortOrder `json:"deletedAt,omitempty"`
 }
 
 type PostCategory struct {
@@ -260,36 +263,36 @@ type PostCategoryWhereInput struct {
 }
 
 type PostCreateInput struct {
-	Name          string      `json:"name"`
-	Slug          *string     `json:"slug,omitempty"`
-	Title         string      `json:"title"`
+	Categories    []uuid.UUID `json:"categories"`
 	Content       string      `json:"content"`
-	PreviewImage  *string     `json:"previewImage,omitempty"`
 	IsHighlighted bool        `json:"isHighlighted"`
 	IsPublished   bool        `json:"isPublished"`
-	Categories    []uuid.UUID `json:"categories"`
+	Name          string      `json:"name"`
+	PreviewImage  *string     `json:"previewImage,omitempty"`
+	Slug          *string     `json:"slug,omitempty"`
+	Title         string      `json:"title"`
 }
 
 type PostUpdateInput struct {
+	Categories    []uuid.UUID `json:"categories,omitempty"`
+	Content       string      `json:"content"`
+	IsHighlighted bool        `json:"isHighlighted"`
 	Name          string      `json:"name"`
+	PreviewImage  *string     `json:"previewImage,omitempty"`
 	Slug          string      `json:"slug"`
 	Title         string      `json:"title"`
-	Content       string      `json:"content"`
-	PreviewImage  *string     `json:"previewImage,omitempty"`
-	IsHighlighted bool        `json:"isHighlighted"`
-	Categories    []uuid.UUID `json:"categories,omitempty"`
 }
 
 type PostWhereInput struct {
+	CreatedAt     *time.Time `json:"createdAt,omitempty"`
+	DeletedAt     *time.Time `json:"deletedAt,omitempty"`
 	ID            *uuid.UUID `json:"id,omitempty"`
-	Title         *string    `json:"title,omitempty"`
-	Slug          *string    `json:"slug,omitempty"`
 	IsHighlighted *bool      `json:"isHighlighted,omitempty"`
 	IsPublished   *bool      `json:"isPublished,omitempty"`
 	PublishedAt   *time.Time `json:"publishedAt,omitempty"`
-	CreatedAt     *time.Time `json:"createdAt,omitempty"`
+	Slug          *string    `json:"slug,omitempty"`
+	Title         *string    `json:"title,omitempty"`
 	UpdatedAt     *time.Time `json:"updatedAt,omitempty"`
-	DeletedAt     *time.Time `json:"deletedAt,omitempty"`
 }
 
 type Status struct {
